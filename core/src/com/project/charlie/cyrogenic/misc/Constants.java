@@ -42,6 +42,12 @@ public class Constants {
     public static final Vector2 GRAVITY = new Vector2(0, -10);
 
 
+    public static final int GAMEMODE_NORMAL = 0;
+    public static final int GAMEMODE_OBSTACLES = 1;
+    public static final int GAMEMODE_CREATOR = 3;
+
+
+
     /* Masks */
     public static final short BULLET_ENTITY = 0x1;    // 0001
     public static final short TURRET_BULLET_ENTITY = 0x5;    // 0005
