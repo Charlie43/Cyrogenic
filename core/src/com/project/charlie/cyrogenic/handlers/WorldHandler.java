@@ -78,17 +78,18 @@ public class WorldHandler {
         return body;
     }
 
-    public static Body createTurret(World world, float x, float y, float fireRate) {
+    public static Body createTurret(World world, float x, float y, float width, float height, float fireRate) {
         if (x == 0 && y == 0) {
             x = Constants.TURRET_X;
             y = Constants.TURRET_Y;
         }
 
+        Gdx.app.log("TURRET", String.format("Creating turret with X: %f Y: %f Width: %f Height: %f", x, y, width, height));
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.KinematicBody;
         bodyDef.position.set(new Vector2(x, y));
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(Constants.TURRET_WIDTH / 2, Constants.TURRET_HEIGHT / 2);
+        shape.setAsBox(width / 2, height / 2);
         Body body = world.createBody(bodyDef);
 
         body.setGravityScale(Constants.DEFUALT_GRAVITY);
@@ -102,7 +103,7 @@ public class WorldHandler {
         fixtureDef.density = Constants.TURRET_DENSITY;
         body.createFixture(fixtureDef);
 
-        body.setUserData(new TurretActorData(Constants.TURRET_WIDTH, Constants.TURRET_HEIGHT, 100f, fireRate));
+        body.setUserData(new TurretActorData(width, height, 100f, fireRate));
         body.resetMassData();
 
         shape.dispose();

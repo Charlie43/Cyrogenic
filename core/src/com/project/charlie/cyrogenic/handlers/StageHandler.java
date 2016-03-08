@@ -1,5 +1,7 @@
 package com.project.charlie.cyrogenic.handlers;
 
+import com.project.charlie.cyrogenic.objects.TurretJSON;
+
 import java.util.ArrayList;
 
 /**
@@ -11,10 +13,10 @@ public class StageHandler {
     private int asteriodCount;
     private float asteriodInterval;
     private float asteriodSpeed;
-    private ArrayList<TurretTemplate> turrets;
+    private ArrayList<TurretJSON> turrets;
 
     public StageHandler() {
-        turrets = new ArrayList<TurretTemplate>();
+        turrets = new ArrayList<TurretJSON>();
     }
 
     public int getId() {
@@ -49,15 +51,15 @@ public class StageHandler {
         this.asteriodSpeed = asteriodSpeed;
     }
 
-    public ArrayList<TurretTemplate> getTurrets() {
+    public ArrayList<TurretJSON> getTurrets() {
         return turrets;
     }
 
-    public void setTurrets(ArrayList<TurretTemplate> turrets) {
+    public void setTurrets(ArrayList<TurretJSON> turrets) {
         this.turrets = turrets;
     }
 
-    public void addTurret(TurretTemplate turret) {
+    public void addTurret(TurretJSON turret) {
         this.turrets.add(turret);
     }
 
@@ -65,13 +67,22 @@ public class StageHandler {
     public class TurretTemplate {
         float x;
         float y;
+        float width;
+        float height;
         float fireRate;
         float health;
         float damage;
 
-        public TurretTemplate(float x, float y, float fireRate) {
+        public TurretTemplate() {
+
+        }
+
+        public TurretTemplate(float x, float y, float width, float height, float fireRate) {
             this.x = x;
             this.y = y;
+            this.width = width;
+            this.height = height;
+            this.health = health;
             this.fireRate = fireRate;
         }
 
@@ -113,6 +124,22 @@ public class StageHandler {
 
         public void setDamage(float damage) {
             this.damage = damage;
+        }
+
+        public float getWidth() {
+            return width;
+        }
+
+        public void setWidth(float width) {
+            this.width = width;
+        }
+
+        public float getHeight() {
+            return height;
+        }
+
+        public void setHeight(float height) {
+            this.height = height;
         }
     }
 }

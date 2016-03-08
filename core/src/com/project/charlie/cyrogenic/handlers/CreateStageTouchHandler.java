@@ -1,7 +1,6 @@
 package com.project.charlie.cyrogenic.handlers;
 
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.math.Vector3;
 import com.project.charlie.cyrogenic.game.GameStage;
 
 /**
@@ -35,9 +34,10 @@ public class CreateStageTouchHandler implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        Vector3 touch = stage.translateScreenToWorldCoordinates(screenX, screenY);
-        creatorHandler.handlePlacement(touch.x, touch.y);
-        return true;
+//        Vector3 touch = stage.translateScreenToWorldCoordinates(screenX, screenY);
+//        if(creatorHandler.placing )
+//        creatorHandler.handlePlacement(touch.x, touch.y);
+        return false;
     }
 
     @Override

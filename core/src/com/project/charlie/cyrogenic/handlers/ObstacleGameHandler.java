@@ -22,6 +22,7 @@ public class ObstacleGameHandler extends GameHandler {
     public ObstacleGameHandler(GameStage stage) {
         super(stage);
         asteroidCount = 0;
+
 //        MainGameTouchHandler mainGameHandler = new MainGameTouchHandler(this); // todo asteroid touchhandler
     }
 
@@ -32,9 +33,9 @@ public class ObstacleGameHandler extends GameHandler {
         stage.addAsteroid(asteroid);
         stage.addActor(asteroid);
         asteroidCount++;
-        Gdx.app.log("COUNT", "Asteroid Count: " + asteroidCount + " / " + stage.getStageHandler().getAsteriodCount());
+        Gdx.app.log("COUNT", "AsteroidLevel Count: " + asteroidCount + " / " + stage.getStageHandler().getAsteriodCount());
         if (asteroidCount >= stage.getStageHandler().getAsteriodCount()) {
-            Gdx.app.log("COUNT", "Asteroid complete");
+            Gdx.app.log("COUNT", "AsteroidLevel complete");
             stage.setUpNormalLevel();
         }
     }

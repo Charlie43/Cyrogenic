@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.project.charlie.cyrogenic.actors.Bullet;
 import com.project.charlie.cyrogenic.actors.Player;
 import com.project.charlie.cyrogenic.actors.Turret;
 import com.project.charlie.cyrogenic.data.BulletActorData;
@@ -18,7 +19,10 @@ import com.project.charlie.cyrogenic.data.PlayerUserData;
 import com.project.charlie.cyrogenic.data.TurretActorData;
 import com.project.charlie.cyrogenic.game.GameStage;
 import com.project.charlie.cyrogenic.misc.Constants;
+import com.project.charlie.cyrogenic.objects.TurretJSON;
 import com.project.charlie.cyrogenic.ui.GameLabel;
+
+import java.util.Random;
 
 /**
  * Created by Charlie on 05/03/2016.
@@ -31,10 +35,12 @@ public class GameHandler {
     MainGameTouchHandler mainGameHandler;
     private Touchpad touchPad;
     GameLabel infoLabel;
+    Random random;
 
     public GameHandler(GameStage stage) {
         this.stage = stage;
         mainGameHandler = new MainGameTouchHandler(stage);
+        random = new Random();
     }
 
 
@@ -66,11 +72,12 @@ public class GameHandler {
         // null check
         player = new Player(WorldHandler.createPlayer(stage.getWorld()));
         stage.addActor(player);
+        Gdx.app.log("GH", "Player created");
     }
 
     public void setUpTurrets() { // TODO: handle stages
-        for (StageHandler.TurretTemplate turret : stage.getStageHandler().getTurrets()) {
-            Turret temp = new Turret(WorldHandler.createTurret(stage.getWorld(), turret.getX(), turret.getY(),
+        for (TurretJSON turret : stage.getStageHandler().getTurrets()) {
+            Turret temp = new Turret(WorldHandler.createTurret(stage.getWorld(), turret.getX(), turret.getY(), turret.getWidth(), turret.getHeight(),
                     turret.getFireRate()));
             temp.getActorData().turret = temp;
             stage.addActor(temp);
@@ -164,5 +171,60 @@ public class GameHandler {
 
     }
 
+    public void createBullets(int bulletsToCreate) {
+        if (gameMode != Constants.GAMEMODE_CREATOR) {
+            for (int i = 0; i < bulletsToCreate; i++) {
+                Bullet bullet = new Bullet(WorldHandler.createBullet(stage.getWorld(), player.getX() + 55,
+                        player.getY() + 15, Constants.PLAYER_ASSET_ID));
+                BulletActorData data = bullet.getActorData();
+                data.bullet = bullet;
+                stage.addActor(bullet);
+                stage.addBullet(bullet);
+            }
+            stage.setBulletsToCreate(0);
+            if (stage.getTurrets().size() > 0) {
+                for (Turret turret : stage.getTurrets()) {
+                    //todo define these numbers by difficulty?
+                    boolean checkFireRate = ((System.currentTimeMillis() - turret.getLastFiretime()) / 1000) > turret.getActorData().getFireRate();
+                    if (random.nextFloat() > 0.3 && checkFireRate) {
+                        turret.setLastFiretime(System.currentTimeMillis());
+                        Bullet bullet = new Bullet(WorldHandler.createBullet(stage.getWorld(),
+                                turret.getX() - 55, turret.getY() + 15, Constants.TURRET_ASSET_ID));
+                        BulletActorData data = bullet.getActorData();
+                        data.bullet = bullet;
+                        stage.addActor(bullet);
+                        stage.addBullet(bullet);
+                    }
+                }
+            }
+        }
+    }
+
+
+    public void touchDown(float x, float y) {
+        int activeTouch = 0;
+        for (int i = 0; i < 2; i++) {
+            if (Gdx.input.isTouched(i)) activeTouch++;
+        }
+
+        if (player != null) {
+            player.applyForce(touchPad.getKnobPercentX() * 10,
+                    touchPad.getKnobPercentY() * 10);
+            if (activeTouch > 1) {
+                stage.addBullet();
+            }
+        }
+    }
+
+    public void touchDragged(float x, float y) {
+        if (player != null) {
+            player.applyForce(touchPad.getKnobPercentX() * 10,
+                    touchPad.getKnobPercentY() * 10);
+        }
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
 }
 

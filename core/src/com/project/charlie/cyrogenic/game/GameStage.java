@@ -7,7 +7,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
@@ -21,7 +20,6 @@ import com.project.charlie.cyrogenic.misc.Constants;
 import com.project.charlie.cyrogenic.ui.GameLabel;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 /**
  * Created by Charlie on 12/02/2016.
@@ -30,19 +28,16 @@ public class GameStage extends Stage implements ContactListener {
     private Box2DDebugRenderer renderer;
     OrthographicCamera camera;
     World world;
-    Random random = new Random();
 
     private GameHandler gameHandler;
     private ObstacleGameHandler obstacleGameHandler;
     private CreatorHandler creatorHandler;
     private LevelManager levelManager;
     private StageHandler stageHandler;
-    private Player player;
     private Boundary boundaryBottom;
     private Boundary boundaryTop;
     private Boundary boundaryLeft;
     private Boundary boundaryRight;
-
 
 
     private ArrayList<Turret> turrets = new ArrayList<Turret>();
@@ -55,7 +50,6 @@ public class GameStage extends Stage implements ContactListener {
     static int VIEWPORT_WIDTH = Constants.APP_WIDTH;
     static int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;
     private Vector3 touchPoint;
-    private Touchpad touchPad;
 
     ArrayList<Asteroid> asteroids = new ArrayList<Asteroid>();
 
@@ -91,6 +85,7 @@ public class GameStage extends Stage implements ContactListener {
         gameHandler = new GameHandler(this);
         obstacleGameHandler = new ObstacleGameHandler(this);
         creatorHandler = new CreatorHandler(this);
+//        LevelManager.writeLevel(null);
 
         setUpMenu();
 
@@ -148,13 +143,15 @@ public class GameStage extends Stage implements ContactListener {
         gameHandler.gameMode = Constants.GAMEMODE_CREATOR;
         clear();
         setUpStage(1);
+        setUpBoundaries();
         creatorHandler.setUpButtons();
         creatorHandler.setUpFinishButton();
     }
 
 
     public void loadLevel() {
-        stageHandler = LevelManager.parseLevel(world);
+        stageHandler = LevelManager.parseJSONLevel(world);
+//        stageHandler = LevelManager.parseLevel(world);
     }
 
     public GameLabel createLabel(String text, Vector3 bounds, float width, float height, int fadeOut) {
@@ -167,8 +164,10 @@ public class GameStage extends Stage implements ContactListener {
     }
 
     public String getDebugText() {
-        String text = infoLabelString.replace("%hp%", player.getActorData().getHealth() + "");
+        String text = infoLabelString;
         if (Constants.DEBUG) {
+            if (gameHandler.getPlayer() != null)
+                text = infoLabelString.replace("%hp%", gameHandler.getPlayer().getActorData().getHealth() + "");
             if (turrets.size() > 0) { // todo correct way of checking current stage (gamemanager)
                 String tempText = "";
                 for (Turret turret : turrets) {
@@ -234,30 +233,39 @@ public class GameStage extends Stage implements ContactListener {
 
     private void createBullets() {
         if (gameHandler.gameMode != Constants.GAMEMODE_CREATOR) {
-            for (int i = 0; i < bulletsToCreate; i++) {
-                Bullet bullet = new Bullet(WorldHandler.createBullet(world, player.getX() + 55, player.getY() + 15, Constants.PLAYER_ASSET_ID));
-                BulletActorData data = bullet.getActorData();
-                data.bullet = bullet;
-                addActor(bullet);
-                bullets.add(bullet);
-            }
-            bulletsToCreate = 0;
-            if (turrets.size() > 0) {
-                for (Turret turret : turrets) {
-                    //todo define these numbers by difficulty?
-                    boolean checkFireRate = ((System.currentTimeMillis() - turret.getLastFiretime()) / 1000) > turret.getActorData().getFireRate();
-                    if (random.nextFloat() > 0.3 && checkFireRate) {
-                        turret.setLastFiretime(System.currentTimeMillis());
-                        Bullet bullet = new Bullet(WorldHandler.createBullet(world, turret.getX() - 55, turret.getY() + 15, Constants.TURRET_ASSET_ID));
-                        BulletActorData data = bullet.getActorData();
-                        data.bullet = bullet;
-                        addActor(bullet);
-                        bullets.add(bullet);
-                    }
-                }
-            }
+            if (gameHandler.gameMode == Constants.GAMEMODE_OBSTACLES)
+                obstacleGameHandler.createBullets(bulletsToCreate);
+            else if (gameHandler.gameMode == Constants.GAMEMODE_NORMAL)
+                gameHandler.createBullets(bulletsToCreate);
         }
     }
+//    private void createBullets() {
+//        if (gameHandler.gameMode != Constants.GAMEMODE_CREATOR) {
+//            for (int i = 0; i < bulletsToCreate; i++) {
+//                Bullet bullet = new Bullet(WorldHandler.createBullet(world, gameHandler.getPlayer().getX() + 55,
+//                        gameHandler.getPlayer().getY() + 15, Constants.PLAYER_ASSET_ID));
+//                BulletActorData data = bullet.getActorData();
+//                data.bullet = bullet;
+//                addActor(bullet);
+//                bullets.add(bullet);
+//            }
+//            bulletsToCreate = 0;
+//            if (turrets.size() > 0) {
+//                for (Turret turret : turrets) {
+//                    //todo define these numbers by difficulty?
+//                    boolean checkFireRate = ((System.currentTimeMillis() - turret.getLastFiretime()) / 1000) > turret.getActorData().getFireRate();
+//                    if (random.nextFloat() > 0.3 && checkFireRate) {
+//                        turret.setLastFiretime(System.currentTimeMillis());
+//                        Bullet bullet = new Bullet(WorldHandler.createBullet(world, turret.getX() - 55, turret.getY() + 15, Constants.TURRET_ASSET_ID));
+//                        BulletActorData data = bullet.getActorData();
+//                        data.bullet = bullet;
+//                        addActor(bullet);
+//                        bullets.add(bullet);
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     private void checkBounds() {
         for (Bullet bullet : bullets) {
@@ -322,12 +330,46 @@ public class GameStage extends Stage implements ContactListener {
 
 
     public Vector3 translateScreenToWorldCoordinates(int x, int y) {
-        getCamera().unproject(touchPoint.set(x, y, 0));
+        touchPoint.set(getCamera().unproject(new Vector3(x, y, 0)));
         return touchPoint;
     }
 
     @Override
-    public void beginContact(Contact contact) { // todo call seperate handlers depending on current game mode?
+    public boolean touchDown(int x, int y, int pointer, int button) {
+        translateScreenToWorldCoordinates(x, y);
+        switch (gameHandler.gameMode) {
+            case Constants.GAMEMODE_CREATOR:
+                creatorHandler.touchDown(touchPoint.x, touchPoint.y);
+                break;
+            case Constants.GAMEMODE_NORMAL:
+                gameHandler.touchDown(touchPoint.x, touchPoint.y);
+                break;
+            case Constants.GAMEMODE_OBSTACLES:
+                obstacleGameHandler.touchDown(touchPoint.x, touchPoint.y);
+                break;
+        }
+        return super.touchDown(x, y, pointer, button);
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        translateScreenToWorldCoordinates(screenX, screenY);
+        switch (gameHandler.gameMode) {
+            case Constants.GAMEMODE_CREATOR:
+                creatorHandler.touchDragged(touchPoint.x, touchPoint.y);
+                break;
+            case Constants.GAMEMODE_NORMAL:
+                gameHandler.touchDragged(touchPoint.x, touchPoint.y);
+                break;
+            case Constants.GAMEMODE_OBSTACLES:
+                obstacleGameHandler.touchDragged(touchPoint.x, touchPoint.y);
+                break;
+        }
+        return super.touchDragged(screenX, screenY, pointer);
+    }
+
+    @Override
+    public void beginContact(Contact contact) { // todo call separate handlers depending on current game mode?
         Body a = contact.getFixtureA().getBody();
         Body b = contact.getFixtureB().getBody();
 
@@ -362,9 +404,6 @@ public class GameStage extends Stage implements ContactListener {
 
     }
 
-    public Player getPlayer() {
-        return player;
-    }
 
     public LevelManager getLevelManager() {
         return levelManager;
@@ -374,9 +413,7 @@ public class GameStage extends Stage implements ContactListener {
         return stageHandler;
     }
 
-    public Touchpad getTouchPad() {
-        return touchPad;
-    }
+
 
     public void addBullet() {
         bulletsToCreate++;
@@ -401,5 +438,21 @@ public class GameStage extends Stage implements ContactListener {
 
     public void addDead(Body body) {
         dead.add(body);
+    }
+
+    public void addBullet(Bullet bullet) {
+        bullets.add(bullet);
+    }
+
+    public void setBulletsToCreate(int bulletsToCreate) {
+        this.bulletsToCreate = bulletsToCreate;
+    }
+
+    public ArrayList<Turret> getTurrets() {
+        return turrets;
+    }
+
+    public ArrayList<Bullet> getBullets() {
+        return bullets;
     }
 }

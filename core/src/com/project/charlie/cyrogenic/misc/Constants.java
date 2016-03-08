@@ -10,7 +10,7 @@ public class Constants {
     /* Application Constants */
     public static final float PIXELS_TO_METRES = 100f;
 
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     static final float WORLD_TO_BOX = 0.032f; // Pixels * 0.032 to get metres
     public static final float BOX_TO_WORLD = 32; // Metres * 32 to get pixels
@@ -78,8 +78,8 @@ public class Constants {
     public static final String TURRET_IMAGE_PATH = "turret_new.png";
     public static final int TURRET_X = 2;
     public static final int TURRET_Y = 7;
-    public static final float TURRET_WIDTH = 1.5f;
-    public static final float TURRET_HEIGHT = 1.7f;
+    public static final float TURRET_WIDTH = 20.5f;
+    public static final float TURRET_HEIGHT = 20.7f;
     public static final float TURRET_DENSITY = 4.5f;
 
 
