@@ -20,13 +20,13 @@ import java.util.ArrayList;
  */
 public class CreatorHandler extends GameHandler {
     String placing;
-    CreateStageTouchHandler touchHandler;
+    GameStage stage;
     ArrayList<TurretJSON> placedTurrets;
 
     public CreatorHandler(GameStage stage) {
         super(stage);
+        this.stage = stage;
         placing = "";
-        touchHandler = new CreateStageTouchHandler(stage, this);
         placedTurrets = new ArrayList<TurretJSON>();
     }
 
@@ -38,8 +38,8 @@ public class CreatorHandler extends GameHandler {
 
         final ImageButton imageButton = new ImageButton(style);
         imageButton.setSize(50, 50);
-        imageButton.setPosition(stage.getCamera().viewportWidth / 6, stage.getCamera().viewportHeight / 6);
-        imageButton.setBounds(stage.getCamera().viewportWidth / 6, stage.getCamera().viewportHeight / 6, imageButton.getWidth(), imageButton.getHeight());
+        imageButton.setPosition(stage.getCamera().viewportWidth / 9, stage.getCamera().viewportHeight / 8);
+        imageButton.setBounds(stage.getCamera().viewportWidth / 9, stage.getCamera().viewportHeight / 8, imageButton.getWidth(), imageButton.getHeight());
         imageButton.addListener(new ClickListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -51,11 +51,15 @@ public class CreatorHandler extends GameHandler {
         stage.addActor(imageButton);
     }
 
+    Turret temp;
+
     public void handlePlacement(float x, float y) {
+        x = Constants.ConvertToBox(x);
+        y = Constants.ConvertToBox(y);
         Gdx.app.log("CH", "Touch registered");
         if (placing.equals("turret")) {
             Gdx.app.log("CH", "Placing turret..");
-            Turret temp = new Turret(WorldHandler.createTurret(stage.getWorld(), x, y, Constants.TURRET_WIDTH, Constants.TURRET_HEIGHT,
+            temp = new Turret(WorldHandler.createTurret(stage.getWorld(), x, y, Constants.TURRET_WIDTH, Constants.TURRET_HEIGHT,
                     10)); // todo define firerate based on turret type
             temp.getActorData().turret = temp;
             placedTurrets.add(new TurretJSON(x, y, Constants.TURRET_WIDTH, Constants.TURRET_HEIGHT, 10));
@@ -66,7 +70,7 @@ public class CreatorHandler extends GameHandler {
     }
 
     public void setUpCreatorButton() {
-        TextButton creatorButton = new TextButton("Create Level", new Skin(Gdx.files.internal(Constants.BUTTONS_SKIN_PATH)), "default");
+        TextButton creatorButton = new TextButton("Create Base", new Skin(Gdx.files.internal(Constants.BUTTONS_SKIN_PATH)), "default");
         creatorButton.setPosition(stage.getCamera().viewportWidth / 3, stage.getCamera().viewportHeight / 2 - 100);
         creatorButton.setBounds(stage.getCamera().viewportWidth / 3, stage.getCamera().viewportHeight / 2 - 100, 250, 40);
         creatorButton.addListener(new ClickListener() {
@@ -79,18 +83,45 @@ public class CreatorHandler extends GameHandler {
         stage.addActor(creatorButton);
     }
 
-    public void setUpFinishButton() {
-        TextButton finishButton = new TextButton("Finish Level", new Skin(Gdx.files.internal(Constants.BUTTONS_SKIN_PATH)), "default");
-        finishButton.setPosition(stage.getCamera().viewportWidth / 3, stage.getCamera().viewportHeight / 2 - 200);
-        finishButton.setBounds(stage.getCamera().viewportWidth / 3, stage.getCamera().viewportHeight / 2 - 200, 250, 40);
-        finishButton.addListener(new ClickListener() {
+    public void setUpResetButton() {
+        TextButton resetButton = new TextButton("Reset Base", new Skin(Gdx.files.internal(Constants.BUTTONS_SKIN_PATH)), "default");
+        resetButton.setPosition(stage.getCamera().viewportWidth / 3, stage.getCamera().viewportHeight / 2 - 220);
+        resetButton.setBounds(resetButton.getX(), resetButton.getY(), 250, 40);
+        resetButton.addListener(new ClickListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                writeLevel();
+                LevelManager.clearBase();
+                placedTurrets.clear();
+                if (stage.getStageHandler() != null)
+                    stage.getStageHandler().setTurrets(null);
+                stage.setUpStageCreator();
                 return false;
             }
         });
+        stage.addActor(resetButton);
+
+    }
+
+    public void setUpFinishButton() {
+        TextButton finishButton = new TextButton("Finish Level", new Skin(Gdx.files.internal(Constants.BUTTONS_SKIN_PATH)), "default");
+        finishButton.setPosition(stage.getCamera().viewportWidth / 3, stage.getCamera().viewportHeight / 2 - 190);
+        finishButton.setBounds(stage.getCamera().viewportWidth / 3, stage.getCamera().viewportHeight / 2 - 190, 250, 40);
+        finishButton.addListener(new ClickListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                placing = "";
+//                if (placedTurrets.size() > 0)
+//                    placedTurrets.remove(placedTurrets.size() - 1); // Remove the last placed turret. todo less hacky approach to this
+                writeLevel();
+                stage.setUpMenu();
+                return true;
+            }
+        });
         stage.addActor(finishButton);
+    }
+
+    public void loadBase() {
+        setUpTurrets(LevelManager.loadBase(stage.getWorld()));
     }
 
     private void writeLevel() {

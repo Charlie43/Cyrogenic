@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
@@ -32,22 +33,20 @@ public class GameHandler {
     GameStage stage;
     public int gameMode;
     private Player player;
-    MainGameTouchHandler mainGameHandler;
     private Touchpad touchPad;
     GameLabel infoLabel;
     Random random;
 
     public GameHandler(GameStage stage) {
         this.stage = stage;
-        mainGameHandler = new MainGameTouchHandler(stage);
         random = new Random();
     }
 
 
     public void setUpControls() {
         Skin touchpadSkin = new Skin();
-        touchpadSkin.add("touchBackground", new Texture("touchBackground_new.png"));
-        touchpadSkin.add("touchKnob", new Texture("touchKnob_new.png"));
+        touchpadSkin.add("touchBackground", new Texture(Constants.TOUCH_BG_PATH));
+        touchpadSkin.add("touchKnob", new Texture(Constants.TOUCH_KNOB_PATH));
         // Style
         Touchpad.TouchpadStyle touchpadStyle = new Touchpad.TouchpadStyle();
         // create drawables
@@ -62,11 +61,6 @@ public class GameHandler {
         stage.addActor(touchPad);
     }
 
-    public void setUpWorld() {
-        stage.setWorld(WorldHandler.createWorld());
-        stage.getWorld().setContactListener(stage);
-    }
-
 
     public void setUpPlayer() {
         // null check
@@ -75,8 +69,13 @@ public class GameHandler {
         Gdx.app.log("GH", "Player created");
     }
 
-    public void setUpTurrets() { // TODO: handle stages
-        for (TurretJSON turret : stage.getStageHandler().getTurrets()) {
+    public void setUpTurrets(StageHandler stageHandler) { // TODO: handle stages
+        if (stageHandler == null)
+            stageHandler = stage.getStageHandler();
+
+        Gdx.app.log("GH", String.format("Setting up %d turrets.", stageHandler.getTurrets().size()));
+
+        for (TurretJSON turret : stageHandler.getTurrets()) {
             Turret temp = new Turret(WorldHandler.createTurret(stage.getWorld(), turret.getX(), turret.getY(), turret.getWidth(), turret.getHeight(),
                     turret.getFireRate()));
             temp.getActorData().turret = temp;
@@ -93,8 +92,9 @@ public class GameHandler {
     }
 
     public void setUpStageCompleteLabel() {
-        stage.createLabel("Planet Entry completed", new Vector3(stage.getCamera().viewportWidth / 3,
+        GameLabel label = stage.createLabel("Planet Entry completed", new Vector3(stage.getCamera().viewportWidth / 3,
                 stage.getCamera().viewportHeight / 3, 0), 100, 20, 10);
+        label.addAction(Actions.fadeOut(10));
 
 //        new Timer().scheduleTask(new Timer.Task() {
 //            @Override

@@ -51,7 +51,7 @@ public class GameStage extends Stage implements ContactListener {
     static int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;
     private Vector3 touchPoint;
 
-    ArrayList<Asteroid> asteroids = new ArrayList<Asteroid>();
+    ArrayList<Asteroid> asteroids = new ArrayList<Asteroid>(); // todo reset arraylists when changing mode
 
     private ArrayList<Body> dead = new ArrayList<Body>();
 
@@ -92,11 +92,11 @@ public class GameStage extends Stage implements ContactListener {
         if (Constants.DEBUG)
             renderer = new Box2DDebugRenderer();
 
-        // set up camera, stage, etc
-        // audio
+        // todo audio & animation
     }
 
     public void setUpMenu() {
+        clear();
         setUpPreChoice();
         obstacleGameHandler.setUpObstaclesButton();
         gameHandler.setUpNormalButton();
@@ -115,7 +115,7 @@ public class GameStage extends Stage implements ContactListener {
         gameHandler.setUpPlayer();
         if (stageHandler == null)
             loadLevel();
-        gameHandler.setUpTurrets();
+        gameHandler.setUpTurrets(stageHandler);
         setUpBoundaries();
         gameHandler.setUpControls();
         gameHandler.setUpStageCompleteLabel();
@@ -144,8 +144,10 @@ public class GameStage extends Stage implements ContactListener {
         clear();
         setUpStage(1);
         setUpBoundaries();
+        creatorHandler.loadBase();
         creatorHandler.setUpButtons();
         creatorHandler.setUpFinishButton();
+        creatorHandler.setUpResetButton();
     }
 
 
@@ -186,8 +188,13 @@ public class GameStage extends Stage implements ContactListener {
     }
 
     public void setUpStage(int stage) {
-        gameHandler.setUpWorld();
+        setUpWorld();
         setUpBackground(stage);
+    }
+
+    public void setUpWorld() {
+        world = WorldHandler.createWorld();
+        world.setContactListener(this);
     }
 
     public void setUpBoundaries() {
