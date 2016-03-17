@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.project.charlie.cyrogenic.data.*;
 import com.project.charlie.cyrogenic.misc.Constants;
+import com.project.charlie.cyrogenic.objects.PlanetJSON;
 
 import java.util.Random;
 
@@ -110,7 +111,7 @@ public class WorldHandler {
         return body;
     }
 
-    public static Body createObstacle(World world, StageHandler stageHandler) {
+    public static Body createObstacle(World world, PlanetHandler planetHandler) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         float randomNum = random.nextFloat();
@@ -136,7 +137,7 @@ public class WorldHandler {
         body.resetMassData();
         body.setGravityScale(0);
 
-        body.setLinearVelocity(-stageHandler.getAsteriodSpeed(), 0f);
+        body.setLinearVelocity(-planetHandler.getAsteriodSpeed(), 0f);
         return body;
     }
 
@@ -182,6 +183,28 @@ public class WorldHandler {
         body.createFixture(fixtureDef);
         edgeShape.dispose();
         return body;
+    }
+
+    public static Body createPlanet(World world, PlanetJSON planet) {
+        float width = planet.size;
+        float height = planet.size;
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.position.set(planet.x, planet.y);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        PolygonShape shape = new PolygonShape();
+
+        shape.setAsBox(width / 2, height / 2);
+        fixtureDef.shape = shape;
+        shape.dispose();
+
+        Body body = world.createBody(bodyDef);
+        body.createFixture(fixtureDef);
+        body.setUserData(new PlanetData(width, height));
+        return body;
+
     }
 
 

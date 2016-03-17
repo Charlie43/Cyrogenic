@@ -15,7 +15,7 @@ import com.project.charlie.cyrogenic.data.AsteroidActorData;
 import com.project.charlie.cyrogenic.data.BulletActorData;
 import com.project.charlie.cyrogenic.data.TurretActorData;
 import com.project.charlie.cyrogenic.handlers.*;
-import com.project.charlie.cyrogenic.managers.LevelManager;
+import com.project.charlie.cyrogenic.managers.PlanetManager;
 import com.project.charlie.cyrogenic.misc.Constants;
 import com.project.charlie.cyrogenic.ui.GameLabel;
 
@@ -32,8 +32,9 @@ public class GameStage extends Stage implements ContactListener {
     private GameHandler gameHandler;
     private ObstacleGameHandler obstacleGameHandler;
     private CreatorHandler creatorHandler;
-    private LevelManager levelManager;
-    private StageHandler stageHandler;
+    private StarMapHandler mapHandler;
+    private PlanetManager planetManager;
+    private PlanetHandler planetHandler;
     private Boundary boundaryBottom;
     private Boundary boundaryTop;
     private Boundary boundaryLeft;
@@ -42,6 +43,7 @@ public class GameStage extends Stage implements ContactListener {
 
     private ArrayList<Turret> turrets = new ArrayList<Turret>();
     private ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+    private ArrayList<Planet> planets = new ArrayList<Planet>();
 
     private int bulletsToCreate;
     private float accumulator = 0f;
@@ -73,6 +75,8 @@ public class GameStage extends Stage implements ContactListener {
      * <p/>
      * Way of managing different stages - Base building stage, planet map stage, etc
      * - IE ways of handling touch inputs for each stage (seperate controllers for each stage)
+     * <p/>
+     * fade out background to show moving stages
      */
 
 
@@ -85,7 +89,8 @@ public class GameStage extends Stage implements ContactListener {
         gameHandler = new GameHandler(this);
         obstacleGameHandler = new ObstacleGameHandler(this);
         creatorHandler = new CreatorHandler(this);
-//        LevelManager.writeLevel(null);
+        mapHandler = new StarMapHandler(this);
+//        PlanetManager.writePlanet(null);
 
         setUpMenu();
 
@@ -101,6 +106,7 @@ public class GameStage extends Stage implements ContactListener {
         obstacleGameHandler.setUpObstaclesButton();
         gameHandler.setUpNormalButton();
         creatorHandler.setUpCreatorButton();
+        mapHandler.setUpMapButton();
     }
 
     public void setUpPreChoice() {
@@ -113,9 +119,9 @@ public class GameStage extends Stage implements ContactListener {
         clear();
         setUpStage(1);
         gameHandler.setUpPlayer();
-        if (stageHandler == null)
+        if (planetHandler == null)
             loadLevel();
-        gameHandler.setUpTurrets(stageHandler);
+        gameHandler.setUpTurrets(planetHandler);
         setUpBoundaries();
         gameHandler.setUpControls();
         gameHandler.setUpStageCompleteLabel();
@@ -136,7 +142,14 @@ public class GameStage extends Stage implements ContactListener {
             public void run() {
                 obstacleGameHandler.createAsteroid();
             }
-        }, 4, stageHandler.getAsteriodInterval(), stageHandler.getAsteriodCount());
+        }, 4, planetHandler.getAsteriodInterval(), planetHandler.getAsteriodCount());
+    }
+
+    public void setUpMap() {
+        gameHandler.gameMode = Constants.GAMEMODE_MAP;
+        clear();
+        setUpStage(2);
+        mapHandler.createPlanets(0);
     }
 
     public void setUpStageCreator() {
@@ -152,13 +165,12 @@ public class GameStage extends Stage implements ContactListener {
 
 
     public void loadLevel() {
-        stageHandler = LevelManager.parseJSONLevel(world);
-//        stageHandler = LevelManager.parseLevel(world);
+        planetHandler = PlanetManager.parsePlanet(world);
     }
 
-    public GameLabel createLabel(String text, Vector3 bounds, float width, float height, int fadeOut) {
+    public GameLabel createLabel(String text, Vector3 bounds, float width, float height, int fadeOut, float scale) {
         Rectangle rect = new Rectangle(bounds.x, bounds.y, width, height);
-        GameLabel toReturn = new GameLabel(rect, text, 1f);
+        GameLabel toReturn = new GameLabel(rect, text, scale);
         addActor(toReturn);
         if (fadeOut > 0)
             toReturn.addAction(Actions.fadeOut(fadeOut));
@@ -246,6 +258,7 @@ public class GameStage extends Stage implements ContactListener {
                 gameHandler.createBullets(bulletsToCreate);
         }
     }
+
 //    private void createBullets() {
 //        if (gameHandler.gameMode != Constants.GAMEMODE_CREATOR) {
 //            for (int i = 0; i < bulletsToCreate; i++) {
@@ -329,6 +342,7 @@ public class GameStage extends Stage implements ContactListener {
                 }
             }
         }
+        dead.clear();
     }
 
 //    // todo implement rotate
@@ -344,6 +358,7 @@ public class GameStage extends Stage implements ContactListener {
     @Override
     public boolean touchDown(int x, int y, int pointer, int button) {
         translateScreenToWorldCoordinates(x, y);
+        Gdx.app.log("Touch", String.format("X: %d Y: %d \n TransX: %f TransY: %f", x, y, touchPoint.x, touchPoint.y));
         switch (gameHandler.gameMode) {
             case Constants.GAMEMODE_CREATOR:
                 creatorHandler.touchDown(touchPoint.x, touchPoint.y);
@@ -353,6 +368,9 @@ public class GameStage extends Stage implements ContactListener {
                 break;
             case Constants.GAMEMODE_OBSTACLES:
                 obstacleGameHandler.touchDown(touchPoint.x, touchPoint.y);
+                break;
+            default:
+                gameHandler.touchDown(touchPoint.x, touchPoint.y);
                 break;
         }
         return super.touchDown(x, y, pointer, button);
@@ -412,14 +430,13 @@ public class GameStage extends Stage implements ContactListener {
     }
 
 
-    public LevelManager getLevelManager() {
-        return levelManager;
+    public PlanetManager getPlanetManager() {
+        return planetManager;
     }
 
-    public StageHandler getStageHandler() {
-        return stageHandler;
+    public PlanetHandler getPlanetHandler() {
+        return planetHandler;
     }
-
 
 
     public void addBullet() {
@@ -461,5 +478,9 @@ public class GameStage extends Stage implements ContactListener {
 
     public ArrayList<Bullet> getBullets() {
         return bullets;
+    }
+
+    public void addPlanet(Planet planet) {
+        this.planets.add(planet);
     }
 }

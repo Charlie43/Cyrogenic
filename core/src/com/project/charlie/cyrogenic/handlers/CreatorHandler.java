@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.project.charlie.cyrogenic.actors.Turret;
 import com.project.charlie.cyrogenic.game.GameStage;
-import com.project.charlie.cyrogenic.managers.LevelManager;
+import com.project.charlie.cyrogenic.managers.PlanetManager;
 import com.project.charlie.cyrogenic.misc.Constants;
 import com.project.charlie.cyrogenic.objects.TurretJSON;
 
@@ -90,10 +90,10 @@ public class CreatorHandler extends GameHandler {
         resetButton.addListener(new ClickListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                LevelManager.clearBase();
+                PlanetManager.clearBase();
                 placedTurrets.clear();
-                if (stage.getStageHandler() != null)
-                    stage.getStageHandler().setTurrets(null);
+                if (stage.getPlanetHandler() != null)
+                    stage.getPlanetHandler().setTurrets(null);
                 stage.setUpStageCreator();
                 return false;
             }
@@ -121,12 +121,12 @@ public class CreatorHandler extends GameHandler {
     }
 
     public void loadBase() {
-        setUpTurrets(LevelManager.loadBase(stage.getWorld()));
+        setUpTurrets(PlanetManager.loadBase(stage.getWorld()));
     }
 
     private void writeLevel() {
         // todo define n of asteroids etc based on difficulty (planet type etc)
-        LevelManager.writeLevel(placedTurrets);
+        PlanetManager.writePlanet(placedTurrets);
     }
 
     public void touchDown(float x, float y) {

@@ -11,7 +11,7 @@ import com.project.charlie.cyrogenic.misc.Constants;
  * Created by Charlie on 13/02/2016.
  */
 public class Turret extends BaseActor {
-
+    // todo turrets appear after certain interval
     private float stateTime;
     private long lastFiretime;
 

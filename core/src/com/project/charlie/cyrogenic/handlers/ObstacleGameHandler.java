@@ -22,19 +22,17 @@ public class ObstacleGameHandler extends GameHandler {
     public ObstacleGameHandler(GameStage stage) {
         super(stage);
         asteroidCount = 0;
-
-//        MainGameTouchHandler mainGameHandler = new MainGameTouchHandler(this); // todo asteroid touchhandler
     }
 
     public void createAsteroid() { // todo as we run lower on asteroids, apply affects to players ship to simulate entering a planet
-        Asteroid asteroid = new Asteroid(WorldHandler.createObstacle(stage.getWorld(), stage.getStageHandler()));
+        Asteroid asteroid = new Asteroid(WorldHandler.createObstacle(stage.getWorld(), stage.getPlanetHandler()));
         AsteroidActorData data = (AsteroidActorData) asteroid.getActorData();
         data.asteroid = asteroid;
         stage.addAsteroid(asteroid);
         stage.addActor(asteroid);
         asteroidCount++;
-        Gdx.app.log("COUNT", "AsteroidLevel Count: " + asteroidCount + " / " + stage.getStageHandler().getAsteriodCount());
-        if (asteroidCount >= stage.getStageHandler().getAsteriodCount()) {
+        Gdx.app.log("COUNT", "AsteroidLevel Count: " + asteroidCount + " / " + stage.getPlanetHandler().getAsteriodCount());
+        if (asteroidCount >= stage.getPlanetHandler().getAsteriodCount()) {
             Gdx.app.log("COUNT", "AsteroidLevel complete");
             stage.setUpNormalLevel();
         }
@@ -103,7 +101,5 @@ public class ObstacleGameHandler extends GameHandler {
                 a_data.isRemoved = true;
             }
         }
-
     }
-
 }

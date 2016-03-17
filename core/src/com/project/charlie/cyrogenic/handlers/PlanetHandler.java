@@ -7,15 +7,17 @@ import java.util.ArrayList;
 /**
  * Created by Charlie on 24/02/2016.
  */
-public class StageHandler {
+public class PlanetHandler {
 
     private int id;
+    private String name;
+    private String type;
     private int asteriodCount;
     private float asteriodInterval;
     private float asteriodSpeed;
     private ArrayList<TurretJSON> turrets;
 
-    public StageHandler() {
+    public PlanetHandler() {
         turrets = new ArrayList<TurretJSON>();
     }
 
@@ -61,5 +63,21 @@ public class StageHandler {
 
     public void addTurret(TurretJSON turret) {
         this.turrets.add(turret);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

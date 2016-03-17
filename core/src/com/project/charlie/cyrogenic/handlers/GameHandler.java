@@ -42,7 +42,6 @@ public class GameHandler {
         random = new Random();
     }
 
-
     public void setUpControls() {
         Skin touchpadSkin = new Skin();
         touchpadSkin.add("touchBackground", new Texture(Constants.TOUCH_BG_PATH));
@@ -69,13 +68,13 @@ public class GameHandler {
         Gdx.app.log("GH", "Player created");
     }
 
-    public void setUpTurrets(StageHandler stageHandler) { // TODO: handle stages
-        if (stageHandler == null)
-            stageHandler = stage.getStageHandler();
+    public void setUpTurrets(PlanetHandler planetHandler) { // TODO: handle stages
+        if (planetHandler == null)
+            planetHandler = stage.getPlanetHandler();
 
-        Gdx.app.log("GH", String.format("Setting up %d turrets.", stageHandler.getTurrets().size()));
+        Gdx.app.log("GH", String.format("Setting up %d turrets.", planetHandler.getTurrets().size()));
 
-        for (TurretJSON turret : stageHandler.getTurrets()) {
+        for (TurretJSON turret : planetHandler.getTurrets()) {
             Turret temp = new Turret(WorldHandler.createTurret(stage.getWorld(), turret.getX(), turret.getY(), turret.getWidth(), turret.getHeight(),
                     turret.getFireRate()));
             temp.getActorData().turret = temp;
@@ -93,7 +92,7 @@ public class GameHandler {
 
     public void setUpStageCompleteLabel() {
         GameLabel label = stage.createLabel("Planet Entry completed", new Vector3(stage.getCamera().viewportWidth / 3,
-                stage.getCamera().viewportHeight / 3, 0), 100, 20, 10);
+                stage.getCamera().viewportHeight / 3, 0), 100, 20, 10, 1f);
         label.addAction(Actions.fadeOut(10));
 
 //        new Timer().scheduleTask(new Timer.Task() {

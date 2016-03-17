@@ -17,15 +17,20 @@ public class Background extends Actor {
     private Rectangle regionBounds2;
     private int speed = 100;
 
+    int stage;
     public static final int SPACE = 0;
     public static final int PLANET = 1;
+    public static final int MAP = 2;
 
 
     public Background(int stage) {
-        if (stage == SPACE) {
+        this.stage = stage;
+        if (stage == SPACE || stage == MAP) {
             region = AssetsManager.getTextureRegion(Constants.BACKGROUND_SPACE_ASSET_ID);
-        } else {
+        } else if (stage == PLANET) {
             region = AssetsManager.getTextureRegion(Constants.BACKGROUND_ASSET_ID);
+        } else {
+            region = null;
         }
         regionBounds1 = new Rectangle(0 - Constants.APP_WIDTH / 2,
                 0, Constants.APP_WIDTH, Constants.APP_HEIGHT);
@@ -35,11 +40,12 @@ public class Background extends Actor {
 
     @Override
     public void act(float delta) {
-        if (leftBoundsReached(delta))
-            resetBounds();
-        else
-            updateXBounds(-delta);
-
+        if (stage != MAP) {
+            if (leftBoundsReached(delta))
+                resetBounds();
+            else
+                updateXBounds(-delta);
+        }
         // if != running, return
     }
 
