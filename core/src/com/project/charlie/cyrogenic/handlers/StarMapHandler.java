@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.project.charlie.cyrogenic.actors.Planet;
+import com.project.charlie.cyrogenic.data.PlanetData;
 import com.project.charlie.cyrogenic.game.GameStage;
 import com.project.charlie.cyrogenic.managers.PlanetManager;
 import com.project.charlie.cyrogenic.misc.Constants;
@@ -39,28 +40,23 @@ public class StarMapHandler extends GameHandler {
         stage.addActor(mapButton);
     }
 
-
     public void createPlanets(int sector) {
         ArrayList<PlanetJSON> planets = PlanetManager.loadPlanets();
         for (PlanetJSON planet : planets) {
-            Planet planetActor = new Planet(WorldHandler.createPlanet(stage.getWorld(), planet), planet.image);
-            planetActor.setBounds(
-                    planet.x,
-                    planet.y,
-                    planet.size,
-                    planet.size);
+            final Planet planetActor = new Planet(WorldHandler.createPlanet(stage.getWorld(), planet), planet.image);
 
-            stage.addActor(stage.createLabel(planet.name, new Vector3(
+            stage.addLabel(planet.name, stage.createLabel(planet.name, new Vector3(
                     Constants.ConvertToScreen(planet.x),
-                    Constants.ConvertToScreen(planet.y)
-                    , 0), 5, 10, 0, 0.4f));
+                    Constants.ConvertToScreen(planet.y) + planet.size,
+                    0), 5, 10, 0, 0.4f));
 
-            stage.addPlanet(planetActor);
-            stage.addActor(planetActor);
+            stage.addPlanet(planetActor, planet.name);
             planetActor.addListener(new ClickListener() {
                 @Override
                 public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                    Gdx.app.log("Planet", "Planet Touched");
+                    Gdx.app.log("Touch", "touch");
+                    PlanetData data = (PlanetData) planetActor.getActorData();
+                    stage.setUpPlanet(data.getName());
                     return super.touchDown(event, x, y, pointer, button);
                 }
             });

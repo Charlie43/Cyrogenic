@@ -202,9 +202,8 @@ public class WorldHandler {
 
         Body body = world.createBody(bodyDef);
         body.createFixture(fixtureDef);
-        body.setUserData(new PlanetData(width, height));
+        body.setUserData(new PlanetData(width, height, planet.name, planet.type));
         return body;
-
     }
 
 
@@ -237,5 +236,13 @@ public class WorldHandler {
 
         ActorData data = (ActorData) body.getUserData();
         return data.getDataType().equals("Turret");
+    }
+
+    public static boolean isPlanet(Body body) {
+        if (body == null)
+            return false;
+
+        ActorData data = (ActorData) body.getUserData();
+        return data.getDataType().equals("Planet");
     }
 }

@@ -40,6 +40,7 @@ public class GameHandler {
     public GameHandler(GameStage stage) {
         this.stage = stage;
         random = new Random();
+        gameMode = Constants.GAMEMODE_NOTHING;
     }
 
     public void setUpControls() {
@@ -78,10 +79,8 @@ public class GameHandler {
             Turret temp = new Turret(WorldHandler.createTurret(stage.getWorld(), turret.getX(), turret.getY(), turret.getWidth(), turret.getHeight(),
                     turret.getFireRate()));
             temp.getActorData().turret = temp;
-            stage.addActor(temp);
             stage.addTurret(temp);
         }
-
     }
 
     public void setUpInfoText() {

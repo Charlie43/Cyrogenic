@@ -18,10 +18,12 @@ import com.project.charlie.cyrogenic.misc.Constants;
  */
 public class ObstacleGameHandler extends GameHandler {
     int asteroidCount;
+    boolean triggered;
 
     public ObstacleGameHandler(GameStage stage) {
         super(stage);
         asteroidCount = 0;
+        triggered = false;
     }
 
     public void createAsteroid() { // todo as we run lower on asteroids, apply affects to players ship to simulate entering a planet
@@ -29,10 +31,10 @@ public class ObstacleGameHandler extends GameHandler {
         AsteroidActorData data = (AsteroidActorData) asteroid.getActorData();
         data.asteroid = asteroid;
         stage.addAsteroid(asteroid);
-        stage.addActor(asteroid);
         asteroidCount++;
         Gdx.app.log("COUNT", "AsteroidLevel Count: " + asteroidCount + " / " + stage.getPlanetHandler().getAsteriodCount());
-        if (asteroidCount >= stage.getPlanetHandler().getAsteriodCount()) {
+        if (asteroidCount >= stage.getPlanetHandler().getAsteriodCount() && !triggered) {
+            triggered = true;
             Gdx.app.log("COUNT", "AsteroidLevel complete");
             stage.setUpNormalLevel();
         }

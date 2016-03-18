@@ -7,7 +7,7 @@ public class Constants {
     /* Application Constants */
     public static final float PIXELS_TO_METRES = 100f;
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     static final float WORLD_TO_BOX = 0.032f; // Pixels * 0.032 to get metres
     public static final float BOX_TO_WORLD = 32; // Metres * 32 to get pixels
@@ -34,7 +34,6 @@ public class Constants {
     public static final int DOWN = 1;
     public static final int LEFT = 2;
     public static final int RIGHT = 3;
-    public static String WORKING_DIR;
 
     public static final Vector2 GRAVITY = new Vector2(0, -10);
 
@@ -44,8 +43,7 @@ public class Constants {
     public static final int GAMEMODE_OBSTACLES = 1;
     public static final int GAMEMODE_CREATOR = 3;
     public static final int GAMEMODE_MAP = 4;
-
-
+    public static final int GAMEMODE_NOTHING = 5;
 
     /* Masks */
     public static final short BULLET_ENTITY = 0x1;    // 0001
@@ -63,8 +61,8 @@ public class Constants {
     public static final int PLAYER_X = 1;
     public static final int PLAYER_Y = 5 + 1; // GROUND y + ground height
     public static final float PLAYER_GRAVITY = 0f;
-    public static final float PLAYER_WIDTH = 1.5f;
-    public static final float PLAYER_HEIGHT = 1.7f;
+    public static final float PLAYER_WIDTH = 1.3f;
+    public static final float PLAYER_HEIGHT = 1.5f;
     public static final float PLAYER_DENSITY = 0.5f;
 
 

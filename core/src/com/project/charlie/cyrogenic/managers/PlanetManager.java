@@ -62,6 +62,32 @@ public class PlanetManager {
         return planets;
     }
 
+    public static PlanetHandler loadPlanet(String planet) {
+        PlanetHandler planetHandler = new PlanetHandler();
+        try {
+            FileHandle[] files = Gdx.files.internal("planets/").list();
+            Json json = new Json();
+
+            for (FileHandle file : files) {
+                if (file.name().contains(planet)) {
+                    PlanetJSON planetJSON = json.fromJson(PlanetJSON.class, file);
+                    planetHandler.setName(planetJSON.name);
+                    planetHandler.setType(planetJSON.type);
+                    planetHandler.setAsteriodCount(planetJSON.asteroid.number);
+                    planetHandler.setAsteriodInterval(planetJSON.asteroid.interval);
+                    planetHandler.setAsteriodSpeed(planetJSON.asteroid.speed);
+
+                    for (TurretJSON turret : planetJSON.turrets) {
+                        planetHandler.addTurret(turret);
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return planetHandler;
+    }
 
     public static PlanetHandler parsePlanet(World gameWorld) {
         world = gameWorld;
@@ -88,9 +114,7 @@ public class PlanetManager {
             e.printStackTrace();
             Gdx.app.log("JSON", "Exception");
         }
-
         return planet;
-
     }
 
     public static void writePlanet(ArrayList<TurretJSON> turrets) {

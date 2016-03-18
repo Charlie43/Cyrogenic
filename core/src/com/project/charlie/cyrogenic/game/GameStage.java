@@ -20,6 +20,7 @@ import com.project.charlie.cyrogenic.misc.Constants;
 import com.project.charlie.cyrogenic.ui.GameLabel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Charlie on 12/02/2016.
@@ -43,7 +44,8 @@ public class GameStage extends Stage implements ContactListener {
 
     private ArrayList<Turret> turrets = new ArrayList<Turret>();
     private ArrayList<Bullet> bullets = new ArrayList<Bullet>();
-    private ArrayList<Planet> planets = new ArrayList<Planet>();
+    private HashMap<String, Planet> planets = new HashMap<String, Planet>();
+    public HashMap<String, GameLabel> labels = new HashMap<String, GameLabel>();
 
     private int bulletsToCreate;
     private float accumulator = 0f;
@@ -90,7 +92,6 @@ public class GameStage extends Stage implements ContactListener {
         obstacleGameHandler = new ObstacleGameHandler(this);
         creatorHandler = new CreatorHandler(this);
         mapHandler = new StarMapHandler(this);
-//        PlanetManager.writePlanet(null);
 
         setUpMenu();
 
@@ -103,8 +104,8 @@ public class GameStage extends Stage implements ContactListener {
     public void setUpMenu() {
         clear();
         setUpPreChoice();
-        obstacleGameHandler.setUpObstaclesButton();
-        gameHandler.setUpNormalButton();
+//        obstacleGameHandler.setUpObstaclesButton();
+//        gameHandler.setUpNormalButton();
         creatorHandler.setUpCreatorButton();
         mapHandler.setUpMapButton();
     }
@@ -112,6 +113,23 @@ public class GameStage extends Stage implements ContactListener {
     public void setUpPreChoice() {
         setUpCamera();
         setUpStage(1);
+    }
+
+    public void setUpPlanet(String planet) {
+        clear();
+        gameHandler.gameMode = Constants.GAMEMODE_OBSTACLES;
+        setUpStage(0);
+        obstacleGameHandler.setUpPlayer();
+        planetHandler = PlanetManager.loadPlanet(planet);
+        setUpBoundaries();
+        obstacleGameHandler.setUpControls();
+        obstacleGameHandler.setUpInfoText();
+        new Timer().scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                obstacleGameHandler.createAsteroid();
+            }
+        }, 4, planetHandler.getAsteriodInterval(), planetHandler.getAsteriodCount());
     }
 
     public void setUpNormalLevel() {
@@ -189,7 +207,6 @@ public class GameStage extends Stage implements ContactListener {
                             turret.getActorData().getHealth(), turret.getActorData().getFireRate());
 
                 }
-
                 text = text.replace("%tatkspd%", tempText);
             } else
                 text = text.replace("%tatkspd%", "");
@@ -220,7 +237,6 @@ public class GameStage extends Stage implements ContactListener {
         addActor(boundaryRight);
     }
 
-
     public void setUpBackground(int stage) {
         addActor(new Background(stage));
     }
@@ -248,6 +264,7 @@ public class GameStage extends Stage implements ContactListener {
         checkBounds();
 
         removeDeadBodies();
+        checkEndGame();
     }
 
     private void createBullets() {
@@ -305,34 +322,38 @@ public class GameStage extends Stage implements ContactListener {
         }
     }
 
-    private synchronized void removeDeadBodies() {
+    private void removeDeadBodies() {
+        ArrayList<Body> removed = new ArrayList<Body>();
         for (int j = 0; j < dead.size(); j++) {
             Body body = dead.get(j);
             if (body != null && !world.isLocked()) {
                 if (body.isBullet()) {
                     BulletActorData b_data = (BulletActorData) body.getUserData();
                     if (b_data != null && b_data.isRemoved) {
+                        removed.add(body);
                         if (bullets.contains(b_data.bullet))
                             bullets.remove(b_data.bullet);
                         b_data.bullet.addAction(Actions.removeActor());
                         world.destroyBody(body);
                         body.setUserData(null);
-                        dead.remove(body);
                         body = null;
                     }
                 } else if (WorldHandler.isTurret(body)) {
                     TurretActorData t_data = (TurretActorData) body.getUserData();
                     if (t_data != null && t_data.isRemoved && turrets.contains(t_data.turret)) {
+                        removed.add(body);
+                        Gdx.app.log("Dead", "Removed turret. Remaining: " + turrets.size());
                         turrets.remove(t_data.turret);
                         t_data.turret.addAction(Actions.removeActor());
                         world.destroyBody(body);
                         body.setUserData(null);
-                        dead.remove(body);
                         body = null;
-                    }
+                    } else
+                        Gdx.app.log("Dead", "Escaped selection statement");
                 } else if (WorldHandler.isAsteroid(body)) {
                     AsteroidActorData a_data = (AsteroidActorData) body.getUserData();
                     if (a_data != null && a_data.isRemoved && asteroids.contains(a_data.asteroid)) {
+                        removed.add(body);
                         asteroids.remove(a_data.asteroid);
                         a_data.asteroid.addAction(Actions.removeActor());
                         world.destroyBody(body);
@@ -342,7 +363,14 @@ public class GameStage extends Stage implements ContactListener {
                 }
             }
         }
-        dead.clear();
+        dead.removeAll(removed);
+    }
+
+    public void checkEndGame() {
+        if (gameHandler.gameMode == Constants.GAMEMODE_NORMAL && turrets.isEmpty()) {
+            Gdx.app.log("GS", "Turrets dead.");
+            setUpMenu();
+        }
     }
 
 //    // todo implement rotate
@@ -358,7 +386,7 @@ public class GameStage extends Stage implements ContactListener {
     @Override
     public boolean touchDown(int x, int y, int pointer, int button) {
         translateScreenToWorldCoordinates(x, y);
-        Gdx.app.log("Touch", String.format("X: %d Y: %d \n TransX: %f TransY: %f", x, y, touchPoint.x, touchPoint.y));
+//        Gdx.app.log("Touch", String.format("X: %d Y: %d ## TransX: %f TransY: %f", x, y, touchPoint.x, touchPoint.y));
         switch (gameHandler.gameMode) {
             case Constants.GAMEMODE_CREATOR:
                 creatorHandler.touchDown(touchPoint.x, touchPoint.y);
@@ -369,9 +397,9 @@ public class GameStage extends Stage implements ContactListener {
             case Constants.GAMEMODE_OBSTACLES:
                 obstacleGameHandler.touchDown(touchPoint.x, touchPoint.y);
                 break;
-            default:
-                gameHandler.touchDown(touchPoint.x, touchPoint.y);
-                break;
+//            default:
+//                gameHandler.touchDown(touchPoint.x, touchPoint.y);
+//                break;
         }
         return super.touchDown(x, y, pointer, button);
     }
@@ -449,11 +477,12 @@ public class GameStage extends Stage implements ContactListener {
 
     public void addTurret(Turret turret) {
         turrets.add(turret);
+        addActor(turret);
     }
 
     public void addAsteroid(Asteroid asteroid) {
         asteroids.add(asteroid);
-
+        addActor(asteroid);
     }
 
     public void setWorld(World world) {
@@ -480,7 +509,13 @@ public class GameStage extends Stage implements ContactListener {
         return bullets;
     }
 
-    public void addPlanet(Planet planet) {
-        this.planets.add(planet);
+    public void addPlanet(Planet planet, String name) {
+        planets.put(name, planet);
+        addActor(planet);
+    }
+
+    public void addLabel(String key, GameLabel label) {
+        labels.put(key, label);
+        addActor(label);
     }
 }

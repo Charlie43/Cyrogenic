@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.project.charlie.cyrogenic.handlers.WorldHandler;
 import com.project.charlie.cyrogenic.misc.Constants;
 
 
@@ -33,7 +34,10 @@ public abstract class BaseActor extends Actor {
 
         if (body.getUserData() != null) {
             if (body.getType() == BodyDef.BodyType.StaticBody) {
-                updateBoundaryRectangle();
+                if (!WorldHandler.isPlanet(body))
+                    updateBoundaryRectangle();
+                else
+                    updateRectangle();
             } else
                 updateRectangle();
         } else {
