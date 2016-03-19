@@ -47,14 +47,13 @@ public class StarMapHandler extends GameHandler {
 
             stage.addLabel(planet.name, stage.createLabel(planet.name, new Vector3(
                     Constants.ConvertToScreen(planet.x),
-                    Constants.ConvertToScreen(planet.y) + planet.size,
+                    Constants.ConvertToScreen(planet.y) + Constants.ConvertToScreen(planet.size),
                     0), 5, 10, 0, 0.4f));
 
             stage.addPlanet(planetActor, planet.name);
             planetActor.addListener(new ClickListener() {
                 @Override
                 public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                    Gdx.app.log("Touch", "touch");
                     PlanetData data = (PlanetData) planetActor.getActorData();
                     stage.setUpPlanet(data.getName());
                     return super.touchDown(event, x, y, pointer, button);

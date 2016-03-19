@@ -6,7 +6,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
@@ -77,7 +76,7 @@ public class GameHandler {
 
         for (TurretJSON turret : planetHandler.getTurrets()) {
             Turret temp = new Turret(WorldHandler.createTurret(stage.getWorld(), turret.getX(), turret.getY(), turret.getWidth(), turret.getHeight(),
-                    turret.getFireRate()));
+                    turret.getFireRate())); // TODO "warp in" animation
             temp.getActorData().turret = temp;
             stage.addTurret(temp);
         }
@@ -90,17 +89,8 @@ public class GameHandler {
     }
 
     public void setUpStageCompleteLabel() {
-        GameLabel label = stage.createLabel("Planet Entry completed", new Vector3(stage.getCamera().viewportWidth / 3,
-                stage.getCamera().viewportHeight / 3, 0), 100, 20, 10, 1f);
-        label.addAction(Actions.fadeOut(10));
-
-//        new Timer().scheduleTask(new Timer.Task() {
-//            @Override
-//            public void run() {
-//                displayedLabel.addAction(Actions.removeActor());
-//                Gdx.app.log("LABEL", "removed");
-//            }
-//        }, 10, 100);
+        stage.addLabel("StageComplete", stage.createLabel("Planet Entry completed", new Vector3(stage.getCamera().viewportWidth / 3,
+                stage.getCamera().viewportHeight - 10, 0), 100, 20, 10, 0.3f));
     }
 
     public void setUpNormalButton() {
@@ -140,7 +130,7 @@ public class GameHandler {
             stage.addDead(bullet);
 
             TurretActorData t_data = (TurretActorData) turret.getUserData();
-            if (t_data.subHealth(10)) {
+            if (t_data.subHealth(data.getDamage())) {
                 t_data.isRemoved = true;
                 stage.addDead(turret);
                 // death animation and stuff
@@ -161,7 +151,7 @@ public class GameHandler {
 
             stage.addDead(bullet);
 
-            if (p_data.subHealth(7) <= 0) {
+            if (p_data.subHealth(b_data.getDamage()) <= 0) {
                 Gdx.app.log("PLAYER", "You died!");
             }
             infoLabel.setText(stage.getDebugText());
@@ -176,21 +166,19 @@ public class GameHandler {
                         player.getY() + 15, Constants.PLAYER_ASSET_ID));
                 BulletActorData data = bullet.getActorData();
                 data.bullet = bullet;
-                stage.addActor(bullet);
                 stage.addBullet(bullet);
             }
             stage.setBulletsToCreate(0);
             if (stage.getTurrets().size() > 0) {
                 for (Turret turret : stage.getTurrets()) {
                     //todo define these numbers by difficulty?
-                    boolean checkFireRate = ((System.currentTimeMillis() - turret.getLastFiretime()) / 1000) > turret.getActorData().getFireRate();
-                    if (random.nextFloat() > 0.3 && checkFireRate) {
+                    boolean canFire = ((System.currentTimeMillis() - turret.getLastFiretime()) / 1000) > turret.getActorData().getFireRate();
+                    if (random.nextFloat() > 0.3 && canFire) {
                         turret.setLastFiretime(System.currentTimeMillis());
                         Bullet bullet = new Bullet(WorldHandler.createBullet(stage.getWorld(),
                                 turret.getX() - 55, turret.getY() + 15, Constants.TURRET_ASSET_ID));
                         BulletActorData data = bullet.getActorData();
                         data.bullet = bullet;
-                        stage.addActor(bullet);
                         stage.addBullet(bullet);
                     }
                 }

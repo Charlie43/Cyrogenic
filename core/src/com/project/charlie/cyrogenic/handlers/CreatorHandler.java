@@ -56,9 +56,7 @@ public class CreatorHandler extends GameHandler {
     public void handlePlacement(float x, float y) {
         x = Constants.ConvertToBox(x);
         y = Constants.ConvertToBox(y);
-        Gdx.app.log("CH", "Touch registered");
         if (placing.equals("turret")) {
-            Gdx.app.log("CH", "Placing turret..");
             temp = new Turret(WorldHandler.createTurret(stage.getWorld(), x, y, Constants.TURRET_WIDTH, Constants.TURRET_HEIGHT,
                     10)); // todo define firerate based on turret type
             temp.getActorData().turret = temp;
@@ -110,8 +108,6 @@ public class CreatorHandler extends GameHandler {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 placing = "";
-//                if (placedTurrets.size() > 0)
-//                    placedTurrets.remove(placedTurrets.size() - 1); // Remove the last placed turret. todo less hacky approach to this
                 writeLevel();
                 stage.setUpMenu();
                 return true;

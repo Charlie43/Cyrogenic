@@ -62,22 +62,8 @@ public class GameStage extends Stage implements ContactListener {
 
     String infoLabelString = "Player HP: %hp%\n%tatkspd%";
 
-
     /**
      * todo
-     * touch based placement of turrets
-     * same view as playing mode
-     * ability to switch stages
-     * just use touchpoint to spawn turrets in place, and write to XML file
-     * <p/>
-     * <p/>
-     * EVERYTHING is just a background and actors
-     * planet to attack map, etc
-     * dont over complicate
-     * <p/>
-     * Way of managing different stages - Base building stage, planet map stage, etc
-     * - IE ways of handling touch inputs for each stage (seperate controllers for each stage)
-     * <p/>
      * fade out background to show moving stages
      */
 
@@ -102,6 +88,7 @@ public class GameStage extends Stage implements ContactListener {
     }
 
     public void setUpMenu() {
+        gameHandler.gameMode = Constants.GAMEMODE_NOTHING;
         clear();
         setUpPreChoice();
 //        obstacleGameHandler.setUpObstaclesButton();
@@ -122,6 +109,7 @@ public class GameStage extends Stage implements ContactListener {
         obstacleGameHandler.setUpPlayer();
         planetHandler = PlanetManager.loadPlanet(planet);
         setUpBoundaries();
+        obstacleGameHandler.setUpLabels(planet);
         obstacleGameHandler.setUpControls();
         obstacleGameHandler.setUpInfoText();
         new Timer().scheduleTask(new Timer.Task() {
@@ -191,15 +179,13 @@ public class GameStage extends Stage implements ContactListener {
         GameLabel toReturn = new GameLabel(rect, text, scale);
         addActor(toReturn);
         if (fadeOut > 0)
-            toReturn.addAction(Actions.fadeOut(fadeOut));
+            toReturn.addAction(Actions.sequence(Actions.fadeOut(fadeOut), Actions.hide()));
         return toReturn;
     }
 
     public String getDebugText() {
         String text = infoLabelString;
         if (Constants.DEBUG) {
-            if (gameHandler.getPlayer() != null)
-                text = infoLabelString.replace("%hp%", gameHandler.getPlayer().getActorData().getHealth() + "");
             if (turrets.size() > 0) { // todo correct way of checking current stage (gamemanager)
                 String tempText = "";
                 for (Turret turret : turrets) {
@@ -212,7 +198,8 @@ public class GameStage extends Stage implements ContactListener {
                 text = text.replace("%tatkspd%", "");
         } else
             text = text.replace("%tatkspd%", "");
-
+        if (gameHandler.getPlayer() != null)
+            text = text.replace("%hp%", gameHandler.getPlayer().getActorData().getHealth() + "");
         return text;
     }
 
@@ -262,7 +249,6 @@ public class GameStage extends Stage implements ContactListener {
             renderer.render(world, camera.combined);
 
         checkBounds();
-
         removeDeadBodies();
         checkEndGame();
     }
@@ -386,7 +372,6 @@ public class GameStage extends Stage implements ContactListener {
     @Override
     public boolean touchDown(int x, int y, int pointer, int button) {
         translateScreenToWorldCoordinates(x, y);
-//        Gdx.app.log("Touch", String.format("X: %d Y: %d ## TransX: %f TransY: %f", x, y, touchPoint.x, touchPoint.y));
         switch (gameHandler.gameMode) {
             case Constants.GAMEMODE_CREATOR:
                 creatorHandler.touchDown(touchPoint.x, touchPoint.y);
@@ -495,6 +480,7 @@ public class GameStage extends Stage implements ContactListener {
 
     public void addBullet(Bullet bullet) {
         bullets.add(bullet);
+        addActor(bullet);
     }
 
     public void setBulletsToCreate(int bulletsToCreate) {

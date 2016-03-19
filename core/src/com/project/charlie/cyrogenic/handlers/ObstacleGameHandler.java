@@ -1,6 +1,7 @@
 package com.project.charlie.cyrogenic.handlers;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -54,6 +55,11 @@ public class ObstacleGameHandler extends GameHandler {
         stage.addActor(obstacleButton);
     }
 
+    public void setUpLabels(String name) {
+        stage.addLabel("PlanetName", stage.createLabel(name,
+                new Vector3(stage.getCamera().viewportWidth / 2, stage.getCamera().viewportHeight - 10, 0), 20, 20, 0, 0.4f));
+    }
+
     public void handleContact(Body a, Body b) {
         boolean playerHitAsteroid = (WorldHandler.isAsteroid(a) && WorldHandler.isPlayer(b)) ||
                 WorldHandler.isPlayer(a) && WorldHandler.isAsteroid(b);
@@ -77,7 +83,7 @@ public class ObstacleGameHandler extends GameHandler {
                 stage.addDead(asteroid);
             }
 
-            if (p_data.subHealth(15) <= 0) {
+            if (p_data.subHealth(a_data.getDamage()) <= 0) {
                 // game over
                 Gdx.app.log("plr", "plr dead");
             }
@@ -98,7 +104,7 @@ public class ObstacleGameHandler extends GameHandler {
             b_data.isRemoved = true;
             stage.addDead(bullet);
 
-            if (a_data.subHealth(15) <= 0) {
+            if (a_data.subHealth(b_data.getDamage()) <= 0) {
                 stage.addDead(asteroid);
                 a_data.isRemoved = true;
             }

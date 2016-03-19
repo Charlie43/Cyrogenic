@@ -6,17 +6,17 @@
   "x": "7",
   "y": "5",
   "asteroid": {
-    "number": "60",
-    "speed": "22",
-    "interval": "0.5"
+    "number": "20",
+    "speed": "12",
+    "interval": "1"
   },
   "turrets": [
     {
       "x": "20",
-      "y": "10",
+      "y": "12.3",
       "width": "0.9",
       "height": "1.1",
-      "fireRate": "3",
+      "fireRate": "7",
       "health": "100",
       "damage": "1"
     },

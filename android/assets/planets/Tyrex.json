@@ -4,7 +4,7 @@
   "size": "3",
   "image": "planet_water",
   "x": "20",
-  "y": "15",
+  "y": "11.5",
   "asteroid": {
     "number": "60",
     "speed": "22",

@@ -4,11 +4,11 @@
   "size": "4",
   "image": "planet_gas",
   "x": "14",
-  "y": "12.4",
+  "y": "2.4",
   "asteroid": {
-    "number": "60",
-    "speed": "22",
-    "interval": "0.5"
+    "number": "40",
+    "speed": "42",
+    "interval": "1.5"
   },
   "turrets": [
     {

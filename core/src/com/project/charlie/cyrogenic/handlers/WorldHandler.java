@@ -72,7 +72,7 @@ public class WorldHandler {
 
 
         body.resetMassData();
-        body.setUserData(new BulletActorData(Constants.BULLET_WIDTH, Constants.BULLET_HEIGHT));
+        body.setUserData(new BulletActorData(Constants.BULLET_WIDTH, Constants.BULLET_HEIGHT, 5f));
         body.setLinearVelocity(
                 (shotBy.equals(Constants.PLAYER_ASSET_ID) ? Constants.BULLET_SPEED : -Constants.BULLET_SPEED), 0);
 
