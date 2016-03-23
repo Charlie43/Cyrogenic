@@ -11,8 +11,11 @@ public class GameScreen implements Screen {
 
     private GameStage stage;
 
-    public GameScreen() {
-        stage = new GameStage();
+    Cyrogenic cyrogenic;
+
+    public GameScreen(final Cyrogenic cyrogenic) {
+        stage = new GameStage(cyrogenic);
+        this.cyrogenic = cyrogenic;
     }
 
     @Override

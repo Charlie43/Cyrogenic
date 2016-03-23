@@ -61,14 +61,17 @@ public class GameStage extends Stage implements ContactListener {
 
 
     String infoLabelString = "Player HP: %hp%\n%tatkspd%";
+    Cyrogenic cyrogenic;
 
+    FitnessHandler fitnessHandler;
     /**
      * todo
      * fade out background to show moving stages
+     * @param cyrogenic
      */
 
 
-    public GameStage() {
+    public GameStage(Cyrogenic cyrogenic) {
         super(new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT,
                 new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)));
 
@@ -78,13 +81,21 @@ public class GameStage extends Stage implements ContactListener {
         obstacleGameHandler = new ObstacleGameHandler(this);
         creatorHandler = new CreatorHandler(this);
         mapHandler = new StarMapHandler(this);
+        fitnessHandler = new FitnessHandler();
 
+
+        this.cyrogenic = cyrogenic;
+        fitness();
         setUpMenu();
 
         if (Constants.DEBUG)
             renderer = new Box2DDebugRenderer();
 
         // todo audio & animation
+    }
+
+    public void fitness() {
+//        fitnessHandler.connectToApi(cyrogenic);
     }
 
     public void setUpMenu() {
