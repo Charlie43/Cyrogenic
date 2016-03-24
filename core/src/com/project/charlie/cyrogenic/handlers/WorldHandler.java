@@ -79,7 +79,40 @@ public class WorldHandler {
         return body;
     }
 
-    public static Body createTurret(World world, float x, float y, float width, float height, float fireRate) {
+    public static Body createLaser(World world, float createX, float createY, String shotBy) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        createX = Constants.ConvertToBox(createX);
+        createY = Constants.ConvertToBox(createY);
+        bodyDef.position.set(new Vector2(createX, createY));
+
+        Body body = world.createBody(bodyDef);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(Constants.LASER_WIDTH / 2, Constants.LASER_HEIGHT / 2);
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.isSensor = true;
+        if (shotBy.equals(Constants.PLAYER_ASSET_ID)) {
+            fixtureDef.filter.categoryBits = Constants.BULLET_ENTITY;
+            fixtureDef.filter.maskBits = Constants.DEFAULT_ENTITY | Constants.ASTERIODENTITY;
+        } else {
+            fixtureDef.filter.categoryBits = Constants.TURRET_BULLET_ENTITY;
+            fixtureDef.filter.maskBits = Constants.ASTERIODENTITY | Constants.PLAYER_ENTITY;
+        }
+
+        body.createFixture(fixtureDef);
+        shape.dispose();
+
+        body.setGravityScale(Constants.DEFUALT_GRAVITY);
+        body.setBullet(true);
+
+        body.resetMassData();
+        body.setUserData(new LaserActorData(Constants.LASER_WIDTH, Constants.LASER_HEIGHT));
+        return body;
+    }
+
+    public static Body createTurret(World world, float x, float y, float width, float height) {
         if (x == 0 && y == 0) {
             x = Constants.TURRET_X;
             y = Constants.TURRET_Y;
@@ -104,7 +137,7 @@ public class WorldHandler {
         fixtureDef.density = Constants.TURRET_DENSITY;
         body.createFixture(fixtureDef);
 
-        body.setUserData(new TurretActorData(width, height, 100f, fireRate));
+        body.setUserData(new TurretActorData(width, height));
         body.resetMassData();
 
         shape.dispose();
@@ -244,5 +277,35 @@ public class WorldHandler {
 
         ActorData data = (ActorData) body.getUserData();
         return data.getDataType().equals("Planet");
+    }
+    public static boolean isBullet(Body body) {
+        if(body == null)
+            return false;
+
+        ActorData data = (ActorData) body.getUserData();
+        return data.getDataType().equals("Bullet");
+    }
+
+    public static boolean isLaser(Body body) {
+        if(body == null)
+            return false;
+
+        ActorData data = (ActorData) body.getUserData();
+        return data.getDataType().equals("Laser");
+    }
+
+    public static float getProjectileDamage(Body body) {
+        if(body == null)
+            return 0f;
+
+        ActorData data = (ActorData) body.getUserData();
+        switch(data.getDataType()) {
+            case "Laser":
+                return ((LaserActorData) data).getDamage(); // todo convert to interface to avoid unnecessary casting
+            case "Bullet":
+                return ((BulletActorData) data).getDamage();
+            default:
+                return 0f;
+        }
     }
 }

@@ -56,9 +56,8 @@ public class CreatorHandler extends GameHandler {
     public void handlePlacement(float x, float y) {
         x = Constants.ConvertToBox(x);
         y = Constants.ConvertToBox(y);
-        if (placing.equals("turret")) {
-            temp = new Turret(WorldHandler.createTurret(stage.getWorld(), x, y, Constants.TURRET_WIDTH, Constants.TURRET_HEIGHT,
-                    10)); // todo define firerate based on turret type
+        if (placing.equals("turret")) { // todo placing turret types
+            temp = new Turret(WorldHandler.createTurret(stage.getWorld(), x, y, Constants.TURRET_WIDTH, Constants.TURRET_HEIGHT), temp.getActorData().getTurretType().toString()); // todo define firerate based on turret type
             temp.getActorData().turret = temp;
             placedTurrets.add(new TurretJSON(x, y, Constants.TURRET_WIDTH, Constants.TURRET_HEIGHT, 10));
             Gdx.app.log("CH", "Turret created, adding to stage at coords " + x + " - " + y);
@@ -69,8 +68,8 @@ public class CreatorHandler extends GameHandler {
 
     public void setUpCreatorButton() {
         TextButton creatorButton = new TextButton("Create Base", new Skin(Gdx.files.internal(Constants.BUTTONS_SKIN_PATH)), "default");
-        creatorButton.setPosition(stage.getCamera().viewportWidth / 3, stage.getCamera().viewportHeight / 2 - 100);
-        creatorButton.setBounds(stage.getCamera().viewportWidth / 3, stage.getCamera().viewportHeight / 2 - 100, 250, 40);
+        creatorButton.setPosition(stage.getCamera().viewportWidth / 3, stage.getCamera().viewportHeight / 2 );
+        creatorButton.setBounds(stage.getCamera().viewportWidth / 3, stage.getCamera().viewportHeight / 2 , 250, 40);
         creatorButton.addListener(new ClickListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {

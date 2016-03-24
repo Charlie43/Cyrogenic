@@ -43,19 +43,19 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
     @Override
     protected void onStart() {
         super.onStart();
-        gameHelper.onStart(this);
+//        gameHelper.onStart(this);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        gameHelper.onActivityResult(requestCode, resultCode, data);
+//        gameHelper.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        gameHelper.onStop();
+//        gameHelper.onStop();
     }
 
     public void requestPermissions() {

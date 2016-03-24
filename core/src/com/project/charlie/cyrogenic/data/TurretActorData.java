@@ -1,26 +1,20 @@
 package com.project.charlie.cyrogenic.data;
 
 import com.project.charlie.cyrogenic.actors.Turret;
+import com.project.charlie.cyrogenic.misc.Constants;
 
 /**
  * Created by Charlie on 22/02/2016.
  */
 public class TurretActorData extends ActorData {
     protected float health;
-    protected float fireRate;
+    Constants.TurretType turretType;
     public Turret turret;
 
 
     public TurretActorData(float width, float height) {
         super(width, height);
         dataType = "Turret";
-    }
-
-    public TurretActorData(float width, float height, float health, float fireRate) {
-        super(width, height);
-        this.health = health;
-        dataType = "Turret";
-        this.fireRate = fireRate;
     }
 
     public boolean subHealth(float amount) {
@@ -36,11 +30,24 @@ public class TurretActorData extends ActorData {
         return health;
     }
 
-    public float getFireRate() {
-        return fireRate;
+    public void setHealth(float health) {
+        this.health = health;
     }
 
-    public void setFireRate(float fireRate) {
-        this.fireRate = fireRate;
+    public Constants.TurretType getTurretType() {
+        return turretType;
+    }
+
+    public void setTurretType(Constants.TurretType turretType) {
+        this.turretType = turretType;
+        this.health = turretType.getHealth();
+    }
+
+    public Turret getTurret() {
+        return turret;
+    }
+
+    public void setTurret(Turret turret) {
+        this.turret = turret;
     }
 }

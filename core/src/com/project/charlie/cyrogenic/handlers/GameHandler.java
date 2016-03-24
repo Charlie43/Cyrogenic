@@ -12,11 +12,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.project.charlie.cyrogenic.actors.Bullet;
+import com.project.charlie.cyrogenic.actors.Laser;
 import com.project.charlie.cyrogenic.actors.Player;
 import com.project.charlie.cyrogenic.actors.Turret;
-import com.project.charlie.cyrogenic.data.BulletActorData;
-import com.project.charlie.cyrogenic.data.PlayerUserData;
-import com.project.charlie.cyrogenic.data.TurretActorData;
+import com.project.charlie.cyrogenic.data.*;
 import com.project.charlie.cyrogenic.game.GameStage;
 import com.project.charlie.cyrogenic.misc.Constants;
 import com.project.charlie.cyrogenic.objects.TurretJSON;
@@ -75,15 +74,14 @@ public class GameHandler {
         Gdx.app.log("GH", String.format("Setting up %d turrets.", planetHandler.getTurrets().size()));
 
         for (TurretJSON turret : planetHandler.getTurrets()) {
-            Turret temp = new Turret(WorldHandler.createTurret(stage.getWorld(), turret.getX(), turret.getY(), turret.getWidth(), turret.getHeight(),
-                    turret.getFireRate())); // TODO "warp in" animation
+            Turret temp = new Turret(WorldHandler.createTurret(stage.getWorld(), turret.getX(), turret.getY(), turret.getWidth(), turret.getHeight()), turret.getType()); // TODO "warp in" animation
             temp.getActorData().turret = temp;
             stage.addTurret(temp);
         }
     }
 
     public void setUpInfoText() {
-        Rectangle bounds = new Rectangle(stage.getCamera().viewportWidth / 2.7f, stage.getCamera().viewportHeight / 1.5f, 100, 20);
+        Rectangle bounds = new Rectangle(stage.getCamera().viewportWidth / 4.7f, stage.getCamera().viewportHeight, 100, 20);
         infoLabel = new GameLabel(bounds, stage.getDebugText(), 0.7f);
         stage.addActor(infoLabel);
     }
@@ -107,12 +105,13 @@ public class GameHandler {
         stage.addActor(normalButton);
     }
 
+    @SuppressWarnings("Duplicates")
     public void handleContact(Body a, Body b) {
-        boolean bulletHitTurret = ((a.isBullet() && WorldHandler.isTurret(b)) ||
-                (WorldHandler.isTurret(a) && b.isBullet()));
+        boolean bulletHitTurret = (((WorldHandler.isBullet(a) || WorldHandler.isLaser(a)) && WorldHandler.isTurret(b)) ||
+                (WorldHandler.isTurret(a) && (WorldHandler.isBullet(b) || WorldHandler.isLaser(b))));
 
-        boolean bulletHitPlayer = ((a.isBullet() && WorldHandler.isPlayer(b)) ||
-                WorldHandler.isPlayer(a) && b.isBullet());
+        boolean bulletHitPlayer = (((WorldHandler.isBullet(a) || WorldHandler.isLaser(a)) && WorldHandler.isPlayer(b)) ||
+                WorldHandler.isPlayer(a) && (WorldHandler.isBullet(b) || WorldHandler.isLaser(b)));
         Body bullet;
         Body turret;
         Body player;
@@ -125,12 +124,13 @@ public class GameHandler {
                 bullet = b;
                 turret = a;
             }
-            BulletActorData data = (BulletActorData) bullet.getUserData();
+            ActorData data = (ActorData) bullet.getUserData();
+
             data.isRemoved = true;
             stage.addDead(bullet);
 
             TurretActorData t_data = (TurretActorData) turret.getUserData();
-            if (t_data.subHealth(data.getDamage())) {
+            if (t_data.subHealth(WorldHandler.getProjectileDamage(bullet))) {
                 t_data.isRemoved = true;
                 stage.addDead(turret);
                 // death animation and stuff
@@ -145,13 +145,14 @@ public class GameHandler {
                 player = a;
                 bullet = b;
             }
-            BulletActorData b_data = (BulletActorData) bullet.getUserData();
+            ActorData b_data = (ActorData) bullet.getUserData();
+
             PlayerUserData p_data = (PlayerUserData) player.getUserData();
             b_data.isRemoved = true;
 
             stage.addDead(bullet);
 
-            if (p_data.subHealth(b_data.getDamage()) <= 0) {
+            if (p_data.subHealth(WorldHandler.getProjectileDamage(bullet)) <= 0) {
                 Gdx.app.log("PLAYER", "You died!");
             }
             infoLabel.setText(stage.getDebugText());
@@ -161,25 +162,41 @@ public class GameHandler {
 
     public void createBullets(int bulletsToCreate) {
         if (gameMode != Constants.GAMEMODE_CREATOR) {
-            for (int i = 0; i < bulletsToCreate; i++) {
+            for (int i = 0; i < bulletsToCreate; i++) { // todo player bullet types
                 Bullet bullet = new Bullet(WorldHandler.createBullet(stage.getWorld(), player.getX() + 55,
                         player.getY() + 15, Constants.PLAYER_ASSET_ID));
                 BulletActorData data = bullet.getActorData();
                 data.bullet = bullet;
-                stage.addBullet(bullet);
+                stage.addProjectile(Constants.BULLET_ASSET_ID, bullet);
             }
             stage.setBulletsToCreate(0);
             if (stage.getTurrets().size() > 0) {
                 for (Turret turret : stage.getTurrets()) {
-                    //todo define these numbers by difficulty?
-                    boolean canFire = ((System.currentTimeMillis() - turret.getLastFiretime()) / 1000) > turret.getActorData().getFireRate();
+
+                    Constants.TurretType type = turret.getActorData().getTurretType();
+                    boolean canFire = ((System.currentTimeMillis() - turret.getLastFiretime()) / 1000) > type.getFireRate();
+
                     if (random.nextFloat() > 0.3 && canFire) {
                         turret.setLastFiretime(System.currentTimeMillis());
-                        Bullet bullet = new Bullet(WorldHandler.createBullet(stage.getWorld(),
-                                turret.getX() - 55, turret.getY() + 15, Constants.TURRET_ASSET_ID));
-                        BulletActorData data = bullet.getActorData();
-                        data.bullet = bullet;
-                        stage.addBullet(bullet);
+                        switch (type) {
+                            case MACHINE_GUN:
+                                Bullet bullet = new Bullet(WorldHandler.createBullet(stage.getWorld(),
+                                        turret.getX() - 55, turret.getY() + 15, Constants.TURRET_ASSET_ID));
+                                BulletActorData b_data = bullet.getActorData();
+                                b_data.bullet = bullet;
+                                b_data.setDamage(type.getDamage());
+                                stage.addProjectile(Constants.BULLET_ASSET_ID, bullet);
+                                break;
+                            case LASER:
+                                Gdx.app.log("GH", "Creating laser..");
+                                Laser laser = new Laser(WorldHandler.createLaser(stage.getWorld(), turret.getX() - 5, turret.getY(), Constants.TURRET_ASSET_ID));
+                                LaserActorData l_data = laser.getActorData();
+                                l_data.laser = laser;
+                                l_data.setDamage(type.getDamage());
+                                stage.addProjectile(Constants.LASER_ASSET_ID, laser);
+//                                stage.scheduleRemoval(laser.getBody(), Constants.LASER_DELAY);
+                                break;
+                        }
                     }
                 }
             }

@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.project.charlie.cyrogenic.actors.Asteroid;
+import com.project.charlie.cyrogenic.data.ActorData;
 import com.project.charlie.cyrogenic.data.AsteroidActorData;
 import com.project.charlie.cyrogenic.data.BulletActorData;
 import com.project.charlie.cyrogenic.data.PlayerUserData;
@@ -98,13 +99,13 @@ public class ObstacleGameHandler extends GameHandler {
                 bullet = b;
                 asteroid = a;
             }
-            BulletActorData b_data = (BulletActorData) bullet.getUserData();
+            ActorData b_data = (ActorData) bullet.getUserData();
             AsteroidActorData a_data = (AsteroidActorData) asteroid.getUserData();
 
             b_data.isRemoved = true;
             stage.addDead(bullet);
 
-            if (a_data.subHealth(b_data.getDamage()) <= 0) {
+            if (a_data.subHealth(WorldHandler.getProjectileDamage(bullet)) <= 0) {
                 stage.addDead(asteroid);
                 a_data.isRemoved = true;
             }

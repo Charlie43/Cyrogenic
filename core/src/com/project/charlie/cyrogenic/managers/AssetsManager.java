@@ -40,6 +40,9 @@ public class AssetsManager {
         texturesMap.put(Constants.ASTEROID_ASSET_ID, new TextureRegion(
                 new Texture(Gdx.files.internal(Constants.ASTEROID_IMAGE_PATH))));
 
+        texturesMap.put(Constants.LASER_ASSET_ID, new TextureRegion(
+                new Texture(Gdx.files.internal(Constants.LASER_IMAGE_PATH))));
+
 
     }
 

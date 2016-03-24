@@ -7,7 +7,7 @@ public class Constants {
     /* Application Constants */
     public static final float PIXELS_TO_METRES = 100f;
 
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     static final float WORLD_TO_BOX = 0.032f; // Pixels * 0.032 to get metres
     public static final float BOX_TO_WORLD = 32; // Metres * 32 to get pixels
@@ -86,6 +86,14 @@ public class Constants {
     public static final float BULLET_HEIGHT = 0.5f;
     public static final float BULLET_SPEED = 8f;
 
+    /* Laser */
+    public static final String LASER_ASSET_ID = "laser";
+    public static final String LASER_IMAGE_PATH = "images/misc/laser.png";
+    public static final float LASER_WIDTH = 3.5f;
+    public static final float LASER_HEIGHT = 1.5f;
+    public static final float LASER_DELAY = 10f;
+
+
 
     /* Misc */
     public static final String BLOCK_ASSET_ID = "block";
@@ -113,6 +121,31 @@ public class Constants {
 
     public static final String PLANET_WATER_ASSET_ID = "planet_water";
     public static final String PLANET_WATER_IMAGE_PATH = "images/planets/planet_water.png";
+
+    public enum TurretType {
+        MACHINE_GUN(0.5f, 2f, 100), LASER(10.5f, 10f, 150), BURST(1.3f, 7f, 50), TESLA(2f, 12.5f, 100);
+        private final float fireRate;
+        private final float damage;
+        private final float health;
+
+        TurretType(float fireRate, float damage, float health) {
+            this.fireRate = fireRate;
+            this.damage = damage;
+            this.health = health;
+        }
+
+        public float getFireRate() {
+            return fireRate;
+        }
+
+        public float getDamage() {
+            return damage;
+        }
+
+        public float getHealth() {
+            return health;
+        }
+    }
 
 
 

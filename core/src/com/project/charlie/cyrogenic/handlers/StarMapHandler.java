@@ -40,7 +40,7 @@ public class StarMapHandler extends GameHandler {
         stage.addActor(mapButton);
     }
 
-    public void createPlanets(int sector) {
+    public void createPlanets(int sector) { // todo sectors
         ArrayList<PlanetJSON> planets = PlanetManager.loadPlanets();
         for (PlanetJSON planet : planets) {
             final Planet planetActor = new Planet(WorldHandler.createPlanet(stage.getWorld(), planet), planet.image);

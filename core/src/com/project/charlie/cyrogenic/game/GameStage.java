@@ -11,9 +11,7 @@ import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.project.charlie.cyrogenic.actors.*;
-import com.project.charlie.cyrogenic.data.AsteroidActorData;
-import com.project.charlie.cyrogenic.data.BulletActorData;
-import com.project.charlie.cyrogenic.data.TurretActorData;
+import com.project.charlie.cyrogenic.data.*;
 import com.project.charlie.cyrogenic.handlers.*;
 import com.project.charlie.cyrogenic.managers.PlanetManager;
 import com.project.charlie.cyrogenic.misc.Constants;
@@ -43,7 +41,8 @@ public class GameStage extends Stage implements ContactListener {
 
 
     private ArrayList<Turret> turrets = new ArrayList<Turret>();
-    private ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+    private ArrayList<Bullet> bullets = new ArrayList<>();
+    private ArrayList<Object> projectiles = new ArrayList<>();
     private HashMap<String, Planet> planets = new HashMap<String, Planet>();
     public HashMap<String, GameLabel> labels = new HashMap<String, GameLabel>();
 
@@ -64,10 +63,11 @@ public class GameStage extends Stage implements ContactListener {
     Cyrogenic cyrogenic;
 
     FitnessHandler fitnessHandler;
+
     /**
      * todo
      * fade out background to show moving stages
-     * @param cyrogenic
+     * health/shield bars for player + last hit target
      */
 
 
@@ -129,6 +129,18 @@ public class GameStage extends Stage implements ContactListener {
                 obstacleGameHandler.createAsteroid();
             }
         }, 4, planetHandler.getAsteriodInterval(), planetHandler.getAsteriodCount());
+    }
+
+    public void scheduleRemoval(final Body body, float time) {
+        new Timer().scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                Gdx.app.log("SR", "Removing laser");
+                addDead(body);
+                ((ActorData) body.getUserData()).isRemoved = true;
+            }
+        }, time);
+
     }
 
     public void setUpNormalLevel() {
@@ -201,7 +213,7 @@ public class GameStage extends Stage implements ContactListener {
                 String tempText = "";
                 for (Turret turret : turrets) {
                     tempText = tempText + String.format("\nTurret %d HP: %f SPD: %f", turrets.indexOf(turret),
-                            turret.getActorData().getHealth(), turret.getActorData().getFireRate());
+                            turret.getActorData().getHealth(), turret.getActorData().getTurretType().getFireRate());
 
                 }
                 text = text.replace("%tatkspd%", tempText);
@@ -273,34 +285,6 @@ public class GameStage extends Stage implements ContactListener {
         }
     }
 
-//    private void createBullets() {
-//        if (gameHandler.gameMode != Constants.GAMEMODE_CREATOR) {
-//            for (int i = 0; i < bulletsToCreate; i++) {
-//                Bullet bullet = new Bullet(WorldHandler.createBullet(world, gameHandler.getPlayer().getX() + 55,
-//                        gameHandler.getPlayer().getY() + 15, Constants.PLAYER_ASSET_ID));
-//                BulletActorData data = bullet.getActorData();
-//                data.bullet = bullet;
-//                addActor(bullet);
-//                bullets.add(bullet);
-//            }
-//            bulletsToCreate = 0;
-//            if (turrets.size() > 0) {
-//                for (Turret turret : turrets) {
-//                    //todo define these numbers by difficulty?
-//                    boolean checkFireRate = ((System.currentTimeMillis() - turret.getLastFiretime()) / 1000) > turret.getActorData().getFireRate();
-//                    if (random.nextFloat() > 0.3 && checkFireRate) {
-//                        turret.setLastFiretime(System.currentTimeMillis());
-//                        Bullet bullet = new Bullet(WorldHandler.createBullet(world, turret.getX() - 55, turret.getY() + 15, Constants.TURRET_ASSET_ID));
-//                        BulletActorData data = bullet.getActorData();
-//                        data.bullet = bullet;
-//                        addActor(bullet);
-//                        bullets.add(bullet);
-//                    }
-//                }
-//            }
-//        }
-//    }
-
     private void checkBounds() {
         for (Bullet bullet : bullets) {
             if (bullet.getX() + bullet.getWidth() > VIEWPORT_WIDTH) {
@@ -324,17 +308,30 @@ public class GameStage extends Stage implements ContactListener {
         for (int j = 0; j < dead.size(); j++) {
             Body body = dead.get(j);
             if (body != null && !world.isLocked()) {
-                if (body.isBullet()) {
+                if (WorldHandler.isBullet(body)) {
                     BulletActorData b_data = (BulletActorData) body.getUserData();
                     if (b_data != null && b_data.isRemoved) {
                         removed.add(body);
-                        if (bullets.contains(b_data.bullet))
-                            bullets.remove(b_data.bullet);
+                        if (projectiles.contains(b_data.bullet))
+                            projectiles.remove(b_data.bullet);
                         b_data.bullet.addAction(Actions.removeActor());
                         world.destroyBody(body);
                         body.setUserData(null);
                         body = null;
                     }
+                } else if (WorldHandler.isLaser(body)) {
+                    LaserActorData l_data = (LaserActorData) body.getUserData();
+                    if (l_data != null && l_data.isRemoved) {
+                        removed.add(body);
+                        if (projectiles.contains(l_data.getLaser())) {
+                            projectiles.remove(l_data.getLaser());
+                        }
+                        l_data.laser.addAction(Actions.removeActor());
+                        world.destroyBody(body);
+                        body.setUserData(null);
+                        body = null;
+                    }
+
                 } else if (WorldHandler.isTurret(body)) {
                     TurretActorData t_data = (TurretActorData) body.getUserData();
                     if (t_data != null && t_data.isRemoved && turrets.contains(t_data.turret)) {
@@ -489,9 +486,17 @@ public class GameStage extends Stage implements ContactListener {
         dead.add(body);
     }
 
-    public void addBullet(Bullet bullet) {
-        bullets.add(bullet);
-        addActor(bullet);
+    public void addProjectile(String type, Object projectile) {
+        projectiles.add(projectile);
+        switch (type) {
+            case Constants.BULLET_ASSET_ID:
+                addActor((Bullet) projectile);
+                break;
+            case Constants.LASER_ASSET_ID:
+                Gdx.app.log("GS", "Adding laser actor");
+                addActor((Laser) projectile);
+                break;
+        }
     }
 
     public void setBulletsToCreate(int bulletsToCreate) {

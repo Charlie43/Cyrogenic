@@ -13,6 +13,7 @@ public class TurretJSON {
     float fireRate;
     float health;
     float damage;
+    String type;
 
     public TurretJSON() {
 
@@ -83,6 +84,13 @@ public class TurretJSON {
         this.height = height;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     @Override
     public String toString() {

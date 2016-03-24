@@ -15,10 +15,24 @@ public class Turret extends BaseActor {
     private float stateTime;
     private long lastFiretime;
 
-    public Turret(Body body) {
+    public Turret(Body body, String type) {
         super(body);
         stateTime = 0f;
         lastFiretime = System.currentTimeMillis();
+        switch (type) {
+            case "MACHINE_GUN":
+                ((TurretActorData) this.actorData).setTurretType(Constants.TurretType.MACHINE_GUN);
+                break;
+            case "LASER":
+                ((TurretActorData) this.actorData).setTurretType(Constants.TurretType.LASER);
+                break;
+            case "TESLA":
+                ((TurretActorData) this.actorData).setTurretType(Constants.TurretType.TESLA);
+                break;
+            case "BURST":
+                ((TurretActorData) this.actorData).setTurretType(Constants.TurretType.BURST);
+                break;
+        }
     }
 
     @Override
