@@ -43,6 +43,9 @@ public class AssetsManager {
         texturesMap.put(Constants.LASER_ASSET_ID, new TextureRegion(
                 new Texture(Gdx.files.internal(Constants.LASER_IMAGE_PATH))));
 
+        texturesMap.put(Constants.TESLA_ASSET_ID, new TextureRegion(
+                new Texture(Gdx.files.internal(Constants.TESLA_IMAGE_PATH))));
+
 
     }
 

@@ -6,7 +6,7 @@
   "x": "7",
   "y": "5",
   "asteroid": {
-    "number": "20",
+    "number": "2",
     "speed": "12",
     "interval": "1"
   },
@@ -39,7 +39,7 @@
       "fireRate": "3",
       "health": "100",
       "damage": "1",
-      "type": "MACHINE_GUN"
+      "type": "BURST"
     },
     {
       "x": "22",
@@ -49,7 +49,7 @@
       "fireRate": "3",
       "health": "100",
       "damage": "1",
-      "type": "MACHINE_GUN"
+      "type": "TESLA"
     },
     {
       "x": "13",

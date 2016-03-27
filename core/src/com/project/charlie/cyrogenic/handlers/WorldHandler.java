@@ -79,6 +79,46 @@ public class WorldHandler {
         return body;
     }
 
+    public static Body createTesla(World world, float createX, float createY, String shotBy, int number) {
+        float rotation;
+        Gdx.app.log("WH", "Number: " + number);
+        if (number == 0) {
+            rotation = 170f;
+        } else {
+            rotation = 190f;
+        }
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        createX = Constants.ConvertToBox(createX);
+        createY = Constants.ConvertToBox(createY);
+        bodyDef.position.set(new Vector2(createX, createY));
+
+        Body body = world.createBody(bodyDef);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(Constants.TESLA_WIDTH / 2, Constants.TESLA_HEIGHT / 2);
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.isSensor = true;
+        if (shotBy.equals(Constants.PLAYER_ASSET_ID)) {
+            fixtureDef.filter.categoryBits = Constants.BULLET_ENTITY;
+            fixtureDef.filter.maskBits = Constants.DEFAULT_ENTITY | Constants.ASTERIODENTITY;
+        } else {
+            fixtureDef.filter.categoryBits = Constants.TURRET_BULLET_ENTITY;
+            fixtureDef.filter.maskBits = Constants.ASTERIODENTITY | Constants.PLAYER_ENTITY;
+        }
+
+        body.createFixture(fixtureDef);
+        shape.dispose();
+
+        body.setGravityScale(Constants.DEFUALT_GRAVITY);
+        body.setBullet(true);
+
+        body.resetMassData();
+        body.setUserData(new TeslaActorData(Constants.TESLA_WIDTH, Constants.TESLA_HEIGHT, rotation));
+        return body;
+    }
+
     public static Body createLaser(World world, float createX, float createY, String shotBy) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -278,8 +318,19 @@ public class WorldHandler {
         ActorData data = (ActorData) body.getUserData();
         return data.getDataType().equals("Planet");
     }
+
+    public static boolean isProjectile(Body body) {
+        return isBullet(body) || isLaser(body) || isTesla(body);
+    }
+
+    public static boolean isTesla(Body body) {
+        if (body == null || body.getUserData() == null) return false;
+        ActorData data = (ActorData) body.getUserData();
+        return data.getDataType().equals("Tesla");
+    }
+
     public static boolean isBullet(Body body) {
-        if(body == null)
+        if (body == null || body.getUserData() == null)
             return false;
 
         ActorData data = (ActorData) body.getUserData();
@@ -287,7 +338,7 @@ public class WorldHandler {
     }
 
     public static boolean isLaser(Body body) {
-        if(body == null)
+        if (body == null || body.getUserData() == null)
             return false;
 
         ActorData data = (ActorData) body.getUserData();
@@ -295,11 +346,11 @@ public class WorldHandler {
     }
 
     public static float getProjectileDamage(Body body) {
-        if(body == null)
+        if (body == null || body.getUserData() == null)
             return 0f;
 
         ActorData data = (ActorData) body.getUserData();
-        switch(data.getDataType()) {
+        switch (data.getDataType()) {
             case "Laser":
                 return ((LaserActorData) data).getDamage(); // todo convert to interface to avoid unnecessary casting
             case "Bullet":

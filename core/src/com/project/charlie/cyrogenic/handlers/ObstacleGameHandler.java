@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.project.charlie.cyrogenic.actors.Asteroid;
 import com.project.charlie.cyrogenic.data.ActorData;
 import com.project.charlie.cyrogenic.data.AsteroidActorData;
-import com.project.charlie.cyrogenic.data.BulletActorData;
 import com.project.charlie.cyrogenic.data.PlayerUserData;
 import com.project.charlie.cyrogenic.game.GameStage;
 import com.project.charlie.cyrogenic.misc.Constants;
@@ -35,10 +34,14 @@ public class ObstacleGameHandler extends GameHandler {
         stage.addAsteroid(asteroid);
         asteroidCount++;
         Gdx.app.log("COUNT", "AsteroidLevel Count: " + asteroidCount + " / " + stage.getPlanetHandler().getAsteriodCount());
-        if (asteroidCount >= stage.getPlanetHandler().getAsteriodCount() && !triggered) {
+        if (asteroidCount == stage.getPlanetHandler().getAsteriodCount() && !triggered) {
             triggered = true;
             Gdx.app.log("COUNT", "AsteroidLevel complete");
             stage.setUpNormalLevel();
+        }
+        if(asteroidCount > stage.getPlanetHandler().getAsteriodCount()) {
+            asteroid.getActorData().isRemoved = true;
+            stage.addDead(asteroid.getBody());
         }
     }
 

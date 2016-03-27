@@ -7,7 +7,7 @@ public class Constants {
     /* Application Constants */
     public static final float PIXELS_TO_METRES = 100f;
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     static final float WORLD_TO_BOX = 0.032f; // Pixels * 0.032 to get metres
     public static final float BOX_TO_WORLD = 32; // Metres * 32 to get pixels
@@ -89,10 +89,17 @@ public class Constants {
     /* Laser */
     public static final String LASER_ASSET_ID = "laser";
     public static final String LASER_IMAGE_PATH = "images/misc/laser.png";
-    public static final float LASER_WIDTH = 3.5f;
-    public static final float LASER_HEIGHT = 1.5f;
-    public static final float LASER_DELAY = 10f;
+    public static final float LASER_WIDTH = 19.5f;
+    public static final float LASER_HEIGHT = 0.5f;
+    public static final float LASER_DELAY = 7f;
 
+    /* Tesla */
+
+    public static final String TESLA_ASSET_ID = "tesla";
+    public static final String TESLA_IMAGE_PATH = "images/misc/shock_one.png";
+    public static final float TESLA_WIDTH = 8f;
+    public static final float TESLA_HEIGHT = 1f;
+    public static final float TESLA_DELAY = 2f;
 
 
     /* Misc */
@@ -123,7 +130,7 @@ public class Constants {
     public static final String PLANET_WATER_IMAGE_PATH = "images/planets/planet_water.png";
 
     public enum TurretType {
-        MACHINE_GUN(0.5f, 2f, 100), LASER(10.5f, 10f, 150), BURST(1.3f, 7f, 50), TESLA(2f, 12.5f, 100);
+        MACHINE_GUN(0.5f, 2f, 100), LASER(10.5f, 3f, 150), BURST(1.3f, 7f, 50), TESLA(2.5f, 12.5f, 100);
         private final float fireRate;
         private final float damage;
         private final float health;

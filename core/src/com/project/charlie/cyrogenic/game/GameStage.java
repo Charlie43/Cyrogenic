@@ -19,6 +19,7 @@ import com.project.charlie.cyrogenic.ui.GameLabel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Charlie on 12/02/2016.
@@ -42,7 +43,7 @@ public class GameStage extends Stage implements ContactListener {
 
     private ArrayList<Turret> turrets = new ArrayList<Turret>();
     private ArrayList<Bullet> bullets = new ArrayList<>();
-    private ArrayList<Object> projectiles = new ArrayList<>();
+    private HashMap<Object, String> projectiles = new HashMap<>();
     private HashMap<String, Planet> planets = new HashMap<String, Planet>();
     public HashMap<String, GameLabel> labels = new HashMap<String, GameLabel>();
 
@@ -135,7 +136,6 @@ public class GameStage extends Stage implements ContactListener {
         new Timer().scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                Gdx.app.log("SR", "Removing laser");
                 addDead(body);
                 ((ActorData) body.getUserData()).isRemoved = true;
             }
@@ -286,10 +286,13 @@ public class GameStage extends Stage implements ContactListener {
     }
 
     private void checkBounds() {
-        for (Bullet bullet : bullets) {
-            if (bullet.getX() + bullet.getWidth() > VIEWPORT_WIDTH) {
-                dead.add(bullet.getBody());
-                bullet.getActorData().isRemoved = true;
+        for (Map.Entry<Object, String> cursor : projectiles.entrySet()) {
+            if (cursor.getValue().equals(Constants.BULLET_ASSET_ID)) {
+                Bullet bullet = (Bullet) cursor.getKey();
+                if (bullet.getX() + bullet.getWidth() > VIEWPORT_WIDTH) {
+                    dead.add(bullet.getBody());
+                    bullet.getActorData().isRemoved = true;
+                }
             }
         }
         for (Asteroid asteroid : asteroids) {
@@ -303,7 +306,7 @@ public class GameStage extends Stage implements ContactListener {
         }
     }
 
-    private void removeDeadBodies() {
+    private void removeDeadBodies() { // todo this needs sorting out
         ArrayList<Body> removed = new ArrayList<Body>();
         for (int j = 0; j < dead.size(); j++) {
             Body body = dead.get(j);
@@ -312,7 +315,7 @@ public class GameStage extends Stage implements ContactListener {
                     BulletActorData b_data = (BulletActorData) body.getUserData();
                     if (b_data != null && b_data.isRemoved) {
                         removed.add(body);
-                        if (projectiles.contains(b_data.bullet))
+                        if (projectiles.containsKey(b_data.bullet))
                             projectiles.remove(b_data.bullet);
                         b_data.bullet.addAction(Actions.removeActor());
                         world.destroyBody(body);
@@ -323,7 +326,7 @@ public class GameStage extends Stage implements ContactListener {
                     LaserActorData l_data = (LaserActorData) body.getUserData();
                     if (l_data != null && l_data.isRemoved) {
                         removed.add(body);
-                        if (projectiles.contains(l_data.getLaser())) {
+                        if (projectiles.containsKey(l_data.getLaser())) {
                             projectiles.remove(l_data.getLaser());
                         }
                         l_data.laser.addAction(Actions.removeActor());
@@ -331,7 +334,18 @@ public class GameStage extends Stage implements ContactListener {
                         body.setUserData(null);
                         body = null;
                     }
-
+                } else if (WorldHandler.isTesla(body)) {
+                    TeslaActorData t_data = (TeslaActorData) body.getUserData();
+                    if (t_data != null && t_data.isRemoved) {
+                        removed.add(body);
+                        if (projectiles.containsKey(t_data.getTesla())) {
+                            projectiles.remove(t_data.getTesla());
+                        }
+                        t_data.getTesla().addAction(Actions.removeActor());
+                        world.destroyBody(body);
+                        body.setUserData(null);
+                        body = null;
+                    }
                 } else if (WorldHandler.isTurret(body)) {
                     TurretActorData t_data = (TurretActorData) body.getUserData();
                     if (t_data != null && t_data.isRemoved && turrets.contains(t_data.turret)) {
@@ -487,14 +501,16 @@ public class GameStage extends Stage implements ContactListener {
     }
 
     public void addProjectile(String type, Object projectile) {
-        projectiles.add(projectile);
+        projectiles.put(projectile, type);
         switch (type) {
             case Constants.BULLET_ASSET_ID:
                 addActor((Bullet) projectile);
                 break;
             case Constants.LASER_ASSET_ID:
-                Gdx.app.log("GS", "Adding laser actor");
                 addActor((Laser) projectile);
+                break;
+            case Constants.TESLA_ASSET_ID:
+                addActor((Tesla) projectile);
                 break;
         }
     }

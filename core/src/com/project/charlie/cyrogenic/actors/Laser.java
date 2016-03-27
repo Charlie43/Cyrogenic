@@ -2,7 +2,6 @@ package com.project.charlie.cyrogenic.actors;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.project.charlie.cyrogenic.data.ActorData;
 import com.project.charlie.cyrogenic.data.BaseActor;
 import com.project.charlie.cyrogenic.data.LaserActorData;
 import com.project.charlie.cyrogenic.managers.AssetsManager;
@@ -22,11 +21,17 @@ public class Laser extends BaseActor {
         if (Constants.DEBUG)
             batch.draw(AssetsManager.getTextureRegion(Constants.BOX_ASSET_ID), screenRectangle.x, screenRectangle.y, screenRectangle.width, screenRectangle.height);
 
-        batch.draw(AssetsManager.getTextureRegion(Constants.LASER_ASSET_ID), screenRectangle.x - screenRectangle.width, screenRectangle.y, screenRectangle.width, screenRectangle.height);
+        batch.draw(AssetsManager.getTextureRegion(Constants.LASER_ASSET_ID), screenRectangle.x, screenRectangle.y, screenRectangle.width, screenRectangle.height);
     }
 
     @Override
     public LaserActorData getActorData() {
         return (LaserActorData) actorData;
     }
+
+    public float getX() {
+        return screenRectangle.x;
+    }
+
+
 }

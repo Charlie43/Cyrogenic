@@ -11,10 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.project.charlie.cyrogenic.actors.Bullet;
-import com.project.charlie.cyrogenic.actors.Laser;
-import com.project.charlie.cyrogenic.actors.Player;
-import com.project.charlie.cyrogenic.actors.Turret;
+import com.badlogic.gdx.utils.Timer;
+import com.project.charlie.cyrogenic.actors.*;
 import com.project.charlie.cyrogenic.data.*;
 import com.project.charlie.cyrogenic.game.GameStage;
 import com.project.charlie.cyrogenic.misc.Constants;
@@ -81,7 +79,7 @@ public class GameHandler {
     }
 
     public void setUpInfoText() {
-        Rectangle bounds = new Rectangle(stage.getCamera().viewportWidth / 4.7f, stage.getCamera().viewportHeight, 100, 20);
+        Rectangle bounds = new Rectangle(0, stage.getCamera().viewportHeight, 100, 20);
         infoLabel = new GameLabel(bounds, stage.getDebugText(), 0.7f);
         stage.addActor(infoLabel);
     }
@@ -107,11 +105,12 @@ public class GameHandler {
 
     @SuppressWarnings("Duplicates")
     public void handleContact(Body a, Body b) {
-        boolean bulletHitTurret = (((WorldHandler.isBullet(a) || WorldHandler.isLaser(a)) && WorldHandler.isTurret(b)) ||
-                (WorldHandler.isTurret(a) && (WorldHandler.isBullet(b) || WorldHandler.isLaser(b))));
+        boolean bulletHitTurret = ((WorldHandler.isProjectile(a) && WorldHandler.isTurret(b)) ||
+                (WorldHandler.isTurret(a) && WorldHandler.isProjectile(b)));
 
-        boolean bulletHitPlayer = (((WorldHandler.isBullet(a) || WorldHandler.isLaser(a)) && WorldHandler.isPlayer(b)) ||
-                WorldHandler.isPlayer(a) && (WorldHandler.isBullet(b) || WorldHandler.isLaser(b)));
+        boolean bulletHitPlayer = ((WorldHandler.isProjectile(a) && WorldHandler.isPlayer(b)) ||
+                WorldHandler.isPlayer(a) && WorldHandler.isProjectile(b));
+
         Body bullet;
         Body turret;
         Body player;
@@ -126,8 +125,10 @@ public class GameHandler {
             }
             ActorData data = (ActorData) bullet.getUserData();
 
-            data.isRemoved = true;
-            stage.addDead(bullet);
+            if (WorldHandler.isBullet(bullet)) {
+                data.isRemoved = true;
+                stage.addDead(bullet);
+            }
 
             TurretActorData t_data = (TurretActorData) turret.getUserData();
             if (t_data.subHealth(WorldHandler.getProjectileDamage(bullet))) {
@@ -171,30 +172,55 @@ public class GameHandler {
             }
             stage.setBulletsToCreate(0);
             if (stage.getTurrets().size() > 0) {
-                for (Turret turret : stage.getTurrets()) {
+                for (final Turret turret : stage.getTurrets()) {
 
-                    Constants.TurretType type = turret.getActorData().getTurretType();
+                    final Constants.TurretType type = turret.getActorData().getTurretType();
                     boolean canFire = ((System.currentTimeMillis() - turret.getLastFiretime()) / 1000) > type.getFireRate();
 
                     if (random.nextFloat() > 0.3 && canFire) {
                         turret.setLastFiretime(System.currentTimeMillis());
-                        switch (type) {
+                        switch (type) { // todo just turret.fire and handle the firing for each type in its own class
                             case MACHINE_GUN:
                                 Bullet bullet = new Bullet(WorldHandler.createBullet(stage.getWorld(),
-                                        turret.getX() - 55, turret.getY() + 15, Constants.TURRET_ASSET_ID));
+                                        turret.getX() - 25, turret.getY() + 15, Constants.TURRET_ASSET_ID));
                                 BulletActorData b_data = bullet.getActorData();
                                 b_data.bullet = bullet;
                                 b_data.setDamage(type.getDamage());
                                 stage.addProjectile(Constants.BULLET_ASSET_ID, bullet);
                                 break;
                             case LASER:
-                                Gdx.app.log("GH", "Creating laser..");
-                                Laser laser = new Laser(WorldHandler.createLaser(stage.getWorld(), turret.getX() - 5, turret.getY(), Constants.TURRET_ASSET_ID));
+                                Laser laser = new Laser(WorldHandler.createLaser(stage.getWorld(),
+                                        turret.getX() - (Constants.ConvertToScreen(Constants.LASER_WIDTH) / 2), turret.getY() + 5, Constants.TURRET_ASSET_ID));
                                 LaserActorData l_data = laser.getActorData();
                                 l_data.laser = laser;
                                 l_data.setDamage(type.getDamage());
                                 stage.addProjectile(Constants.LASER_ASSET_ID, laser);
-//                                stage.scheduleRemoval(laser.getBody(), Constants.LASER_DELAY);
+                                stage.scheduleRemoval(laser.getBody(), Constants.LASER_DELAY);
+                                break;
+                            case BURST:
+                                new Timer().scheduleTask(new Timer.Task() {
+                                    @Override
+                                    public void run() {
+                                        Bullet burstBullet = new Bullet(WorldHandler.createBullet(stage.getWorld(),
+                                                turret.getX() - 55, turret.getY() + 15, Constants.TURRET_ASSET_ID));
+                                        BulletActorData burstData = burstBullet.getActorData();
+                                        burstData.bullet = burstBullet;
+                                        burstData.setDamage(type.getDamage());
+                                        stage.addProjectile(Constants.BULLET_ASSET_ID, burstBullet);
+                                    }
+                                }, 0.3f, 0.3f, 2);
+                                break;
+                            case TESLA:
+                                for (int x = 0; x < 2; x++) {
+                                    Tesla tesla = new Tesla(WorldHandler.createTesla(stage.getWorld(),
+                                            turret.getX() + 75, turret.getY() + 35, Constants.TURRET_ASSET_ID, x),
+                                            turret.getX() + 75, turret.getY() + 35);
+                                    TeslaActorData teslaData = tesla.getActorData();
+                                    teslaData.setTesla(tesla);
+                                    teslaData.setDamage(type.getDamage());
+                                    stage.addProjectile(Constants.TESLA_ASSET_ID, tesla);
+                                    stage.scheduleRemoval(tesla.getBody(), Constants.TESLA_DELAY);
+                                }
                                 break;
                         }
                     }
