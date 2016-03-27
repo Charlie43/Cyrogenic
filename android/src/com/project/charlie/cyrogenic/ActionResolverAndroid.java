@@ -55,15 +55,12 @@ public class ActionResolverAndroid {
                             readData();
 
                         }
-
-
                         @Override
                         public void onConnectionSuspended(int i) {
                             Gdx.app.log("AAR", "Connection suspended");
 
                             // todo handle connection callbacks
                         }
-
                     })
                     .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
                         @Override

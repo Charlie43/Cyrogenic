@@ -1,7 +1,8 @@
 package com.project.charlie.cyrogenic.handlers;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -19,6 +20,7 @@ import com.project.charlie.cyrogenic.misc.Constants;
 import com.project.charlie.cyrogenic.objects.TurretJSON;
 import com.project.charlie.cyrogenic.ui.GameLabel;
 
+import java.awt.*;
 import java.util.Random;
 
 /**
@@ -32,6 +34,7 @@ public class GameHandler {
     private Touchpad touchPad;
     GameLabel infoLabel;
     Random random;
+    Bar playerHPBar;
 
     public GameHandler(GameStage stage) {
         this.stage = stage;
@@ -62,7 +65,6 @@ public class GameHandler {
         // null check
         player = new Player(WorldHandler.createPlayer(stage.getWorld()));
         stage.addActor(player);
-        Gdx.app.log("GH", "Player created");
     }
 
     public void setUpTurrets(PlanetHandler planetHandler) { // TODO: handle stages
@@ -79,9 +81,9 @@ public class GameHandler {
     }
 
     public void setUpInfoText() {
-        Rectangle bounds = new Rectangle(0, stage.getCamera().viewportHeight, 100, 20);
-        infoLabel = new GameLabel(bounds, stage.getDebugText(), 0.7f);
-        stage.addActor(infoLabel);
+//        Rectangle bounds = new Rectangle(0, stage.getCamera().viewportHeight, 100, 20);
+//        infoLabel = new GameLabel(bounds, stage.getDebugText(), 0.7f);
+//        stage.addActor(infoLabel);
     }
 
     public void setUpStageCompleteLabel() {
@@ -101,6 +103,15 @@ public class GameHandler {
             }
         });
         stage.addActor(normalButton);
+    }
+
+    public void setUpHPBar() {
+        infoLabel = new GameLabel(new Rectangle(0, stage.getCamera().viewportHeight, 100, 20), "Player HP", 0.5f);
+        stage.addActor(infoLabel);
+
+        playerHPBar = new Bar(WorldHandler.createBar(stage.getWorld(), 100), Color.RED);
+        stage.addActor(playerHPBar);
+        Gdx.app.log("GH", "Bar created");
     }
 
     @SuppressWarnings("Duplicates")
@@ -129,12 +140,13 @@ public class GameHandler {
                 data.isRemoved = true;
                 stage.addDead(bullet);
             }
-
             TurretActorData t_data = (TurretActorData) turret.getUserData();
-            if (t_data.subHealth(WorldHandler.getProjectileDamage(bullet))) {
-                t_data.isRemoved = true;
-                stage.addDead(turret);
-                // death animation and stuff
+            if (data.getShotBy().equals(Constants.PLAYER_ASSET_ID)) {
+                if (t_data.subHealth(WorldHandler.getProjectileDamage(bullet))) {
+                    t_data.isRemoved = true;
+                    stage.addDead(turret);
+                    // death animation and stuff
+                }
             }
             Gdx.app.log("TURRET", "Turret HP:" + t_data.getHealth());
         }
@@ -156,7 +168,8 @@ public class GameHandler {
             if (p_data.subHealth(WorldHandler.getProjectileDamage(bullet)) <= 0) {
                 Gdx.app.log("PLAYER", "You died!");
             }
-            infoLabel.setText(stage.getDebugText());
+            playerHPBar.setBarWidth((int) p_data.getHealth());
+//            infoLabel.setText(stage.getDebugText());
         }
 
     }

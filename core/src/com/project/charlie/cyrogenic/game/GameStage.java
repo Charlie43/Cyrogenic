@@ -55,7 +55,7 @@ public class GameStage extends Stage implements ContactListener {
     static int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;
     private Vector3 touchPoint;
 
-    ArrayList<Asteroid> asteroids = new ArrayList<Asteroid>(); // todo reset arraylists when changing mode
+    ArrayList<Asteroid> asteroids = new ArrayList<Asteroid>();
 
     private ArrayList<Body> dead = new ArrayList<Body>();
 
@@ -130,6 +130,7 @@ public class GameStage extends Stage implements ContactListener {
                 obstacleGameHandler.createAsteroid();
             }
         }, 4, planetHandler.getAsteriodInterval(), planetHandler.getAsteriodCount());
+        gameHandler.setUpHPBar();
     }
 
     public void scheduleRemoval(final Body body, float time) {
@@ -147,14 +148,15 @@ public class GameStage extends Stage implements ContactListener {
         gameHandler.gameMode = Constants.GAMEMODE_NORMAL;
         clear();
         setUpStage(1);
-        gameHandler.setUpPlayer();
+        gameHandler.setUpPlayer(); // todo carry over stats + health from previous stage?
         if (planetHandler == null)
-            loadLevel();
+            loadPlanet();
         gameHandler.setUpTurrets(planetHandler);
         setUpBoundaries();
         gameHandler.setUpControls();
         gameHandler.setUpStageCompleteLabel();
         gameHandler.setUpInfoText();
+        gameHandler.setUpHPBar();
     }
 
     public void setUpObstacleLevel() {
@@ -162,7 +164,7 @@ public class GameStage extends Stage implements ContactListener {
         clear();
         setUpStage(0);
         obstacleGameHandler.setUpPlayer();
-        loadLevel();
+        loadPlanet();
         setUpBoundaries();
         obstacleGameHandler.setUpControls();
         obstacleGameHandler.setUpInfoText();
@@ -193,7 +195,7 @@ public class GameStage extends Stage implements ContactListener {
     }
 
 
-    public void loadLevel() {
+    public void loadPlanet() {
         planetHandler = PlanetManager.parsePlanet(world);
     }
 
@@ -209,7 +211,7 @@ public class GameStage extends Stage implements ContactListener {
     public String getDebugText() {
         String text = infoLabelString;
         if (Constants.DEBUG) {
-            if (turrets.size() > 0) { // todo correct way of checking current stage (gamemanager)
+            if (gameHandler.gameMode == Constants.GAMEMODE_NORMAL && turrets.size() > 0) {
                 String tempText = "";
                 for (Turret turret : turrets) {
                     tempText = tempText + String.format("\nTurret %d HP: %f SPD: %f", turrets.indexOf(turret),
@@ -429,7 +431,7 @@ public class GameStage extends Stage implements ContactListener {
     }
 
     @Override
-    public void beginContact(Contact contact) { // todo call separate handlers depending on current game mode?
+    public void beginContact(Contact contact) {
         Body a = contact.getFixtureA().getBody();
         Body b = contact.getFixtureB().getBody();
 

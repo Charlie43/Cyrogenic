@@ -47,8 +47,8 @@ public class StarMapHandler extends GameHandler {
 
             stage.addLabel(planet.name, stage.createLabel(planet.name, new Vector3(
                     Constants.ConvertToScreen(planet.x),
-                    Constants.ConvertToScreen(planet.y) + Constants.ConvertToScreen(planet.size),
-                    0), 5, 10, 0, 0.4f));
+                    (float) (Constants.ConvertToScreen(planet.y) + (Constants.ConvertToScreen(planet.size) * 0.70)),
+                    0), 3, 3, 0, 0.4f));
 
             stage.addPlanet(planetActor, planet.name);
             planetActor.addListener(new ClickListener() {

@@ -46,6 +46,15 @@ public class AssetsManager {
         texturesMap.put(Constants.TESLA_ASSET_ID, new TextureRegion(
                 new Texture(Gdx.files.internal(Constants.TESLA_IMAGE_PATH))));
 
+        texturesMap.put(Constants.HEALTH_ASSET_ID, new TextureRegion(
+                new Texture(Gdx.files.internal(Constants.HEALTH_IMAGE_PATH))));
+
+        texturesMap.put(Constants.T_TURRET_ASSET_ID, new TextureRegion(
+                new Texture(Gdx.files.internal(Constants.T_TURRET_IMAGE_PATH))));
+
+        texturesMap.put(Constants.L_TURRET_ASSET_ID, new TextureRegion(
+                new Texture(Gdx.files.internal(Constants.L_TURRET_IMAGE_PATH))));
+
 
     }
 

@@ -93,6 +93,7 @@ public class ObstacleGameHandler extends GameHandler {
             }
             if (infoLabel != null)
                 infoLabel.setText("Player HP: " + p_data.getHealth());
+            playerHPBar.setBarWidth((int) p_data.getHealth());
         }
         if (bulletHitAsteroid) {
             if (a.isBullet()) {

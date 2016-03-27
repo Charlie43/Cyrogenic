@@ -8,6 +8,7 @@ public abstract class ActorData {
     protected float height;
     public boolean isRemoved;
     protected String dataType;
+    String shotBy;
 
     public ActorData() {
     }
@@ -38,5 +39,9 @@ public abstract class ActorData {
 
     public String getDataType() {
         return dataType;
+    }
+
+    public String getShotBy() {
+        return shotBy;
     }
 }

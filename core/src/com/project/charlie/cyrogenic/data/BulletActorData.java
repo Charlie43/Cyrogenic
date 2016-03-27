@@ -9,10 +9,13 @@ public class BulletActorData extends ActorData {
     public Bullet bullet;
     float damage;
 
-    public BulletActorData(float width, float height, float damage) {
+
+
+    public BulletActorData(float width, float height, float damage, String shotBy) {
         super(width, height);
         dataType = "Bullet";
         this.damage = damage;
+        this.shotBy = shotBy;
     }
 
     public BulletActorData(float width, float height, Bullet bullet, float damage) {
@@ -36,5 +39,9 @@ public class BulletActorData extends ActorData {
 
     public void setDamage(float damage) {
         this.damage = damage;
+    }
+
+    public String getShotBy() {
+        return shotBy;
     }
 }

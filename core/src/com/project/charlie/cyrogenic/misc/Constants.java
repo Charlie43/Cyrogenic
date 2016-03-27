@@ -79,6 +79,18 @@ public class Constants {
     public static final float TURRET_HEIGHT = 1.7f;
     public static final float TURRET_DENSITY = 4.5f;
 
+    /* Tesla Turret */
+    public static final String T_TURRET_ASSET_ID = "t_turret";
+    public static final String T_TURRET_IMAGE_PATH = "images/turrets/tesla_turret.png";
+    public static final float T_TURRET_WIDTH = 1.5f;
+    public static final float T_TURRET_HEIGHT = 1.7f;
+    public static final float T_TURRET_DENSITY = 4.5f;
+
+    /* Laser Turret */
+    public static final String L_TURRET_ASSET_ID = "l_turret";
+    public static final String L_TURRET_IMAGE_PATH = "images/turrets/laser_turret.png";
+
+
     /* Bullet */
     public static final String BULLET_ASSET_ID = "bullet";
     public static final String BULLET_IMAGE_PATH = "images/misc/bullet.png";
@@ -108,6 +120,9 @@ public class Constants {
 
     public static final String BOX_ASSET_ID = "box";
     public static final String BOX_ASSET_PATH = "images/misc/boundingBox.png";
+
+    public static final String HEALTH_ASSET_ID = "health";
+    public static final String HEALTH_IMAGE_PATH = "images/misc/health.png";
 
     public static final String BUTTONS_SKIN_PATH = "data/uiskin.json";
 

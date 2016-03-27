@@ -16,7 +16,7 @@ public class Planet extends BaseActor {
 
     public Planet(Body body, String image) {
         super(body);
-        this.image = image; // todo image based on type?
+        this.image = image;
         texture = new Texture("images/planets/" + image + ".png");
         setTouchable(Touchable.enabled);
     }

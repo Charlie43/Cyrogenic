@@ -10,10 +10,11 @@ public class TeslaActorData extends ActorData {
     float damage;
     float rotation;
 
-    public TeslaActorData(float width, float height, float rotation) {
+    public TeslaActorData(float width, float height, float rotation, String shotBy) {
         super(width, height);
         this.rotation = rotation;
         dataType = "Tesla";
+        this.shotBy = shotBy;
     }
 
     public float getRotation() {

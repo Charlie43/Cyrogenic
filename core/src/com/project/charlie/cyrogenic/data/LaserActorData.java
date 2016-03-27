@@ -15,9 +15,10 @@ public class LaserActorData extends ActorData {
         dataType = "Laser";
     }
 
-    public LaserActorData(float width, float height) {
+    public LaserActorData(float width, float height, String shotBy) {
         super(width, height);
         dataType = "Laser";
+        this.shotBy = shotBy;
     }
 
     public Laser getLaser() {

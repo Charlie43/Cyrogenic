@@ -72,7 +72,7 @@ public class WorldHandler {
 
 
         body.resetMassData();
-        body.setUserData(new BulletActorData(Constants.BULLET_WIDTH, Constants.BULLET_HEIGHT, 5f));
+        body.setUserData(new BulletActorData(Constants.BULLET_WIDTH, Constants.BULLET_HEIGHT, 5f, shotBy));
         body.setLinearVelocity(
                 (shotBy.equals(Constants.PLAYER_ASSET_ID) ? Constants.BULLET_SPEED : -Constants.BULLET_SPEED), 0);
 
@@ -115,7 +115,7 @@ public class WorldHandler {
         body.setBullet(true);
 
         body.resetMassData();
-        body.setUserData(new TeslaActorData(Constants.TESLA_WIDTH, Constants.TESLA_HEIGHT, rotation));
+        body.setUserData(new TeslaActorData(Constants.TESLA_WIDTH, Constants.TESLA_HEIGHT, rotation, shotBy));
         return body;
     }
 
@@ -148,7 +148,7 @@ public class WorldHandler {
         body.setBullet(true);
 
         body.resetMassData();
-        body.setUserData(new LaserActorData(Constants.LASER_WIDTH, Constants.LASER_HEIGHT));
+        body.setUserData(new LaserActorData(Constants.LASER_WIDTH, Constants.LASER_HEIGHT, shotBy));
         return body;
     }
 
@@ -279,6 +279,28 @@ public class WorldHandler {
         return body;
     }
 
+    public static Body createBar(World world, float max) {
+        float width = 3.2f;
+        float height = 0.4f;
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.position.set(5, Constants.ConvertToBox(Constants.APP_HEIGHT) * 0.93f);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(width / 2, height / 2);
+        fixtureDef.shape = shape;
+        shape.dispose();
+
+        fixtureDef.isSensor = true;
+
+        Body body = world.createBody(bodyDef);
+        body.createFixture(fixtureDef);
+        body.setUserData(new BarData(width, height, 100, max));
+        return body;
+    }
+
 
     public static String getDataType(Body body) {
         if (body == null)
@@ -355,6 +377,8 @@ public class WorldHandler {
                 return ((LaserActorData) data).getDamage(); // todo convert to interface to avoid unnecessary casting
             case "Bullet":
                 return ((BulletActorData) data).getDamage();
+            case "Tesla":
+                return ((TeslaActorData) data).getDamage();
             default:
                 return 0f;
         }

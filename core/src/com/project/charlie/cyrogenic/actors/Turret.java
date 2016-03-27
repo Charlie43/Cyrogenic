@@ -14,6 +14,7 @@ public class Turret extends BaseActor {
     // todo turrets appear after certain interval
     private float stateTime;
     private long lastFiretime;
+    private String assetID;
 
     public Turret(Body body, String type) {
         super(body);
@@ -22,15 +23,19 @@ public class Turret extends BaseActor {
         switch (type) {
             case "MACHINE_GUN":
                 ((TurretActorData) this.actorData).setTurretType(Constants.TurretType.MACHINE_GUN);
+                this.assetID = Constants.TURRET_ASSET_ID;
                 break;
             case "LASER":
                 ((TurretActorData) this.actorData).setTurretType(Constants.TurretType.LASER);
+                this.assetID = Constants.L_TURRET_ASSET_ID;
                 break;
             case "TESLA":
                 ((TurretActorData) this.actorData).setTurretType(Constants.TurretType.TESLA);
+                this.assetID = Constants.T_TURRET_ASSET_ID;
                 break;
             case "BURST":
                 ((TurretActorData) this.actorData).setTurretType(Constants.TurretType.BURST);
+                this.assetID = Constants.TURRET_ASSET_ID;
                 break;
         }
     }
@@ -55,7 +60,7 @@ public class Turret extends BaseActor {
         if (Constants.DEBUG)
             batch.draw(AssetsManager.getTextureRegion(Constants.BOX_ASSET_ID), screenRectangle.x, screenRectangle.y, screenRectangle.width, screenRectangle.height);
 
-        batch.draw(AssetsManager.getTextureRegion(Constants.TURRET_ASSET_ID), x, y,
+        batch.draw(AssetsManager.getTextureRegion(assetID), x, y,
                 width, screenRectangle.height);
 
     }
