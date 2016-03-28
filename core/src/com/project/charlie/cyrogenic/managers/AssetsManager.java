@@ -55,6 +55,15 @@ public class AssetsManager {
         texturesMap.put(Constants.L_TURRET_ASSET_ID, new TextureRegion(
                 new Texture(Gdx.files.internal(Constants.L_TURRET_IMAGE_PATH))));
 
+        texturesMap.put(Constants.BACKGROUND_DESERT_ASSET_ID, new TextureRegion(
+                new Texture(Gdx.files.internal(Constants.BACKGROUND_DESERT_IMAGE_PATH))));
+
+        texturesMap.put(Constants.BACKGROUND_FOREST_ASSET_ID, new TextureRegion(
+                new Texture(Gdx.files.internal(Constants.BACKGROUND_FOREST_IMAGE_PATH))));
+
+        texturesMap.put(Constants.BACKGROUND_CITY_ASSET_ID, new TextureRegion(
+                new Texture(Gdx.files.internal(Constants.BACKGROUND_CITY_IMAGE_PATH))));
+
 
     }
 

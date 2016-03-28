@@ -111,15 +111,15 @@ public class GameStage extends Stage implements ContactListener {
 
     public void setUpPreChoice() {
         setUpCamera();
-        setUpStage(1);
+        setUpStage(1, planetHandler);
     }
 
     public void setUpPlanet(String planet) {
         clear();
         gameHandler.gameMode = Constants.GAMEMODE_OBSTACLES;
-        setUpStage(0);
-        obstacleGameHandler.setUpPlayer();
         planetHandler = PlanetManager.loadPlanet(planet);
+        setUpStage(0, planetHandler);
+        obstacleGameHandler.setUpPlayer();
         setUpBoundaries();
         obstacleGameHandler.setUpLabels(planet);
         obstacleGameHandler.setUpControls();
@@ -147,10 +147,10 @@ public class GameStage extends Stage implements ContactListener {
     public void setUpNormalLevel() {
         gameHandler.gameMode = Constants.GAMEMODE_NORMAL;
         clear();
-        setUpStage(1);
-        gameHandler.setUpPlayer(); // todo carry over stats + health from previous stage?
         if (planetHandler == null)
             loadPlanet();
+        setUpStage(1, planetHandler);
+        gameHandler.setUpPlayer(); // todo carry over stats + health from previous stage?
         gameHandler.setUpTurrets(planetHandler);
         setUpBoundaries();
         gameHandler.setUpControls();
@@ -162,7 +162,7 @@ public class GameStage extends Stage implements ContactListener {
     public void setUpObstacleLevel() {
         gameHandler.gameMode = Constants.GAMEMODE_OBSTACLES;
         clear();
-        setUpStage(0);
+        setUpStage(0, planetHandler);
         obstacleGameHandler.setUpPlayer();
         loadPlanet();
         setUpBoundaries();
@@ -179,14 +179,14 @@ public class GameStage extends Stage implements ContactListener {
     public void setUpMap() {
         gameHandler.gameMode = Constants.GAMEMODE_MAP;
         clear();
-        setUpStage(2);
+        setUpStage(2, planetHandler);
         mapHandler.createPlanets(0);
     }
 
     public void setUpStageCreator() {
         gameHandler.gameMode = Constants.GAMEMODE_CREATOR;
         clear();
-        setUpStage(1);
+        setUpStage(1, planetHandler);
         setUpBoundaries();
         creatorHandler.loadBase();
         creatorHandler.setUpButtons();
@@ -228,9 +228,9 @@ public class GameStage extends Stage implements ContactListener {
         return text;
     }
 
-    public void setUpStage(int stage) {
+    public void setUpStage(int stage, PlanetHandler planetHandler) {
         setUpWorld();
-        setUpBackground(stage);
+        setUpBackground(stage, planetHandler);
     }
 
     public void setUpWorld() {
@@ -249,8 +249,8 @@ public class GameStage extends Stage implements ContactListener {
         addActor(boundaryRight);
     }
 
-    public void setUpBackground(int stage) {
-        addActor(new Background(stage));
+    public void setUpBackground(int stage, PlanetHandler planetHandler) {
+        addActor(new Background(stage, planetHandler));
     }
 
     public void setUpCamera() {

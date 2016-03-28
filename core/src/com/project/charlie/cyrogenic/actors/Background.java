@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.project.charlie.cyrogenic.handlers.PlanetHandler;
 import com.project.charlie.cyrogenic.managers.AssetsManager;
 import com.project.charlie.cyrogenic.misc.Constants;
 
@@ -12,7 +13,7 @@ import com.project.charlie.cyrogenic.misc.Constants;
  */
 public class Background extends Actor {
 
-    private final TextureRegion region;
+    private TextureRegion region;
     private Rectangle regionBounds1;
     private Rectangle regionBounds2;
     private int speed = 100;
@@ -23,12 +24,32 @@ public class Background extends Actor {
     public static final int MAP = 2;
 
 
-    public Background(int stage) {
+    public Background(int stage, PlanetHandler planetHandler) {
         this.stage = stage;
         if (stage == SPACE || stage == MAP) {
             region = AssetsManager.getTextureRegion(Constants.BACKGROUND_SPACE_ASSET_ID);
         } else if (stage == PLANET) {
-            region = AssetsManager.getTextureRegion(Constants.BACKGROUND_ASSET_ID);
+            if (planetHandler == null)
+                region = AssetsManager.getTextureRegion(Constants.BACKGROUND_ASSET_ID);
+            else {
+                switch (planetHandler.getType()) {
+                    case "Desert":
+                        region = AssetsManager.getTextureRegion(Constants.BACKGROUND_DESERT_ASSET_ID);
+                        break;
+                    case "Normal":
+                        region = AssetsManager.getTextureRegion(Constants.BACKGROUND_ASSET_ID);
+                        break;
+                    case "Forest":
+                        region = AssetsManager.getTextureRegion(Constants.BACKGROUND_FOREST_ASSET_ID);
+                        break;
+                    case "City":
+                        region = AssetsManager.getTextureRegion(Constants.BACKGROUND_CITY_ASSET_ID);
+                        break;
+                    default:
+                        region = null;
+                        break;
+                }
+            }
         } else {
             region = null;
         }

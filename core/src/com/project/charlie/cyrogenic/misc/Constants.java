@@ -12,7 +12,9 @@ public class Constants {
     static final float WORLD_TO_BOX = 0.032f; // Pixels * 0.032 to get metres
     public static final float BOX_TO_WORLD = 32; // Metres * 32 to get pixels
 
-
+/*  Convert to box
+*   Box Y range = 0 : 15
+*   */
     public static float ConvertToBox(float n) {
         return n * WORLD_TO_BOX;
     }
@@ -27,6 +29,13 @@ public class Constants {
     public static final String BACKGROUND_IMAGE_PATH = "images/backgrounds/background2.png";
     public static final String BACKGROUND_SPACE_ASSET_ID = "background_space";
     public static final String BACKGROUND_SPACE_IMAGE_PATH = "images/backgrounds/background.jpg";
+    public static final String BACKGROUND_DESERT_ASSET_ID = "background_desert";
+    public static final String BACKGROUND_DESERT_IMAGE_PATH = "images/backgrounds/background4.png";
+    public static final String BACKGROUND_FOREST_ASSET_ID = "background_forest";
+    public static final String BACKGROUND_FOREST_IMAGE_PATH = "images/backgrounds/background3.png";
+    public static final String BACKGROUND_CITY_ASSET_ID = "background_city";
+    public static final String BACKGROUND_CITY_IMAGE_PATH = "images/backgrounds/background5.png";
+
     public static final int TOP = 1;
     public static final int BOTTOM = 0;
 

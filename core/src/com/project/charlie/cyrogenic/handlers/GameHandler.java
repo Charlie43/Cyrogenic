@@ -1,8 +1,8 @@
 package com.project.charlie.cyrogenic.handlers;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -20,7 +20,6 @@ import com.project.charlie.cyrogenic.misc.Constants;
 import com.project.charlie.cyrogenic.objects.TurretJSON;
 import com.project.charlie.cyrogenic.ui.GameLabel;
 
-import java.awt.*;
 import java.util.Random;
 
 /**
@@ -226,8 +225,8 @@ public class GameHandler {
                             case TESLA:
                                 for (int x = 0; x < 2; x++) {
                                     Tesla tesla = new Tesla(WorldHandler.createTesla(stage.getWorld(),
-                                            turret.getX() + 75, turret.getY() + 35, Constants.TURRET_ASSET_ID, x),
-                                            turret.getX() + 75, turret.getY() + 35);
+                                            turret.getX() + 75, turret.getY() + 45, Constants.TURRET_ASSET_ID, x),
+                                            turret.getX() + 75, turret.getY() + 45);
                                     TeslaActorData teslaData = tesla.getActorData();
                                     teslaData.setTesla(tesla);
                                     teslaData.setDamage(type.getDamage());
