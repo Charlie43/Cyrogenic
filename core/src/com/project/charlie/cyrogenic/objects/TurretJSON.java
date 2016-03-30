@@ -8,24 +8,15 @@ package com.project.charlie.cyrogenic.objects;
 public class TurretJSON {
     float x;
     float y;
-    float width;
-    float height;
-    float fireRate;
-    float health;
-    float damage;
     String type;
 
     public TurretJSON() {
 
     }
 
-    public TurretJSON(float x, float y, float width, float height, float fireRate) {
+    public TurretJSON(float x, float y) {
         this.x = x;
         this.y = y;
-        this.width = width;
-        this.height = height;
-//            this.health = health;
-        this.fireRate = fireRate;
     }
 
     public float getX() {
@@ -44,46 +35,6 @@ public class TurretJSON {
         this.y = y;
     }
 
-    public float getFireRate() {
-        return fireRate;
-    }
-
-    public void setFireRate(float fireRate) {
-        this.fireRate = fireRate;
-    }
-
-    public float getHealth() {
-        return health;
-    }
-
-    public void setHealth(float health) {
-        this.health = health;
-    }
-
-    public float getDamage() {
-        return damage;
-    }
-
-    public void setDamage(float damage) {
-        this.damage = damage;
-    }
-
-    public float getWidth() {
-        return width;
-    }
-
-    public void setWidth(float width) {
-        this.width = width;
-    }
-
-    public float getHeight() {
-        return height;
-    }
-
-    public void setHeight(float height) {
-        this.height = height;
-    }
-
     public String getType() {
         return type;
     }
@@ -97,11 +48,6 @@ public class TurretJSON {
         return "TurretJSON{" +
                 "x=" + x +
                 ", y=" + y +
-                ", width=" + width +
-                ", height=" + height +
-                ", fireRate=" + fireRate +
-                ", health=" + health +
-                ", damage=" + damage +
                 '}';
     }
 }

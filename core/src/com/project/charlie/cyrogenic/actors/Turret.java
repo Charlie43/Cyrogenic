@@ -16,28 +16,12 @@ public class Turret extends BaseActor {
     private long lastFiretime;
     private String assetID;
 
-    public Turret(Body body, String type) {
+    public Turret(Body body, Constants.TurretType type) {
         super(body);
         stateTime = 0f;
         lastFiretime = System.currentTimeMillis();
-        switch (type) {
-            case "MACHINE_GUN":
-                ((TurretActorData) this.actorData).setTurretType(Constants.TurretType.MACHINE_GUN);
-                this.assetID = Constants.TURRET_ASSET_ID;
-                break;
-            case "LASER":
-                ((TurretActorData) this.actorData).setTurretType(Constants.TurretType.LASER);
-                this.assetID = Constants.L_TURRET_ASSET_ID;
-                break;
-            case "TESLA":
-                ((TurretActorData) this.actorData).setTurretType(Constants.TurretType.TESLA);
-                this.assetID = Constants.T_TURRET_ASSET_ID;
-                break;
-            case "BURST":
-                ((TurretActorData) this.actorData).setTurretType(Constants.TurretType.BURST);
-                this.assetID = Constants.TURRET_ASSET_ID;
-                break;
-        }
+        ((TurretActorData) this.actorData).setTurretType(type);
+        this.assetID = type.getAssetID();
     }
 
     @Override
@@ -75,6 +59,9 @@ public class Turret extends BaseActor {
 
     public float getX() {
         return screenRectangle.x;
+    }
+    public float getHeight() {
+        return screenRectangle.height;
     }
 
     public float getY() {

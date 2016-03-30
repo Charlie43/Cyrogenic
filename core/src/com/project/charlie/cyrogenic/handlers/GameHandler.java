@@ -73,16 +73,21 @@ public class GameHandler {
         Gdx.app.log("GH", String.format("Setting up %d turrets.", planetHandler.getTurrets().size()));
 
         for (TurretJSON turret : planetHandler.getTurrets()) {
-            Turret temp = new Turret(WorldHandler.createTurret(stage.getWorld(), turret.getX(), turret.getY(), turret.getWidth(), turret.getHeight()), turret.getType()); // TODO "warp in" animation
+            Constants.TurretType type = Constants.TurretType.valueOf(turret.getType());
+            Turret temp = new Turret(WorldHandler.createTurret(stage.getWorld(), turret.getX(), turret.getY(), type.getWidth(), type.getHeight()), type); // TODO "warp in" animation
             temp.getActorData().turret = temp;
             stage.addTurret(temp);
         }
     }
 
     public void setUpInfoText() {
-//        Rectangle bounds = new Rectangle(0, stage.getCamera().viewportHeight, 100, 20);
-//        infoLabel = new GameLabel(bounds, stage.getDebugText(), 0.7f);
-//        stage.addActor(infoLabel);
+        Rectangle bounds = new Rectangle(stage.getCamera().viewportWidth - 100, stage.getCamera().viewportHeight, 100, 20);
+        infoLabel = new GameLabel(bounds, stage.getDebugText(), 0.7f);
+        stage.addActor(infoLabel);
+    }
+
+    public void updateLabel() {
+        infoLabel.setText(stage.getDebugText());
     }
 
     public void setUpStageCompleteLabel() {
@@ -105,8 +110,8 @@ public class GameHandler {
     }
 
     public void setUpHPBar() {
-        infoLabel = new GameLabel(new Rectangle(0, stage.getCamera().viewportHeight, 100, 20), "Player HP", 0.5f);
-        stage.addActor(infoLabel);
+        GameLabel hpLabel = new GameLabel(new Rectangle(0, stage.getCamera().viewportHeight, 100, 20), "Player HP", 0.5f);
+        stage.addActor(hpLabel);
 
         playerHPBar = new Bar(WorldHandler.createBar(stage.getWorld(), 100), Color.RED);
         stage.addActor(playerHPBar);
@@ -160,9 +165,10 @@ public class GameHandler {
             ActorData b_data = (ActorData) bullet.getUserData();
 
             PlayerUserData p_data = (PlayerUserData) player.getUserData();
-            b_data.isRemoved = true;
-
-            stage.addDead(bullet);
+            if (WorldHandler.isBullet(bullet)) {
+                b_data.isRemoved = true;
+                stage.addDead(bullet);
+            }
 
             if (p_data.subHealth(WorldHandler.getProjectileDamage(bullet)) <= 0) {
                 Gdx.app.log("PLAYER", "You died!");
@@ -194,7 +200,7 @@ public class GameHandler {
                         switch (type) { // todo just turret.fire and handle the firing for each type in its own class
                             case MACHINE_GUN:
                                 Bullet bullet = new Bullet(WorldHandler.createBullet(stage.getWorld(),
-                                        turret.getX() - 25, turret.getY() + 15, Constants.TURRET_ASSET_ID));
+                                        turret.getX() - 25, turret.getY() + turret.getHeight() / 2, Constants.TURRET_ASSET_ID));
                                 BulletActorData b_data = bullet.getActorData();
                                 b_data.bullet = bullet;
                                 b_data.setDamage(type.getDamage());
@@ -202,7 +208,8 @@ public class GameHandler {
                                 break;
                             case LASER:
                                 Laser laser = new Laser(WorldHandler.createLaser(stage.getWorld(),
-                                        turret.getX() - (Constants.ConvertToScreen(Constants.LASER_WIDTH) / 2), turret.getY() + 5, Constants.TURRET_ASSET_ID));
+                                        turret.getX() - (Constants.ConvertToScreen(Constants.LASER_WIDTH) / 2),
+                                        turret.getY() + turret.getHeight() * 0.20f, Constants.TURRET_ASSET_ID));
                                 LaserActorData l_data = laser.getActorData();
                                 l_data.laser = laser;
                                 l_data.setDamage(type.getDamage());
@@ -214,7 +221,7 @@ public class GameHandler {
                                     @Override
                                     public void run() {
                                         Bullet burstBullet = new Bullet(WorldHandler.createBullet(stage.getWorld(),
-                                                turret.getX() - 55, turret.getY() + 15, Constants.TURRET_ASSET_ID));
+                                                turret.getX() - 25, turret.getY() + turret.getHeight() / 2, Constants.TURRET_ASSET_ID));
                                         BulletActorData burstData = burstBullet.getActorData();
                                         burstData.bullet = burstBullet;
                                         burstData.setDamage(type.getDamage());
@@ -224,9 +231,12 @@ public class GameHandler {
                                 break;
                             case TESLA:
                                 for (int x = 0; x < 2; x++) {
+                                    Gdx.app.log("Tesla", "Number: " + x + " Y: " + turret.getY() + " Height: " + turret.getHeight());
                                     Tesla tesla = new Tesla(WorldHandler.createTesla(stage.getWorld(),
-                                            turret.getX() + 75, turret.getY() + 45, Constants.TURRET_ASSET_ID, x),
-                                            turret.getX() + 75, turret.getY() + 45);
+                                            turret.getX() + 85,
+                                            turret.getY() + (turret.getHeight() * 0.70f), Constants.TURRET_ASSET_ID, x),
+                                            turret.getX() + 85,
+                                            turret.getY() + (turret.getHeight() * 0.70f));
                                     TeslaActorData teslaData = tesla.getActorData();
                                     teslaData.setTesla(tesla);
                                     teslaData.setDamage(type.getDamage());

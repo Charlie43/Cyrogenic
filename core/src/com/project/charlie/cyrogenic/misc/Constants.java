@@ -13,7 +13,8 @@ public class Constants {
     public static final float BOX_TO_WORLD = 32; // Metres * 32 to get pixels
 
 /*  Convert to box
-*   Box Y range = 0 : 15
+*   Box X Range = ? : ?
+*   Box Y Range = 0 : 15
 *   */
     public static float ConvertToBox(float n) {
         return n * WORLD_TO_BOX;
@@ -26,15 +27,17 @@ public class Constants {
     public static final int APP_WIDTH = 800;
     public static final int APP_HEIGHT = 480;
     public static final String BACKGROUND_ASSET_ID = "background";
-    public static final String BACKGROUND_IMAGE_PATH = "images/backgrounds/background2.png";
+    public static final String BACKGROUND_IMAGE_PATH = "images/backgrounds/background7.jpg";
     public static final String BACKGROUND_SPACE_ASSET_ID = "background_space";
     public static final String BACKGROUND_SPACE_IMAGE_PATH = "images/backgrounds/background.jpg";
     public static final String BACKGROUND_DESERT_ASSET_ID = "background_desert";
     public static final String BACKGROUND_DESERT_IMAGE_PATH = "images/backgrounds/background4.png";
     public static final String BACKGROUND_FOREST_ASSET_ID = "background_forest";
-    public static final String BACKGROUND_FOREST_IMAGE_PATH = "images/backgrounds/background3.png";
+    public static final String BACKGROUND_FOREST_IMAGE_PATH = "images/backgrounds/background3.jpg";
     public static final String BACKGROUND_CITY_ASSET_ID = "background_city";
     public static final String BACKGROUND_CITY_IMAGE_PATH = "images/backgrounds/background5.png";
+    public static final String BACKGROUND_MENU_ASSET_ID = "background_menu";
+    public static final String BACKGROUND_MENU_IMAGE_PATH = "images/backgrounds/cryogenic_mainpage.png";
 
     public static final int TOP = 1;
     public static final int BOTTOM = 0;
@@ -109,7 +112,7 @@ public class Constants {
 
     /* Laser */
     public static final String LASER_ASSET_ID = "laser";
-    public static final String LASER_IMAGE_PATH = "images/misc/laser.png";
+    public static final String LASER_IMAGE_PATH = "images/misc/laser_beam.png";
     public static final float LASER_WIDTH = 19.5f;
     public static final float LASER_HEIGHT = 0.5f;
     public static final float LASER_DELAY = 7f;
@@ -154,15 +157,22 @@ public class Constants {
     public static final String PLANET_WATER_IMAGE_PATH = "images/planets/planet_water.png";
 
     public enum TurretType {
-        MACHINE_GUN(0.5f, 2f, 100), LASER(10.5f, 3f, 150), BURST(1.3f, 7f, 50), TESLA(2.5f, 12.5f, 100);
+        MACHINE_GUN(0.5f, 2f, 100, 1.1f, 1.3f, TURRET_ASSET_ID), LASER(10.5f, 3f, 150, 0.9f, 1.1f, L_TURRET_ASSET_ID),
+        BURST(1.3f, 7f, 50, 1.3f, 1.5f, TURRET_ASSET_ID), TESLA(2.5f, 12.5f, 100, 1.1f, 1.3f, T_TURRET_ASSET_ID);
         private final float fireRate;
         private final float damage;
         private final float health;
+        private final float width;
+        private final float height;
+        private final String assetID;
 
-        TurretType(float fireRate, float damage, float health) {
+        TurretType(float fireRate, float damage, float health, float width, float height, String assetID) {
             this.fireRate = fireRate;
             this.damage = damage;
             this.health = health;
+            this.width = width;
+            this.height = height;
+            this.assetID = assetID;
         }
 
         public float getFireRate() {
@@ -176,9 +186,17 @@ public class Constants {
         public float getHealth() {
             return health;
         }
+
+        public float getWidth() {
+            return width;
+        }
+
+        public float getHeight() {
+            return height;
+        }
+
+        public String getAssetID() {
+            return assetID;
+        }
     }
-
-
-
-
 }

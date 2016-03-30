@@ -64,6 +64,9 @@ public class AssetsManager {
         texturesMap.put(Constants.BACKGROUND_CITY_ASSET_ID, new TextureRegion(
                 new Texture(Gdx.files.internal(Constants.BACKGROUND_CITY_IMAGE_PATH))));
 
+        texturesMap.put(Constants.BACKGROUND_MENU_ASSET_ID, new TextureRegion(
+                new Texture(Gdx.files.internal(Constants.BACKGROUND_MENU_IMAGE_PATH))));
+
 
     }
 

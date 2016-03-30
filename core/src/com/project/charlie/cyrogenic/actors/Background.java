@@ -22,12 +22,15 @@ public class Background extends Actor {
     public static final int SPACE = 0;
     public static final int PLANET = 1;
     public static final int MAP = 2;
+    public static final int MENU = 3;
 
 
     public Background(int stage, PlanetHandler planetHandler) {
         this.stage = stage;
         if (stage == SPACE || stage == MAP) {
             region = AssetsManager.getTextureRegion(Constants.BACKGROUND_SPACE_ASSET_ID);
+        } else if(stage == MENU) {
+            region = AssetsManager.getTextureRegion(Constants.BACKGROUND_MENU_ASSET_ID);
         } else if (stage == PLANET) {
             if (planetHandler == null)
                 region = AssetsManager.getTextureRegion(Constants.BACKGROUND_ASSET_ID);
@@ -53,15 +56,22 @@ public class Background extends Actor {
         } else {
             region = null;
         }
-        regionBounds1 = new Rectangle(0 - Constants.APP_WIDTH / 2,
-                0, Constants.APP_WIDTH, Constants.APP_HEIGHT);
-        regionBounds2 = new Rectangle(Constants.APP_WIDTH / 2,
-                0, Constants.APP_WIDTH, Constants.APP_HEIGHT);
+        if(stage != MENU) {
+            regionBounds1 = new Rectangle(0 - Constants.APP_WIDTH / 2,
+                    0, Constants.APP_WIDTH, Constants.APP_HEIGHT);
+            regionBounds2 = new Rectangle(Constants.APP_WIDTH / 2,
+                    0, Constants.APP_WIDTH, Constants.APP_HEIGHT);
+        } else {
+            regionBounds1 = new Rectangle(0,
+                    0, Constants.APP_WIDTH, Constants.APP_HEIGHT);
+            regionBounds2 = new Rectangle(0-Constants.APP_WIDTH ,
+                    0, Constants.APP_WIDTH, Constants.APP_HEIGHT);
+        }
     }
 
     @Override
     public void act(float delta) {
-        if (stage != MAP) {
+        if (stage != MAP && stage != MENU) {
             if (leftBoundsReached(delta))
                 resetBounds();
             else

@@ -285,7 +285,7 @@ public class WorldHandler {
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
-        bodyDef.position.set(5, Constants.ConvertToBox(Constants.APP_HEIGHT) * 0.93f);
+        bodyDef.position.set(3.5f, Constants.ConvertToBox(Constants.APP_HEIGHT) * 0.93f);
 
         FixtureDef fixtureDef = new FixtureDef();
         PolygonShape shape = new PolygonShape();
@@ -310,8 +310,7 @@ public class WorldHandler {
     }
 
     public static boolean isAsteroid(Body body) {
-        if (body == null)
-            return false;
+        if (body == null || body.getUserData() == null) return false;
 
         ActorData data = (ActorData) body.getUserData();
         return data.getDataType().equals("Asteroid");
@@ -326,16 +325,14 @@ public class WorldHandler {
     }
 
     public static boolean isTurret(Body body) {
-        if (body == null)
-            return false;
+        if (body == null || body.getUserData() == null) return false;
 
         ActorData data = (ActorData) body.getUserData();
         return data.getDataType().equals("Turret");
     }
 
     public static boolean isPlanet(Body body) {
-        if (body == null)
-            return false;
+        if (body == null || body.getUserData() == null) return false;
 
         ActorData data = (ActorData) body.getUserData();
         return data.getDataType().equals("Planet");

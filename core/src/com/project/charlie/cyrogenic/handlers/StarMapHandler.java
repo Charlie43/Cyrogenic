@@ -28,8 +28,8 @@ public class StarMapHandler extends GameHandler {
 
     public void setUpMapButton() {
         TextButton mapButton = new TextButton("Star Map", new Skin(Gdx.files.internal(Constants.BUTTONS_SKIN_PATH)), "default");
-        mapButton.setPosition(stage.getCamera().viewportWidth / 3, stage.getCamera().viewportHeight / 2 - 140);
-        mapButton.setBounds(stage.getCamera().viewportWidth / 3, stage.getCamera().viewportHeight / 2 - 140, 250, 40);
+        mapButton.setPosition(stage.getCamera().viewportWidth / 3, stage.getCamera().viewportHeight * 0.10f);
+        mapButton.setBounds(stage.getCamera().viewportWidth / 3, stage.getCamera().viewportHeight * 0.10f, 250, 40);
         mapButton.addListener(new ClickListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {

@@ -86,7 +86,7 @@ public class GameStage extends Stage implements ContactListener {
 
 
         this.cyrogenic = cyrogenic;
-        fitness();
+//        fitness();
         setUpMenu();
 
         if (Constants.DEBUG)
@@ -111,7 +111,7 @@ public class GameStage extends Stage implements ContactListener {
 
     public void setUpPreChoice() {
         setUpCamera();
-        setUpStage(1, planetHandler);
+        setUpStage(3, planetHandler);
     }
 
     public void setUpPlanet(String planet) {
@@ -130,7 +130,9 @@ public class GameStage extends Stage implements ContactListener {
                 obstacleGameHandler.createAsteroid();
             }
         }, 4, planetHandler.getAsteriodInterval(), planetHandler.getAsteriodCount());
-        gameHandler.setUpHPBar();
+        obstacleGameHandler.setUpHPBar();
+        Gdx.app.log("GS", "Width: " + getCamera().viewportWidth);
+
     }
 
     public void scheduleRemoval(final Body body, float time) {
@@ -157,6 +159,8 @@ public class GameStage extends Stage implements ContactListener {
         gameHandler.setUpStageCompleteLabel();
         gameHandler.setUpInfoText();
         gameHandler.setUpHPBar();
+        Gdx.app.log("GS", "Width: " + getCamera().viewportWidth);
+
     }
 
     public void setUpObstacleLevel() {
@@ -174,6 +178,8 @@ public class GameStage extends Stage implements ContactListener {
                 obstacleGameHandler.createAsteroid();
             }
         }, 4, planetHandler.getAsteriodInterval(), planetHandler.getAsteriodCount());
+        obstacleGameHandler.setUpHPBar();
+        Gdx.app.log("GS", "Width: " + getCamera().viewportWidth);
     }
 
     public void setUpMap() {
@@ -209,22 +215,27 @@ public class GameStage extends Stage implements ContactListener {
     }
 
     public String getDebugText() {
-        String text = infoLabelString;
-        if (Constants.DEBUG) {
-            if (gameHandler.gameMode == Constants.GAMEMODE_NORMAL && turrets.size() > 0) {
-                String tempText = "";
-                for (Turret turret : turrets) {
-                    tempText = tempText + String.format("\nTurret %d HP: %f SPD: %f", turrets.indexOf(turret),
-                            turret.getActorData().getHealth(), turret.getActorData().getTurretType().getFireRate());
-
-                }
-                text = text.replace("%tatkspd%", tempText);
-            } else
-                text = text.replace("%tatkspd%", "");
-        } else
-            text = text.replace("%tatkspd%", "");
+//        String text = infoLabelString;
+//        if (Constants.DEBUG) {
+//            if (gameHandler.gameMode == Constants.GAMEMODE_NORMAL && turrets.size() > 0) {
+//                String tempText = "";
+//                for (Turret turret : turrets) {
+//                    tempText = tempText + String.format("\nTurret %d HP: %f SPD: %f", turrets.indexOf(turret),
+//                            turret.getActorData().getHealth(), turret.getActorData().getTurretType().getFireRate());
+//
+//                }
+//                text = text.replace("%tatkspd%", tempText);
+//            } else
+//                text = text.replace("%tatkspd%", "");
+//        } else
+//            text = text.replace("%tatkspd%", "");
+        String text = "";
         if (gameHandler.getPlayer() != null)
-            text = text.replace("%hp%", gameHandler.getPlayer().getActorData().getHealth() + "");
+            text = "X: " + gameHandler.getPlayer().getX() + "\n Y: " + gameHandler.getPlayer().getY();
+        else if (obstacleGameHandler.getPlayer() != null)
+            text = "X: " + obstacleGameHandler.getPlayer().getX() + "\n Y: " + obstacleGameHandler.getPlayer().getY();
+
+//            text = text.replace("%hp%", gameHandler.getPlayer().getActorData().getHealth() + "");
         return text;
     }
 
@@ -276,6 +287,8 @@ public class GameStage extends Stage implements ContactListener {
         checkBounds();
         removeDeadBodies();
         checkEndGame();
+        if (gameHandler.gameMode == Constants.GAMEMODE_NORMAL)
+            gameHandler.updateLabel();
     }
 
     private void createBullets() {
@@ -358,8 +371,7 @@ public class GameStage extends Stage implements ContactListener {
                         world.destroyBody(body);
                         body.setUserData(null);
                         body = null;
-                    } else
-                        Gdx.app.log("Dead", "Escaped selection statement");
+                    }
                 } else if (WorldHandler.isAsteroid(body)) {
                     AsteroidActorData a_data = (AsteroidActorData) body.getUserData();
                     if (a_data != null && a_data.isRemoved && asteroids.contains(a_data.asteroid)) {
