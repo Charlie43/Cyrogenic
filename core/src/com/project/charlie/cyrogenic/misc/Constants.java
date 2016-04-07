@@ -47,6 +47,9 @@ public class Constants {
     public static final int LEFT = 2;
     public static final int RIGHT = 3;
 
+    public static final String FITNESS_ICON_IMAGE_PATH = "images/misc/fitness_icon.png";
+
+
     public static final Vector2 GRAVITY = new Vector2(0, -10);
 
 

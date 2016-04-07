@@ -24,7 +24,7 @@ public class Tesla extends BaseActor {
         super.draw(batch, parentAlpha);
         setRotation(getActorData().getRotation());
         batch.draw(AssetsManager.getTextureRegion(Constants.TESLA_ASSET_ID), screenRectangle.x, screenRectangle.y,
-                Constants.ConvertToBox(originX), Constants.ConvertToBox(originY),
+                originX, originY,
                 screenRectangle.width, screenRectangle.height, 1f, 1f, getRotation());
     }
 

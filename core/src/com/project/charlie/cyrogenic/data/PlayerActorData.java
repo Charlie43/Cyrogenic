@@ -3,10 +3,10 @@ package com.project.charlie.cyrogenic.data;
 /**
  * Created by Charlie on 12/02/2016.
  */
-public class PlayerUserData extends ActorData {
+public class PlayerActorData extends ActorData {
     float health;
 
-    public PlayerUserData(float width, float height) {
+    public PlayerActorData(float width, float height) {
         super(width, height);
         dataType = "Player";
         this.health = 100f;

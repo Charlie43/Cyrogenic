@@ -10,7 +10,9 @@ import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.google.example.games.basegameutils.GameHelper;
 import com.google.example.games.basegameutils.GameHelper.GameHelperListener;
 import com.project.charlie.cyrogenic.android.ActionResolver;
-import com.project.charlie.cyrogenic.game.Cyrogenic;
+import com.project.charlie.cyrogenic.game.Cryogenic;
+
+import java.util.ArrayList;
 
 public class AndroidLauncher extends AndroidApplication implements ActionResolver, GameHelperListener {
     private static final int FITNESS_REQUEST = 1;
@@ -19,17 +21,21 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
 
     public AndroidLauncher() {
         actionResolverAndroid = new ActionResolverAndroid(this);
-//        gameHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
+
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
+        gameHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
+        gameHelper.enableDebugLog(true);
 
-        initialize(new Cyrogenic(this), config);
+        initialize(new Cryogenic(this), config);
 
-//        gameHelper.setup(this);
+        gameHelper.setup(this);
+        actionResolverAndroid.connectToFitnessApi(this);
+        requestPermissions();
 
     }
 
@@ -43,19 +49,23 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
     @Override
     protected void onStart() {
         super.onStart();
-//        gameHelper.onStart(this);
+        gameHelper.onStart(this);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-//        gameHelper.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 4 && resultCode == RESULT_OK) { // Sign in completed.
+            actionResolverAndroid.connectToFitnessApi(this);
+        }
+        gameHelper.onActivityResult(requestCode, resultCode, data);
+
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-//        gameHelper.onStop();
+        gameHelper.onStop();
     }
 
     public void requestPermissions() {
@@ -81,7 +91,12 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
 
     @Override
     public void connectToFitnessApi() {
-        actionResolverAndroid.connectToFitnessApi();
+        actionResolverAndroid.connectToFitnessApi(this);
+    }
+
+    @Override
+    public void readData() {
+        actionResolverAndroid.readData();
     }
 
     @Override
@@ -113,6 +128,16 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
         }catch(Exception e) {
             Gdx.app.log("AL", "Exception on sign out - " + e.getMessage());
         }
+    }
+
+    @Override
+    public int readTotalSteps() { // todo refactor this interface into its own class
+       return actionResolverAndroid.readTotalSteps();
+    }
+
+    @Override
+    public ArrayList<Integer> readWeeklySteps() {
+        return actionResolverAndroid.readWeeklySteps();
     }
 
     @Override

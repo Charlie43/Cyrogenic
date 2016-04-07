@@ -19,7 +19,7 @@ public class Bullet extends BaseActor {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
-        float x = screenRectangle.x - (screenRectangle.width * 0.1f);
+        float x = screenRectangle.x;
         float y = screenRectangle.y;
         float width = screenRectangle.width * 1.2f;
         if (Constants.DEBUG)

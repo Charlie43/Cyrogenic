@@ -4,10 +4,10 @@ import com.badlogic.gdx.Game;
 import com.project.charlie.cyrogenic.android.ActionResolver;
 import com.project.charlie.cyrogenic.managers.AssetsManager;
 
-public class Cyrogenic extends Game {
-    public static ActionResolver actionResolver;
+public class Cryogenic extends Game {
+    public ActionResolver actionResolver;
 
-    public Cyrogenic(ActionResolver _actionResolver) {
+    public Cryogenic(ActionResolver _actionResolver) {
         actionResolver = _actionResolver;
     }
 

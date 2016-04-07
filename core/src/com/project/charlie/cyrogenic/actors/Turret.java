@@ -67,4 +67,13 @@ public class Turret extends BaseActor {
     public float getY() {
         return screenRectangle.y;
     }
+
+    public float getBodyX() { return getBody().getPosition().x; }
+
+    public float getBodyY() { return getBody().getPosition().y; }
+
+    public float getBodyHeight() { return getActorData().getHeight(); }
+    public float getBodyWidth() { return getActorData().getWidth(); }
+
+
 }

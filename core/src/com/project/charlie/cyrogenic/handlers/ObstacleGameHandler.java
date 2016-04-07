@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.project.charlie.cyrogenic.actors.Asteroid;
 import com.project.charlie.cyrogenic.data.ActorData;
 import com.project.charlie.cyrogenic.data.AsteroidActorData;
-import com.project.charlie.cyrogenic.data.PlayerUserData;
+import com.project.charlie.cyrogenic.data.PlayerActorData;
 import com.project.charlie.cyrogenic.game.GameStage;
 import com.project.charlie.cyrogenic.misc.Constants;
 
@@ -80,7 +80,7 @@ public class ObstacleGameHandler extends GameHandler {
                 asteroid = b;
                 player = a;
             }
-            PlayerUserData p_data = (PlayerUserData) player.getUserData();
+            PlayerActorData p_data = (PlayerActorData) player.getUserData();
             AsteroidActorData a_data = (AsteroidActorData) asteroid.getUserData();
             if (a_data.subHealth(5) <= 0) {
                 a_data.isRemoved = true;

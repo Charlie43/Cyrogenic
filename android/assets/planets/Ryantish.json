@@ -6,7 +6,7 @@
   "x": "14",
   "y": "2.4",
   "asteroid": {
-    "number": "4",
+    "number": "1",
     "speed": "42",
     "interval": "1.5"
   },

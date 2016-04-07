@@ -61,7 +61,7 @@ public class GameStage extends Stage implements ContactListener {
 
 
     String infoLabelString = "Player HP: %hp%\n%tatkspd%";
-    Cyrogenic cyrogenic;
+    Cryogenic cryogenic;
 
     FitnessHandler fitnessHandler;
 
@@ -69,10 +69,13 @@ public class GameStage extends Stage implements ContactListener {
      * todo
      * fade out background to show moving stages
      * health/shield bars for player + last hit target
+     * setting screen
+     * "upgrade" screen. Either buttons, or buildings
+     *      Upgrades for attack speed, turret damage, etc. Percentages. Use currency which is gained through playing/fitness
      */
 
 
-    public GameStage(Cyrogenic cyrogenic) {
+    public GameStage(Cryogenic cryogenic) {
         super(new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT,
                 new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)));
 
@@ -82,11 +85,11 @@ public class GameStage extends Stage implements ContactListener {
         obstacleGameHandler = new ObstacleGameHandler(this);
         creatorHandler = new CreatorHandler(this);
         mapHandler = new StarMapHandler(this);
-        fitnessHandler = new FitnessHandler();
+        fitnessHandler = new FitnessHandler(this);
 
 
-        this.cyrogenic = cyrogenic;
-//        fitness();
+        this.cryogenic = cryogenic;
+        fitness();
         setUpMenu();
 
         if (Constants.DEBUG)
@@ -96,7 +99,13 @@ public class GameStage extends Stage implements ContactListener {
     }
 
     public void fitness() {
-//        fitnessHandler.connectToApi(cyrogenic);
+        fitnessHandler.connectToApi(cryogenic);
+    }
+
+    public void setUpFitnessMenu() {
+        clear();
+        setUpStage(3, planetHandler);
+        fitnessHandler.setUpFitnessText();
     }
 
     public void setUpMenu() {
@@ -107,6 +116,7 @@ public class GameStage extends Stage implements ContactListener {
 //        gameHandler.setUpNormalButton();
         creatorHandler.setUpCreatorButton();
         mapHandler.setUpMapButton();
+        fitnessHandler.setUpFitnessButton();
     }
 
     public void setUpPreChoice() {
@@ -123,7 +133,7 @@ public class GameStage extends Stage implements ContactListener {
         setUpBoundaries();
         obstacleGameHandler.setUpLabels(planet);
         obstacleGameHandler.setUpControls();
-        obstacleGameHandler.setUpInfoText();
+//        obstacleGameHandler.setUpInfoText();
         new Timer().scheduleTask(new Timer.Task() {
             @Override
             public void run() {
@@ -145,7 +155,6 @@ public class GameStage extends Stage implements ContactListener {
         }, time);
 
     }
-
     public void setUpNormalLevel() {
         gameHandler.gameMode = Constants.GAMEMODE_NORMAL;
         clear();
@@ -157,8 +166,9 @@ public class GameStage extends Stage implements ContactListener {
         setUpBoundaries();
         gameHandler.setUpControls();
         gameHandler.setUpStageCompleteLabel();
-        gameHandler.setUpInfoText();
+//        gameHandler.setUpInfoText();
         gameHandler.setUpHPBar();
+        gameHandler.setUpTargetBar();
         Gdx.app.log("GS", "Width: " + getCamera().viewportWidth);
 
     }
@@ -304,7 +314,8 @@ public class GameStage extends Stage implements ContactListener {
         for (Map.Entry<Object, String> cursor : projectiles.entrySet()) {
             if (cursor.getValue().equals(Constants.BULLET_ASSET_ID)) {
                 Bullet bullet = (Bullet) cursor.getKey();
-                if (bullet.getX() + bullet.getWidth() > VIEWPORT_WIDTH) {
+                if ((bullet.getX() + bullet.getWidth() > VIEWPORT_WIDTH)
+                        || bullet.getX() + bullet.getWidth() < 0) {
                     dead.add(bullet.getBody());
                     bullet.getActorData().isRemoved = true;
                 }
@@ -463,6 +474,8 @@ public class GameStage extends Stage implements ContactListener {
         }
     }
 
+
+
     @Override
     public void endContact(Contact contact) {
 
@@ -549,5 +562,9 @@ public class GameStage extends Stage implements ContactListener {
     public void addLabel(String key, GameLabel label) {
         labels.put(key, label);
         addActor(label);
+    }
+
+    public GameLabel getLabel(String key) {
+        return labels.get(key);
     }
 }

@@ -115,7 +115,7 @@ public class CreatorHandler extends GameHandler {
 
     public void setUpResetButton() {
         TextButton resetButton = new TextButton("Reset Base", new Skin(Gdx.files.internal(Constants.BUTTONS_SKIN_PATH)), "default");
-        resetButton.setPosition(stage.getCamera().viewportWidth / 3, stage.getCamera().viewportHeight / 2 - 220);
+        resetButton.setPosition(stage.getCamera().viewportWidth / 3, stage.getCamera().viewportHeight * 0.10f);
         resetButton.setBounds(resetButton.getX(), resetButton.getY(), 250, 40);
         resetButton.addListener(new ClickListener() {
             @Override
@@ -129,7 +129,18 @@ public class CreatorHandler extends GameHandler {
             }
         });
         stage.addActor(resetButton);
+    }
 
+    public void setUpBaseButton() {
+        TextButton baseButton = new TextButton("Upgrades", new Skin(Gdx.files.internal(Constants.BUTTONS_SKIN_PATH)), "default");
+        baseButton.setPosition(stage.getCamera().viewportWidth / 3, stage.getCamera().viewportHeight * 0.05f);
+        baseButton.setBounds(baseButton.getX(), baseButton.getY(), 250, 40);
+        baseButton.addListener(new ClickListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return super.touchDown(event, x, y, pointer, button);
+            }
+        });
     }
 
     public void setUpFinishButton() {

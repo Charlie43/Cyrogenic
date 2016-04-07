@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.project.charlie.cyrogenic.data.BaseActor;
-import com.project.charlie.cyrogenic.data.PlayerUserData;
+import com.project.charlie.cyrogenic.data.PlayerActorData;
 import com.project.charlie.cyrogenic.managers.AssetsManager;
 import com.project.charlie.cyrogenic.misc.Constants;
 
@@ -23,8 +23,8 @@ public class Player extends BaseActor {
     }
 
     @Override
-    public PlayerUserData getActorData() {
-        return (PlayerUserData) actorData;
+    public PlayerActorData getActorData() {
+        return (PlayerActorData) actorData;
     }
 
     @Override
@@ -47,41 +47,6 @@ public class Player extends BaseActor {
         body.setLinearVelocity(new Vector2(forceX, forceY));
     }
 
-    public void fly(int direction_vertical, int direction_horizontal) {
-//        body.setLinearVelocity(0, 0);
-        Vector2 linearImpulse = new Vector2();
-        int vertical = 0;
-        int horizontal = 0;
-        switch (direction_vertical) {
-            case Constants.UP: // up
-                vertical += 10;
-                break;
-            case Constants.DOWN: // down
-                vertical += -10;
-                break;
-        }
-        switch (direction_horizontal) {
-            case Constants.LEFT: // left
-                horizontal += -10;
-                break;
-            case Constants.RIGHT: // right
-                horizontal += 10;
-                break;
-        }
-        moving = true;
-        linearImpulse.set(horizontal, vertical);
-//        if (linearImpulse.x != 0) {
-//            if (body.getLinearVelocity().x == 0)
-//                body.applyLinearImpulse(linearImpulse, body.getWorldCenter(), true);
-//        }
-//        if (linearImpulse.y != 0) {
-//            if (body.getLinearVelocity().y == 0)
-        body.applyForce(linearImpulse, body.getWorldCenter(), true);
-//                body.applyLinearImpulse(linearImpulse, body.getWorldCenter(), true);
-//        }
-//        body.applyLinearImpulse(linearImpulse, body.getWorldCenter(), true);
-    }
-
     public void stopMoving() {
         body.setLinearVelocity(new Vector2(0, 0));
         moving = false;
@@ -102,6 +67,9 @@ public class Player extends BaseActor {
     public float getY() {
         return screenRectangle.y;
     }
+
+    public float getBodyX() { return getBody().getPosition().x; }
+    public float getBodyY() { return getBody().getPosition().y; }
 
     public void rotateToTouch(float angle) {
 //        affine2 = new Affine2();

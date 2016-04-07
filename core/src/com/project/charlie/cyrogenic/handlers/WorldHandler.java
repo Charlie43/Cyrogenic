@@ -36,7 +36,7 @@ public class WorldHandler {
         body.createFixture(fixtureDef);
 
         body.resetMassData();
-        body.setUserData(new PlayerUserData(
+        body.setUserData(new PlayerActorData(
                 Constants.PLAYER_WIDTH, Constants.PLAYER_HEIGHT));
         shape.dispose();
         return body;
@@ -45,8 +45,6 @@ public class WorldHandler {
     public static Body createBullet(World world, float createX, float createY, String shotBy) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        createX = Constants.ConvertToBox(createX);
-        createY = Constants.ConvertToBox(createY);
         bodyDef.position.set(new Vector2(createX, createY));
 
         Body body = world.createBody(bodyDef);
@@ -81,7 +79,6 @@ public class WorldHandler {
 
     public static Body createTesla(World world, float createX, float createY, String shotBy, int number) {
         float rotation;
-        Gdx.app.log("WH", "Number: " + number);
         if (number == 0) {
             rotation = 170f;
         } else {
@@ -89,8 +86,6 @@ public class WorldHandler {
         }
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        createX = Constants.ConvertToBox(createX);
-        createY = Constants.ConvertToBox(createY);
         bodyDef.position.set(new Vector2(createX, createY));
 
         Body body = world.createBody(bodyDef);
@@ -122,8 +117,6 @@ public class WorldHandler {
     public static Body createLaser(World world, float createX, float createY, String shotBy) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        createX = Constants.ConvertToBox(createX);
-        createY = Constants.ConvertToBox(createY);
         bodyDef.position.set(new Vector2(createX, createY));
 
         Body body = world.createBody(bodyDef);
@@ -158,7 +151,6 @@ public class WorldHandler {
             y = Constants.TURRET_Y;
         }
 
-        Gdx.app.log("TURRET", String.format("Creating turret with X: %f Y: %f Width: %f Height: %f", x, y, width, height));
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.KinematicBody;
         bodyDef.position.set(new Vector2(x, y));
@@ -279,13 +271,15 @@ public class WorldHandler {
         return body;
     }
 
-    public static Body createBar(World world, float max) {
+    public static Body createBar(World world, float x, float y, float max) {
         float width = 3.2f;
         float height = 0.4f;
+        x = Constants.ConvertToBox(x);
+        y = Constants.ConvertToBox(y);
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
-        bodyDef.position.set(3.5f, Constants.ConvertToBox(Constants.APP_HEIGHT) * 0.93f);
+        bodyDef.position.set(x, y);
 
         FixtureDef fixtureDef = new FixtureDef();
         PolygonShape shape = new PolygonShape();
