@@ -164,7 +164,7 @@ public class Constants {
 
     public enum TurretType {
         MACHINE_GUN(0.5f, 2f, 100, 1.1f, 1.3f, TURRET_ASSET_ID), LASER(10.5f, 3f, 150, 0.9f, 1.1f, L_TURRET_ASSET_ID),
-        BURST(1.3f, 7f, 50, 1.3f, 1.5f, TURRET_ASSET_ID), TESLA(2.5f, 12.5f, 100, 1.1f, 1.3f, T_TURRET_ASSET_ID);
+        BURST(1.3f, 7f, 50, 1.3f, 1.5f, TURRET_ASSET_ID), TESLA(2.5f, 12.5f, 100, 1f, 1.3f, T_TURRET_ASSET_ID);
         private final float fireRate;
         private final float damage;
         private final float health;

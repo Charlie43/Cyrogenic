@@ -35,6 +35,9 @@ public class GameHandler {
     GameLabel infoLabel;
     Random random;
     Bar playerHPBar;
+    Bar targetBar;
+    Timer.Task damageTimer;
+    CurrencyHandler currencyHandler;
 
     public GameHandler(GameStage stage) {
         this.stage = stage;
@@ -60,6 +63,9 @@ public class GameHandler {
         stage.addActor(touchPad);
     }
 
+    public void setCurrencyHandler(CurrencyHandler currencyHandler) {
+        this.currencyHandler = currencyHandler;
+    }
 
     public void setUpPlayer() {
         // null check
@@ -76,7 +82,7 @@ public class GameHandler {
         for (TurretJSON turret : planetHandler.getTurrets()) {
             Constants.TurretType type = Constants.TurretType.valueOf(turret.getType());
             Turret temp = new Turret(WorldHandler.createTurret(stage.getWorld(), turret.getX(), turret.getY(), type.getWidth(), type.getHeight()), type); // TODO "warp in" animation
-            Gdx.app.log("TURRET", String.format("Creating turret %s with X: %f Y: %f Width: %f Height: %f", type.name(),turret.getX(), turret.getY(), type.getWidth(),
+            Gdx.app.log("TURRET", String.format("Creating turret %s with X: %f Y: %f Width: %f Height: %f", type.name(), turret.getX(), turret.getY(), type.getWidth(),
                     type.getHeight()));
             temp.getActorData().turret = temp;
             stage.addTurret(temp);
@@ -84,13 +90,13 @@ public class GameHandler {
     }
 
     public void setUpInfoText() {
-        Rectangle bounds = new Rectangle(stage.getCamera().viewportWidth - 100, stage.getCamera().viewportHeight, 100, 20);
-        infoLabel = new GameLabel(bounds, stage.getDebugText(), 0.7f);
+        Rectangle bounds = new Rectangle(stage.getCamera().viewportWidth * 0.40f, stage.getCamera().viewportHeight * 0.98f, 100, 20);
+        infoLabel = new GameLabel(bounds, "Currency: " + currencyHandler.getCurrentCurrency(), 0.7f);
         stage.addActor(infoLabel);
     }
 
     public void updateLabel() {
-//        infoLabel.setText(stage.getDebugText());
+        infoLabel.setText("Currency: " + currencyHandler.getCurrentCurrency());
     }
 
     public void setUpStageCompleteLabel() {
@@ -113,15 +119,13 @@ public class GameHandler {
     }
 
     public void setUpHPBar() {
-        GameLabel hpLabel = new GameLabel(new Rectangle(0, stage.getCamera().viewportHeight, 100, 20), "Player HP", 0.5f);
+        GameLabel hpLabel = new GameLabel(new Rectangle(0, stage.getCamera().viewportHeight, 140, 20), "Player HP", 0.5f);
         stage.addActor(hpLabel);
 
-        playerHPBar = new Bar(WorldHandler.createBar(stage.getWorld(), 1, stage.getCamera().viewportHeight * 0.90f, 100), Color.RED);
+        playerHPBar = new Bar(WorldHandler.createBar(stage.getWorld(), 20, stage.getCamera().viewportHeight * 0.95f, 100), Color.RED);
         stage.addActor(playerHPBar);
         Gdx.app.log("GH", "Bar created");
     }
-
-    Bar targetBar;
 
     public void setUpTargetBar() {
         GameLabel targetLabel = new GameLabel(new Rectangle(stage.getCamera().viewportWidth * 0.90f, stage.getCamera().viewportHeight, 100, 20), "", 0.5f);
@@ -139,12 +143,12 @@ public class GameHandler {
         boolean bulletHitPlayer = ((WorldHandler.isProjectile(a) && WorldHandler.isPlayer(b)) ||
                 WorldHandler.isPlayer(a) && WorldHandler.isProjectile(b));
 
-        Body bullet;
+        final Body bullet;
         Body turret;
         Body player;
 
         if (bulletHitTurret) {
-            if (a.isBullet()) {
+            if (WorldHandler.isProjectile(a)) {
                 bullet = a;
                 turret = b;
             } else {
@@ -163,16 +167,16 @@ public class GameHandler {
                     t_data.isRemoved = true;
                     stage.addDead(turret);
                     // death animation and stuff
-
                 }
+
                 if (!targetBar.isVisible())
                     targetBar.addAction(Actions.show());
+                currencyHandler.addCurrency(1);
                 targetBar.setBarWidth((int) t_data.getHealth());
                 stage.getLabel("TargetLabel").setText(t_data.getTurretType().name());
                 Gdx.app.log("TURRET", "Turret HP:" + t_data.getHealth());
             }
-        }
-        if (bulletHitPlayer) { // todo continue causing damage until end contact for weapons laser & tesla
+        } else if (bulletHitPlayer) {
             if (a.isBullet()) {
                 bullet = a;
                 player = b;
@@ -191,9 +195,39 @@ public class GameHandler {
             if (p_data.subHealth(WorldHandler.getProjectileDamage(bullet)) <= 0) {
                 Gdx.app.log("PLAYER", "You died!");
             }
+            if (WorldHandler.isConstantlyDamaging(bullet)) {
+                damageTimer = new Timer().scheduleTask(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        damageTarget(bullet, WorldHandler.getProjectileDamage(bullet));
+                    }
+                }, 0, 750);
+            }
             playerHPBar.setBarWidth((int) p_data.getHealth());
         }
+    }
 
+    public void endContact(Body a, Body b) {
+        boolean bulletHitPlayer = ((WorldHandler.isProjectile(a) && WorldHandler.isPlayer(b)) ||
+                WorldHandler.isPlayer(a) && WorldHandler.isProjectile(b));
+        if (bulletHitPlayer) {
+            Body bullet;
+            if (WorldHandler.isProjectile(a))
+                bullet = a;
+            else
+                bullet = b;
+
+            if (WorldHandler.isConstantlyDamaging(bullet)) {
+                damageTimer.cancel();
+            }
+        }
+    }
+
+    public void damageTarget(Body body, float damage) {
+        if (WorldHandler.isPlayer(body)) {
+            PlayerActorData pData = (PlayerActorData) body.getUserData();
+            pData.subHealth(damage);
+        }
     }
 
     public void createBullets(int bulletsToCreate) {
@@ -249,9 +283,9 @@ public class GameHandler {
                             case TESLA:
                                 for (int x = 0; x < 2; x++) {
                                     Tesla tesla = new Tesla(WorldHandler.createTesla(stage.getWorld(),
-                                            turret.getBodyX() + 2.6f, // todo why the fuck do i need this magic number
+                                            turret.getBodyX() + 2f,
                                             turret.getBodyY() + turret.getBodyHeight() / 2, Constants.TURRET_ASSET_ID, x),
-                                            turret.getBodyX() + 2.6f,
+                                            turret.getBodyX() + 2f,
                                             turret.getBodyY() + turret.getBodyHeight() / 2);
                                     TeslaActorData teslaData = tesla.getActorData();
                                     teslaData.setTesla(tesla);

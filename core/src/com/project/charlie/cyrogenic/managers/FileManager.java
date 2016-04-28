@@ -11,10 +11,10 @@ import com.project.charlie.cyrogenic.objects.TurretJSON;
 
 import java.util.ArrayList;
 
-public class PlanetManager {
+public class FileManager {
     static World world;
 
-    public PlanetManager() {
+    public FileManager() {
     }
 
     public static void clearBase() {
@@ -24,6 +24,26 @@ public class PlanetManager {
             else
                 Gdx.app.log("LM", "Base could not be deleted");
         }
+    }
+
+    public static int loadCurrency() {
+        FileHandle currencyFile = Gdx.files.local("plr_currency.json");
+        if (!currencyFile.exists())
+            return 0;
+
+        Json json = new Json();
+        Integer currency = json.fromJson(Integer.class, currencyFile);
+        Gdx.app.log("CURR", "CURR: " + currency);
+        return currency;
+    }
+
+    public static void saveCurrency() {
+        FileHandle currencyFile = Gdx.files.local("plr_currency.json");
+        if(!currencyFile.exists())
+            return;
+
+        Json json = new Json();
+
     }
 
     public static PlanetHandler loadBase(World gameWorld) {

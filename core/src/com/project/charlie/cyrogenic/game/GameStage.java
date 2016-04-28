@@ -1,6 +1,7 @@
 package com.project.charlie.cyrogenic.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
@@ -13,7 +14,7 @@ import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.project.charlie.cyrogenic.actors.*;
 import com.project.charlie.cyrogenic.data.*;
 import com.project.charlie.cyrogenic.handlers.*;
-import com.project.charlie.cyrogenic.managers.PlanetManager;
+import com.project.charlie.cyrogenic.managers.FileManager;
 import com.project.charlie.cyrogenic.misc.Constants;
 import com.project.charlie.cyrogenic.ui.GameLabel;
 
@@ -33,7 +34,7 @@ public class GameStage extends Stage implements ContactListener {
     private ObstacleGameHandler obstacleGameHandler;
     private CreatorHandler creatorHandler;
     private StarMapHandler mapHandler;
-    private PlanetManager planetManager;
+    private FileManager fileManager;
     private PlanetHandler planetHandler;
     private Boundary boundaryBottom;
     private Boundary boundaryTop;
@@ -64,6 +65,7 @@ public class GameStage extends Stage implements ContactListener {
     Cryogenic cryogenic;
 
     FitnessHandler fitnessHandler;
+    CurrencyHandler currencyHandler;
 
     /**
      * todo
@@ -71,12 +73,12 @@ public class GameStage extends Stage implements ContactListener {
      * health/shield bars for player + last hit target
      * setting screen
      * "upgrade" screen. Either buttons, or buildings
-     *      Upgrades for attack speed, turret damage, etc. Percentages. Use currency which is gained through playing/fitness
-     *  Need to save upgrade progress when app closes
-     *  hold to shoot (not tap for each shot) - allows for attack speed bonus
-     *
+     * Upgrades for attack speed, turret damage, etc. Percentages. Use currency which is gained through playing/setupFitness
+     * Need to save upgrade progress when app closes
+     * hold to shoot (not tap for each shot) - allows for attack speed bonus
+     * <p/>
      * Pick ups - Shield Boost, HP, etc.
-     *
+     * <p/>
      * REMEMBER TO IMPLEMENT LIVES YOU TWAT.
      */
 
@@ -86,16 +88,18 @@ public class GameStage extends Stage implements ContactListener {
                 new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)));
 
         Gdx.input.setInputProcessor(this);
+        Gdx.input.setCatchBackKey(true);
+
         touchPoint = new Vector3();
         gameHandler = new GameHandler(this);
         obstacleGameHandler = new ObstacleGameHandler(this);
         creatorHandler = new CreatorHandler(this);
         mapHandler = new StarMapHandler(this);
         fitnessHandler = new FitnessHandler(this);
-
-
+        currencyHandler = new CurrencyHandler(this);
         this.cryogenic = cryogenic;
-        fitness();
+
+        setupFitness();
         setUpMenu();
 
         if (Constants.DEBUG)
@@ -104,8 +108,12 @@ public class GameStage extends Stage implements ContactListener {
         // todo audio & animation
     }
 
-    public void fitness() {
-        fitnessHandler.connectToApi(cryogenic);
+    public void setupFitness() {
+        fitnessHandler.setCryogenic(cryogenic);
+        fitnessHandler.connectToApi();
+        currencyHandler.addCurrency((int) fitnessHandler.calculateCurrencyGain());
+        gameHandler.setCurrencyHandler(currencyHandler);
+        obstacleGameHandler.setCurrencyHandler(currencyHandler);
     }
 
     public void setUpFitnessMenu() {
@@ -133,13 +141,13 @@ public class GameStage extends Stage implements ContactListener {
     public void setUpPlanet(String planet) {
         clear();
         gameHandler.gameMode = Constants.GAMEMODE_OBSTACLES;
-        planetHandler = PlanetManager.loadPlanet(planet);
+        planetHandler = FileManager.loadPlanet(planet);
         setUpStage(0, planetHandler);
         obstacleGameHandler.setUpPlayer();
         setUpBoundaries();
         obstacleGameHandler.setUpLabels(planet);
         obstacleGameHandler.setUpControls();
-//        obstacleGameHandler.setUpInfoText();
+        obstacleGameHandler.setUpInfoText();
         new Timer().scheduleTask(new Timer.Task() {
             @Override
             public void run() {
@@ -161,6 +169,7 @@ public class GameStage extends Stage implements ContactListener {
         }, time);
 
     }
+
     public void setUpNormalLevel() {
         gameHandler.gameMode = Constants.GAMEMODE_NORMAL;
         clear();
@@ -172,7 +181,7 @@ public class GameStage extends Stage implements ContactListener {
         setUpBoundaries();
         gameHandler.setUpControls();
         gameHandler.setUpStageCompleteLabel();
-//        gameHandler.setUpInfoText();
+        gameHandler.setUpInfoText();
         gameHandler.setUpHPBar();
         gameHandler.setUpTargetBar();
         Gdx.app.log("GS", "Width: " + getCamera().viewportWidth);
@@ -218,7 +227,7 @@ public class GameStage extends Stage implements ContactListener {
 
 
     public void loadPlanet() {
-        planetHandler = PlanetManager.parsePlanet(world);
+        planetHandler = FileManager.parsePlanet(world);
     }
 
     public GameLabel createLabel(String text, Vector3 bounds, float width, float height, int fadeOut, float scale) {
@@ -290,13 +299,16 @@ public class GameStage extends Stage implements ContactListener {
     public void act(float delta) {
         super.act(delta);
         // if paused -> return
-        // Fixed timestep
+
         createBullets(); // force all actor creation to occur before stepping
+
+        // Fixed timestep
         accumulator += delta;
         while (accumulator >= delta) {
             world.step(TIME_STEP, 6, 2);
             accumulator -= TIME_STEP;
         }
+
         if (Constants.DEBUG)
             renderer.render(world, camera.combined);
 
@@ -305,6 +317,8 @@ public class GameStage extends Stage implements ContactListener {
         checkEndGame();
         if (gameHandler.gameMode == Constants.GAMEMODE_NORMAL)
             gameHandler.updateLabel();
+        if (gameHandler.gameMode == Constants.GAMEMODE_OBSTACLES)
+            obstacleGameHandler.updateLabel();
     }
 
     private void createBullets() {
@@ -481,9 +495,25 @@ public class GameStage extends Stage implements ContactListener {
     }
 
 
-
     @Override
     public void endContact(Contact contact) {
+        Body a = contact.getFixtureA().getBody();
+        Body b = contact.getFixtureB().getBody();
+
+        if (WorldHandler.getDataType(a) == null ||
+                WorldHandler.getDataType(b) == null)
+            return;
+
+        switch (gameHandler.gameMode) {
+            case Constants.GAMEMODE_OBSTACLES:
+                obstacleGameHandler.endContact(a, b);
+                break;
+            case Constants.GAMEMODE_NORMAL:
+                gameHandler.endContact(a, b);
+                break;
+            case Constants.GAMEMODE_CREATOR:
+                break;
+        }
 
     }
 
@@ -497,9 +527,16 @@ public class GameStage extends Stage implements ContactListener {
 
     }
 
+    @Override
+    public boolean keyDown(int keyCode) {
+        if (keyCode == Input.Keys.BACK) {
+            setUpMenu();
+        }
+        return false;
+    }
 
-    public PlanetManager getPlanetManager() {
-        return planetManager;
+    public FileManager getFileManager() {
+        return fileManager;
     }
 
     public PlanetHandler getPlanetHandler() {

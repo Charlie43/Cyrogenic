@@ -272,7 +272,7 @@ public class WorldHandler {
     }
 
     public static Body createBar(World world, float x, float y, float max) {
-        float width = 3.2f;
+        float width = 1.2f;
         float height = 0.4f;
         x = Constants.ConvertToBox(x);
         y = Constants.ConvertToBox(y);
@@ -356,6 +356,13 @@ public class WorldHandler {
 
         ActorData data = (ActorData) body.getUserData();
         return data.getDataType().equals("Laser");
+    }
+
+    public static boolean isConstantlyDamaging(Body body) {
+        if (body == null || body.getUserData() == null)
+            return false;
+
+        return isLaser(body) || isTesla(body);
     }
 
     public static float getProjectileDamage(Body body) {

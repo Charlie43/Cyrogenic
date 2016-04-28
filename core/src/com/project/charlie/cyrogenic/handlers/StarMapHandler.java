@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.project.charlie.cyrogenic.actors.Planet;
 import com.project.charlie.cyrogenic.data.PlanetData;
 import com.project.charlie.cyrogenic.game.GameStage;
-import com.project.charlie.cyrogenic.managers.PlanetManager;
+import com.project.charlie.cyrogenic.managers.FileManager;
 import com.project.charlie.cyrogenic.misc.Constants;
 import com.project.charlie.cyrogenic.objects.PlanetJSON;
 
@@ -41,7 +41,7 @@ public class StarMapHandler extends GameHandler {
     }
 
     public void createPlanets(int sector) { // todo sectors
-        ArrayList<PlanetJSON> planets = PlanetManager.loadPlanets();
+        ArrayList<PlanetJSON> planets = FileManager.loadPlanets();
         for (PlanetJSON planet : planets) {
             final Planet planetActor = new Planet(WorldHandler.createPlanet(stage.getWorld(), planet), planet.image);
 

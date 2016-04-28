@@ -24,10 +24,17 @@ public class FitnessHandler extends GameHandler {
     Unit tests - Connected to API, correct currency conversion, handling erroneous step counts (null, negative numbers)
      */
 
-    public void connectToApi(Cryogenic cryogenic) {
+    public void setCryogenic(Cryogenic cryogenic) {
         this.cryogenic = cryogenic;
+    }
+
+    public void connectToApi() {
         cryogenic.actionResolver.connectToFitnessApi();
         cryogenic.actionResolver.readData();
+    }
+
+    public int getDailySteps() {
+        return cryogenic.actionResolver.readTotalSteps();
     }
 
     public void setUpFitnessText() {

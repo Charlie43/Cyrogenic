@@ -45,6 +45,11 @@ public class ObstacleGameHandler extends GameHandler {
         }
     }
 
+    @Override
+    public void updateLabel() {
+        super.updateLabel();
+    }
+
     public void setUpObstaclesButton() {
         TextButton obstacleButton = new TextButton("Stage One: Planetary Entrance", new Skin(Gdx.files.internal(Constants.BUTTONS_SKIN_PATH)), "default");
         obstacleButton.setPosition(stage.getCamera().viewportWidth / 3, stage.getCamera().viewportHeight / 2);

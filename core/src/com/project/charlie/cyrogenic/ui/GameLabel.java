@@ -21,8 +21,8 @@ public class GameLabel extends Actor {
         this.text = text;
         setWidth(bounds.width);
         setHeight(bounds.height);
-        font = new BitmapFont(Gdx.files.internal("mainfont.fnt"));// todo dynamic fonts using truetype
-        font.setColor(Color.ORANGE);
+        font = new BitmapFont(Gdx.files.internal("new_mainfont.fnt"));// todo dynamic fonts using truetype
+        font.setColor(Color.BLUE);
         font.getData().setScale(scale);
     }
 
