@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by Charlie on 19/03/2016.
  */
-public class ActionResolverAndroid {
+public class GoogleFitManager {
 
     Handler handler;
     Context context;
@@ -34,17 +34,13 @@ public class ActionResolverAndroid {
 
     final int FITNESS_REQUEST = 1;
 
-    public ActionResolverAndroid(Context context) {
+    public GoogleFitManager(Context context) {
         handler = new Handler();
         this.context = context;
     }
 
     public void connectToFitnessApi(final AndroidLauncher androidLauncher) {
-
-
-// todo check permissions
         if (mClient == null) {
-
             mClient = new GoogleApiClient.Builder(context)
                     .addApi(Fitness.HISTORY_API)
                     .useDefaultAccount()
@@ -53,14 +49,10 @@ public class ActionResolverAndroid {
                         @Override
                         public void onConnected(@Nullable Bundle bundle) {
                             Gdx.app.log("AndroidActionResolver", "Connected to fitness API");
-                            // todo make fitness api calls
-
                         }
                         @Override
                         public void onConnectionSuspended(int i) {
                             Gdx.app.log("AAR", "Connection suspended");
-
-                            // todo handle connection callbacks
                         }
                     })
                     .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
@@ -70,7 +62,7 @@ public class ActionResolverAndroid {
                             if (connectionResult.getErrorMessage() != null) {
                                 Gdx.app.log("AAR", connectionResult.getErrorMessage());
                             }
-                            if(connectionResult.getErrorCode() == FitnessStatusCodes.SIGN_IN_REQUIRED) {
+                            if (connectionResult.getErrorCode() == FitnessStatusCodes.SIGN_IN_REQUIRED) {
                                 try {
                                     connectionResult.startResolutionForResult(androidLauncher, 4);
                                 } catch (IntentSender.SendIntentException e) {
@@ -131,7 +123,7 @@ public class ActionResolverAndroid {
 
     public int readTotalSteps() {
         DailyTotalResult result = Fitness.HistoryApi.readDailyTotal(mClient, DataType.TYPE_STEP_COUNT_DELTA).await();
-        if(result.getTotal() != null && result.getTotal().getDataPoints() != null) {
+        if (result.getTotal() != null && result.getTotal().getDataPoints() != null) {
             return result.getTotal().getDataPoints().get(0).getValue(Field.FIELD_STEPS).asInt();
         } else {
             return 0;
@@ -156,7 +148,7 @@ public class ActionResolverAndroid {
 
         ArrayList<Integer> steps = new ArrayList<>();
         DataReadResult readResult = Fitness.HistoryApi.readData(mClient, readRequest).await();
-        for(Bucket bucket : readResult.getBuckets()) {
+        for (Bucket bucket : readResult.getBuckets()) {
             Gdx.app.log("AAR", "DS Size " + bucket.getDataSets().size());
             for (DataSet ds : bucket.getDataSets()) {
                 for (DataPoint dp : ds.getDataPoints()) {

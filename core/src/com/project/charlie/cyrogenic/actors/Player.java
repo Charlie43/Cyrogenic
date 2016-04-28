@@ -14,6 +14,9 @@ import com.project.charlie.cyrogenic.misc.Constants;
 public class Player extends BaseActor {
     private float stateTime;
     private boolean moving;
+
+    private float damage;
+    private float maxHealth; // todo
 //    Affine2 affine2;
 
 

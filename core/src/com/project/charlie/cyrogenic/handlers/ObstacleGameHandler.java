@@ -28,7 +28,7 @@ public class ObstacleGameHandler extends GameHandler {
     }
 
     public void createAsteroid() { // todo as we run lower on asteroids, apply affects to players ship to simulate entering a planet
-        Asteroid asteroid = new Asteroid(WorldHandler.createObstacle(stage.getWorld(), stage.getPlanetHandler()));
+        Asteroid asteroid = new Asteroid(WorldHandler.createAsteroid(stage.getWorld(), stage.getPlanetHandler()));
         AsteroidActorData data = (AsteroidActorData) asteroid.getActorData();
         data.asteroid = asteroid;
         stage.addAsteroid(asteroid);

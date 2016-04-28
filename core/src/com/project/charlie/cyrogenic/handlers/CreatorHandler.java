@@ -1,9 +1,7 @@
 package com.project.charlie.cyrogenic.handlers;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -21,58 +19,87 @@ import java.util.ArrayList;
 public class CreatorHandler extends GameHandler {
     Constants.TurretType placing;
     GameStage stage;
-    ArrayList<TurretJSON> placedTurrets;
+    ArrayList<TurretJSON> placedBuildings;
 
     public CreatorHandler(GameStage stage) {
         super(stage);
         this.stage = stage;
         placing = null;
-        placedTurrets = new ArrayList<>();
+        placedBuildings = new ArrayList<>();
+    }
+
+    public TextButton createButton(String text) {
+        return new TextButton(text, new Skin(Gdx.files.internal(Constants.BUTTONS_SKIN_PATH)), "default");
     }
 
     public void setUpButtons() {
-        Skin skin;
-        ImageButton.ImageButtonStyle style;
-        int padding = 0;
-        ImageButton imageButton;
+        TextButton attackSpeed = createButton("Increase Attack Speed");
+        TextButton health = createButton("Increase Health");
+        TextButton damage = createButton("Increase Damage");
 
-        for (Constants.TurretType type : Constants.TurretType.values()) {
-            style = new ImageButton.ImageButtonStyle();
-            switch (type) {
-                case BURST:
-                case MACHINE_GUN:
-                    skin = new Skin();
-                    skin.add(type.name(), new Texture(Gdx.files.internal(Constants.TURRET_IMAGE_PATH)));
-                    style.up = style.down = style.checked = skin.getDrawable(type.name());
-                    break;
-                case TESLA:
-                    skin = new Skin();
-                    skin.add(type.name(), new Texture(Gdx.files.internal(Constants.T_TURRET_IMAGE_PATH)));
-                    style.up = style.down = style.checked = skin.getDrawable(type.name());
-                    break;
-                case LASER:
-                    skin = new Skin();
-                    skin.add(type.name(), new Texture(Gdx.files.internal(Constants.L_TURRET_IMAGE_PATH)));
-                    style.up = style.down = style.checked = skin.getDrawable(type.name());
-                    break;
+        float screenHeight = stage.getCamera().viewportHeight;
+        float screenWidth = stage.getCamera().viewportWidth;
+
+        attackSpeed.setPosition(screenWidth * 0.50f, screenHeight * 0.80f);
+        attackSpeed.setBounds(screenWidth * 0.50f, screenHeight * 0.80f, 250, 40);
+        health.setPosition(screenWidth * 0.50f, screenHeight * 0.70f);
+        health.setBounds(screenWidth * 0.50f, screenHeight * 0.80f, 250, 40);
+        damage.setPosition(screenWidth * 0.50f, screenHeight * 0.60f);
+        damage.setBounds(screenWidth * 0.50f, screenHeight * 0.80f, 250, 40);
+
+        attackSpeed.addListener(new ClickListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+
+                return true;
             }
-            imageButton = new ImageButton(style);
-            imageButton.setSize(50, 50);
-            imageButton.setPosition(padding, stage.getCamera().viewportHeight * 0.10f);
-            imageButton.setBounds(padding, stage.getCamera().viewportHeight * 0.10f, imageButton.getWidth(), imageButton.getHeight());
-            imageButton.setName(style.up.toString());
-            imageButton.addListener(new ClickListener() {
-                @Override
-                public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                    placing = Constants.TurretType.valueOf(event.getListenerActor().getName());
-                    Gdx.app.log("Creator", "Button touched Placing: " + placing.toString());
-                    return true;
-                }
-            });
-            stage.addActor(imageButton);
-            padding += 50;
-        }
+        });
+
     }
+
+//    public void old() {
+//Skin skin;
+//    ImageButton.ImageButtonStyle style;
+//    int padding = 0;
+//    ImageButton imageButton;
+//        for (Constants.TurretType type : Constants.TurretType.values()) {
+//            style = new ImageButton.ImageButtonStyle();
+//            switch (type) {
+//                case BURST:
+//                case MACHINE_GUN:
+//                    skin = new Skin();
+//                    skin.add(type.name(), new Texture(Gdx.files.internal(Constants.TURRET_IMAGE_PATH)));
+//                    style.up = style.down = style.checked = skin.getDrawable(type.name());
+//                    break;
+//                case TESLA:
+//                    skin = new Skin();
+//                    skin.add(type.name(), new Texture(Gdx.files.internal(Constants.T_TURRET_IMAGE_PATH)));
+//                    style.up = style.down = style.checked = skin.getDrawable(type.name());
+//                    break;
+//                case LASER:
+//                    skin = new Skin();
+//                    skin.add(type.name(), new Texture(Gdx.files.internal(Constants.L_TURRET_IMAGE_PATH)));
+//                    style.up = style.down = style.checked = skin.getDrawable(type.name());
+//                    break;
+//            }
+//            imageButton = new ImageButton(style);
+//            imageButton.setSize(50, 50);
+//            imageButton.setPosition(padding, stage.getCamera().viewportHeight * 0.10f);
+//            imageButton.setBounds(padding, stage.getCamera().viewportHeight * 0.10f, imageButton.getWidth(), imageButton.getHeight());
+//            imageButton.setName(style.up.toString());
+//            imageButton.addListener(new ClickListener() {
+//                @Override
+//                public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+//                    placing = Constants.TurretType.valueOf(event.getListenerActor().getName());
+//                    Gdx.app.log("Creator", "Button touched Placing: " + placing.toString());
+//                    return true;
+//                }
+//            });
+//            stage.addActor(imageButton);
+//            padding += 50;
+//        }
+//    }
+
 
     Turret temp;
 
@@ -89,7 +116,7 @@ public class CreatorHandler extends GameHandler {
             case MACHINE_GUN:
                 temp = new Turret(WorldHandler.createTurret(stage.getWorld(), x, y, placing.getWidth(), placing.getHeight()), placing);
                 temp.getActorData().turret = temp;
-                placedTurrets.add(new TurretJSON(x, y));
+                placedBuildings.add(new TurretJSON(x, y));
                 Gdx.app.log("CH", "Turret created, adding to stage at coords " + x + " - " + y);
                 stage.addActor(temp);
                 stage.addTurret(temp);
@@ -121,7 +148,7 @@ public class CreatorHandler extends GameHandler {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 PlanetManager.clearBase();
-                placedTurrets.clear();
+                placedBuildings.clear();
                 if (stage.getPlanetHandler() != null)
                     stage.getPlanetHandler().setTurrets(null);
                 stage.setUpStageCreator();
@@ -165,7 +192,7 @@ public class CreatorHandler extends GameHandler {
 
     private void writeLevel() {
         // todo define n of asteroids etc based on difficulty (planet type etc)
-        PlanetManager.writePlanet(placedTurrets);
+        PlanetManager.writePlanet(placedBuildings);
     }
 
     public void touchDown(float x, float y) {

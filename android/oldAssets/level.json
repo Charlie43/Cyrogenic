@@ -1,0 +1,16 @@
+{
+    "asteroid": 
+        {"number":"60", "speed":"22", "interval":"0.5"},
+    "turrets": [
+        {"x":"20", "y":"10", "width":"1.5", "height":"1.7",
+            "fireRate":"3", "health":"100", "damage":"1"},
+        {"x":"15", "y":"10", "width":"1.5", "height":"1.7",
+            "fireRate":"3", "health":"100", "damage":"1"},
+        {"x":"15", "y":"8", "width":"1.5", "height":"1.7",
+            "fireRate":"3", "health":"100", "damage":"1"},
+        {"x":"22", "y":"5", "width":"1.5", "height":"1.7",
+            "fireRate":"3", "health":"100", "damage":"1"},
+        {"x":"13", "y":"14", "width":"1.5", "height":"1.7",
+            "fireRate":"3", "health":"100", "damage":"1"}
+    ]
+}

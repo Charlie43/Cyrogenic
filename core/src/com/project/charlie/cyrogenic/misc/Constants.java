@@ -12,10 +12,6 @@ public class Constants {
     static final float WORLD_TO_BOX = 0.032f; // Pixels * 0.032 to get metres
     public static final float BOX_TO_WORLD = 32; // Metres * 32 to get pixels
 
-/*  Convert to box
-*   Box X Range = ? : ?
-*   Box Y Range = 0 : 15
-*   */
     public static float ConvertToBox(float n) {
         return n * WORLD_TO_BOX;
     }
@@ -27,13 +23,13 @@ public class Constants {
     public static final int APP_WIDTH = 800;
     public static final int APP_HEIGHT = 480;
     public static final String BACKGROUND_ASSET_ID = "background";
-    public static final String BACKGROUND_IMAGE_PATH = "images/backgrounds/background7.jpg";
+    public static final String BACKGROUND_IMAGE_PATH = "images/backgrounds/background2.png";
     public static final String BACKGROUND_SPACE_ASSET_ID = "background_space";
     public static final String BACKGROUND_SPACE_IMAGE_PATH = "images/backgrounds/background.jpg";
     public static final String BACKGROUND_DESERT_ASSET_ID = "background_desert";
-    public static final String BACKGROUND_DESERT_IMAGE_PATH = "images/backgrounds/background4.png";
+    public static final String BACKGROUND_DESERT_IMAGE_PATH = "images/backgrounds/background_desert.png";
     public static final String BACKGROUND_FOREST_ASSET_ID = "background_forest";
-    public static final String BACKGROUND_FOREST_IMAGE_PATH = "images/backgrounds/background3.jpg";
+    public static final String BACKGROUND_FOREST_IMAGE_PATH = "images/backgrounds/background_forest.png";
     public static final String BACKGROUND_CITY_ASSET_ID = "background_city";
     public static final String BACKGROUND_CITY_IMAGE_PATH = "images/backgrounds/background5.png";
     public static final String BACKGROUND_MENU_ASSET_ID = "background_menu";
@@ -47,7 +43,7 @@ public class Constants {
     public static final int LEFT = 2;
     public static final int RIGHT = 3;
 
-    public static final String FITNESS_ICON_IMAGE_PATH = "images/misc/fitness_icon.png";
+    public static final String FITNESS_ICON_IMAGE_PATH = "images/misc/singleplayer.png";
 
 
     public static final Vector2 GRAVITY = new Vector2(0, -10);
@@ -72,7 +68,7 @@ public class Constants {
 
     /* Player  */
     public static final String PLAYER_ASSET_ID = "player";
-    public static final String PLAYER_IMAGE_PATH = "images/player/plr_ship_trans.png";
+    public static final String PLAYER_IMAGE_PATH = "images/ships/playerShip2_red_resize.png";
     public static final int PLAYER_X = 1;
     public static final int PLAYER_Y = 5 + 1; // GROUND y + ground height
     public static final float PLAYER_GRAVITY = 0f;
@@ -87,7 +83,7 @@ public class Constants {
 
     /* Turret */
     public static final String TURRET_ASSET_ID = "turret";
-    public static final String TURRET_IMAGE_PATH = "images/turrets/turret_new.png";
+    public static final String TURRET_IMAGE_PATH = "images/turrets/machine_gun_turret.png";
     public static final int TURRET_X = 2;
     public static final int TURRET_Y = 7;
     public static final float TURRET_WIDTH = 1.5f;
@@ -108,14 +104,14 @@ public class Constants {
 
     /* Bullet */
     public static final String BULLET_ASSET_ID = "bullet";
-    public static final String BULLET_IMAGE_PATH = "images/misc/bullet.png";
+    public static final String BULLET_IMAGE_PATH = "images/projectiles/bullet.png";
     public static final float BULLET_WIDTH = 0.5f;
     public static final float BULLET_HEIGHT = 0.5f;
     public static final float BULLET_SPEED = 8f;
 
     /* Laser */
     public static final String LASER_ASSET_ID = "laser";
-    public static final String LASER_IMAGE_PATH = "images/misc/laser_beam.png";
+    public static final String LASER_IMAGE_PATH = "images/projectiles/laserBlue12.png";
     public static final float LASER_WIDTH = 19.5f;
     public static final float LASER_HEIGHT = 0.5f;
     public static final float LASER_DELAY = 7f;
@@ -123,7 +119,7 @@ public class Constants {
     /* Tesla */
 
     public static final String TESLA_ASSET_ID = "tesla";
-    public static final String TESLA_IMAGE_PATH = "images/misc/shock_one.png";
+    public static final String TESLA_IMAGE_PATH = "images/projectiles/shock_one.png";
     public static final float TESLA_WIDTH = 8f;
     public static final float TESLA_HEIGHT = 1f;
     public static final float TESLA_DELAY = 2f;
@@ -144,6 +140,13 @@ public class Constants {
     /* Asteroid */
     public static final String ASTEROID_ASSET_ID = "asteroid";
     public static final String ASTEROID_IMAGE_PATH = "images/asteroids/asteroid.png";
+
+    public static final String ASTEROID_2_ASSET_ID = "asteroid";
+    public static final String ASTEROID_2_IMAGE_PATH = "images/asteroids/asteroidBrown1.png";
+
+    public static final String ASTEROID_3_ASSET_ID = "asteroid";
+    public static final String ASTEROID_3_IMAGE_PATH = "images/asteroids/asteroidGrey1.png";
+
     public static final float ASTEROID_WIDTH = 1.2f;
     public static final float ASTEROID_HEIGHT = 1.2f;
     public static final float ASTEROID_DENSITY = 3f;

@@ -7,14 +7,18 @@ import com.project.charlie.cyrogenic.data.BaseActor;
 import com.project.charlie.cyrogenic.managers.AssetsManager;
 import com.project.charlie.cyrogenic.misc.Constants;
 
+import java.util.Random;
+
 /**
  * Created by Charlie on 24/02/2016.
  */
 public class Asteroid extends BaseActor {
 
+    Random random;
 
     public Asteroid(Body body) {
         super(body);
+        random = new Random();
     }
 
     @Override
@@ -30,7 +34,22 @@ public class Asteroid extends BaseActor {
         float width = screenRectangle.width * 1.2f;
         if (Constants.DEBUG)
             batch.draw(AssetsManager.getTextureRegion(Constants.BOX_ASSET_ID), screenRectangle.x, screenRectangle.y, screenRectangle.width, screenRectangle.height);
-        batch.draw(AssetsManager.getTextureRegion(Constants.ASTEROID_ASSET_ID), x, y, width, screenRectangle.height);
+
+        String assetID;
+        switch(random.nextInt(3)) {
+            case 0:
+            default:
+                assetID = Constants.ASTEROID_ASSET_ID;
+                break;
+            case 1:
+                assetID = Constants.ASTEROID_2_ASSET_ID;
+                break;
+            case 2:
+                assetID = Constants.ASTEROID_3_ASSET_ID;
+                break;
+        }
+
+        batch.draw(AssetsManager.getTextureRegion(assetID), x, y, width, screenRectangle.height);
     }
 
     public float getX() {

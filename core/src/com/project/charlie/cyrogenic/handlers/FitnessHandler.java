@@ -12,9 +12,6 @@ import com.project.charlie.cyrogenic.game.GameStage;
 import com.project.charlie.cyrogenic.misc.Constants;
 import com.project.charlie.cyrogenic.ui.GameLabel;
 
-/**
- * Created by Charlie on 19/03/2016.
- */
 public class FitnessHandler extends GameHandler {
     Cryogenic cryogenic;
 
@@ -22,27 +19,15 @@ public class FitnessHandler extends GameHandler {
         super(stage);
     }
 
-
-
-
-/*
-
-todo
-connect to api
-show available fitness stats
- */
-
+    /*
+    Todo
+    Unit tests - Connected to API, correct currency conversion, handling erroneous step counts (null, negative numbers)
+     */
 
     public void connectToApi(Cryogenic cryogenic) {
         this.cryogenic = cryogenic;
-        Gdx.app.log("FitnessHandler", "Connecting to fitness API");
         cryogenic.actionResolver.connectToFitnessApi();
-        Gdx.app.log("FitnessHandler", "Connected");
         cryogenic.actionResolver.readData();
-    }
-
-    private void buildFitnessClient() {
-
     }
 
     public void setUpFitnessText() {
@@ -77,5 +62,10 @@ show available fitness stats
             }
         });
         stage.addActor(imageButton);
+    }
+
+    public float calculateCurrencyGain() {
+        return cryogenic.actionResolver.readTotalSteps() * 0.05f;
+
     }
 }

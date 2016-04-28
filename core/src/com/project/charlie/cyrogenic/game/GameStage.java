@@ -72,6 +72,12 @@ public class GameStage extends Stage implements ContactListener {
      * setting screen
      * "upgrade" screen. Either buttons, or buildings
      *      Upgrades for attack speed, turret damage, etc. Percentages. Use currency which is gained through playing/fitness
+     *  Need to save upgrade progress when app closes
+     *  hold to shoot (not tap for each shot) - allows for attack speed bonus
+     *
+     * Pick ups - Shield Boost, HP, etc.
+     *
+     * REMEMBER TO IMPLEMENT LIVES YOU TWAT.
      */
 
 

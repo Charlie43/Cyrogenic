@@ -116,7 +116,7 @@ public class GameHandler {
         GameLabel hpLabel = new GameLabel(new Rectangle(0, stage.getCamera().viewportHeight, 100, 20), "Player HP", 0.5f);
         stage.addActor(hpLabel);
 
-        playerHPBar = new Bar(WorldHandler.createBar(stage.getWorld(), 0, stage.getCamera().viewportHeight * 0.90f, 100), Color.RED);
+        playerHPBar = new Bar(WorldHandler.createBar(stage.getWorld(), 1, stage.getCamera().viewportHeight * 0.90f, 100), Color.RED);
         stage.addActor(playerHPBar);
         Gdx.app.log("GH", "Bar created");
     }

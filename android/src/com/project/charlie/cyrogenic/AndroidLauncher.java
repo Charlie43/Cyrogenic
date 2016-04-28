@@ -16,11 +16,11 @@ import java.util.ArrayList;
 
 public class AndroidLauncher extends AndroidApplication implements ActionResolver, GameHelperListener {
     private static final int FITNESS_REQUEST = 1;
-    ActionResolverAndroid actionResolverAndroid;
+    GoogleFitManager googleFitManager;
     GameHelper gameHelper;
 
     public AndroidLauncher() {
-        actionResolverAndroid = new ActionResolverAndroid(this);
+        googleFitManager = new GoogleFitManager(this);
 
     }
 
@@ -34,7 +34,7 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
         initialize(new Cryogenic(this), config);
 
         gameHelper.setup(this);
-        actionResolverAndroid.connectToFitnessApi(this);
+        googleFitManager.connectToFitnessApi(this);
         requestPermissions();
 
     }
@@ -56,7 +56,7 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 4 && resultCode == RESULT_OK) { // Sign in completed.
-            actionResolverAndroid.connectToFitnessApi(this);
+            googleFitManager.connectToFitnessApi(this);
         }
         gameHelper.onActivityResult(requestCode, resultCode, data);
 
@@ -91,12 +91,12 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
 
     @Override
     public void connectToFitnessApi() {
-        actionResolverAndroid.connectToFitnessApi(this);
+        googleFitManager.connectToFitnessApi(this);
     }
 
     @Override
     public void readData() {
-        actionResolverAndroid.readData();
+        googleFitManager.readData();
     }
 
     @Override
@@ -132,12 +132,12 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
 
     @Override
     public int readTotalSteps() { // todo refactor this interface into its own class
-       return actionResolverAndroid.readTotalSteps();
+       return googleFitManager.readTotalSteps();
     }
 
     @Override
     public ArrayList<Integer> readWeeklySteps() {
-        return actionResolverAndroid.readWeeklySteps();
+        return googleFitManager.readWeeklySteps();
     }
 
     @Override

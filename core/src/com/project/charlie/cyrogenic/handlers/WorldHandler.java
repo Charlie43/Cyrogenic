@@ -176,7 +176,7 @@ public class WorldHandler {
         return body;
     }
 
-    public static Body createObstacle(World world, PlanetHandler planetHandler) {
+    public static Body createAsteroid(World world, PlanetHandler planetHandler) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         float randomNum = random.nextFloat();
