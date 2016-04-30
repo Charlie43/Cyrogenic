@@ -50,6 +50,7 @@ public class GoogleFitManager {
                         public void onConnected(@Nullable Bundle bundle) {
                             Gdx.app.log("AndroidActionResolver", "Connected to fitness API");
                         }
+
                         @Override
                         public void onConnectionSuspended(int i) {
                             Gdx.app.log("AAR", "Connection suspended");
@@ -157,7 +158,8 @@ public class GoogleFitManager {
                     for (Field field : dp.getDataType().getFields()) {
                         Gdx.app.log("AAR", "\tField: " + field.getName() +
                                 " Value: " + dp.getValue(field));
-                        steps.add(dp.getValue(Field.FIELD_STEPS).asInt());
+                        if (dp.getValue(field) != null)
+                            steps.add(dp.getValue(field).asInt());
                     }
                 }
             }

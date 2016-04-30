@@ -75,6 +75,10 @@ public class Constants {
     public static final float PLAYER_WIDTH = 1.3f;
     public static final float PLAYER_HEIGHT = 1.5f;
     public static final float PLAYER_DENSITY = 0.5f;
+    public static final float PLAYER_DAMAGE_DEFAULT = 5;
+    public static final float PLAYER_SPEED_DEFAULT = 10;
+    public static final float PLAYER_MULTISHOOT_DEFAULT = 0;
+    public static final float PLAYER_HP_DEFAULT = 100f;
 
 
     /* Defaults */

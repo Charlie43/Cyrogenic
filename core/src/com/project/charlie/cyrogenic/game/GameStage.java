@@ -65,21 +65,21 @@ public class GameStage extends Stage implements ContactListener {
     Cryogenic cryogenic;
 
     FitnessHandler fitnessHandler;
-    CurrencyHandler currencyHandler;
+    PlayerHandler playerHandler;
 
     /**
      * todo
      * fade out background to show moving stages
      * health/shield bars for player + last hit target
      * setting screen
-     * "upgrade" screen. Either buttons, or buildings
-     * Upgrades for attack speed, turret damage, etc. Percentages. Use currency which is gained through playing/setupFitness
-     * Need to save upgrade progress when app closes
-     * hold to shoot (not tap for each shot) - allows for attack speed bonus
-     * <p/>
+     *
+     * DONE - "upgrade" screen. Either buttons, or buildings      *
+     * DONE - Upgrades for attack speed, turret damage, etc. Percentages. Use currency which is gained through playing/setupFitness
+     * DONE - Need to save upgrade progress when app closes
+     *
      * Pick ups - Shield Boost, HP, etc.
-     * <p/>
      * REMEMBER TO IMPLEMENT LIVES YOU TWAT.
+     *
      */
 
 
@@ -91,12 +91,12 @@ public class GameStage extends Stage implements ContactListener {
         Gdx.input.setCatchBackKey(true);
 
         touchPoint = new Vector3();
+        playerHandler = new PlayerHandler(this);
         gameHandler = new GameHandler(this);
         obstacleGameHandler = new ObstacleGameHandler(this);
         creatorHandler = new CreatorHandler(this);
         mapHandler = new StarMapHandler(this);
         fitnessHandler = new FitnessHandler(this);
-        currencyHandler = new CurrencyHandler(this);
         this.cryogenic = cryogenic;
 
         setupFitness();
@@ -111,9 +111,9 @@ public class GameStage extends Stage implements ContactListener {
     public void setupFitness() {
         fitnessHandler.setCryogenic(cryogenic);
         fitnessHandler.connectToApi();
-        currencyHandler.addCurrency((int) fitnessHandler.calculateCurrencyGain());
-        gameHandler.setCurrencyHandler(currencyHandler);
-        obstacleGameHandler.setCurrencyHandler(currencyHandler);
+        playerHandler.addCurrency((int) fitnessHandler.calculateCurrencyGain());
+        gameHandler.setPlayerHandler(playerHandler);
+        obstacleGameHandler.setPlayerHandler(playerHandler);
     }
 
     public void setUpFitnessMenu() {
@@ -219,10 +219,8 @@ public class GameStage extends Stage implements ContactListener {
         clear();
         setUpStage(1, planetHandler);
         setUpBoundaries();
-        creatorHandler.loadBase();
+        creatorHandler.setUpLabels();
         creatorHandler.setUpButtons();
-        creatorHandler.setUpFinishButton();
-        creatorHandler.setUpResetButton();
     }
 
 
@@ -497,6 +495,9 @@ public class GameStage extends Stage implements ContactListener {
 
     @Override
     public void endContact(Contact contact) {
+        if(contact.getFixtureA() == null && contact.getFixtureB() == null)
+            return;
+
         Body a = contact.getFixtureA().getBody();
         Body b = contact.getFixtureB().getBody();
 
@@ -609,5 +610,9 @@ public class GameStage extends Stage implements ContactListener {
 
     public GameLabel getLabel(String key) {
         return labels.get(key);
+    }
+
+    public PlayerHandler getPlayerHandler() {
+        return playerHandler;
     }
 }

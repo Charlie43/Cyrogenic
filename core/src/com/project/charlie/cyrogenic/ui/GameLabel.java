@@ -22,7 +22,7 @@ public class GameLabel extends Actor {
         setWidth(bounds.width);
         setHeight(bounds.height);
         font = new BitmapFont(Gdx.files.internal("new_mainfont.fnt"));// todo dynamic fonts using truetype
-        font.setColor(Color.BLUE);
+        font.setColor(Color.LIME);
         font.getData().setScale(scale);
     }
 

@@ -37,7 +37,7 @@ public class GameHandler {
     Bar playerHPBar;
     Bar targetBar;
     Timer.Task damageTimer;
-    CurrencyHandler currencyHandler;
+    PlayerHandler playerHandler;
 
     public GameHandler(GameStage stage) {
         this.stage = stage;
@@ -63,8 +63,8 @@ public class GameHandler {
         stage.addActor(touchPad);
     }
 
-    public void setCurrencyHandler(CurrencyHandler currencyHandler) {
-        this.currencyHandler = currencyHandler;
+    public void setPlayerHandler(PlayerHandler playerHandler) {
+        this.playerHandler = playerHandler;
     }
 
     public void setUpPlayer() {
@@ -77,26 +77,22 @@ public class GameHandler {
         if (planetHandler == null)
             planetHandler = stage.getPlanetHandler();
 
-        Gdx.app.log("GH", String.format("Setting up %d turrets.", planetHandler.getTurrets().size()));
-
         for (TurretJSON turret : planetHandler.getTurrets()) {
             Constants.TurretType type = Constants.TurretType.valueOf(turret.getType());
             Turret temp = new Turret(WorldHandler.createTurret(stage.getWorld(), turret.getX(), turret.getY(), type.getWidth(), type.getHeight()), type); // TODO "warp in" animation
-            Gdx.app.log("TURRET", String.format("Creating turret %s with X: %f Y: %f Width: %f Height: %f", type.name(), turret.getX(), turret.getY(), type.getWidth(),
-                    type.getHeight()));
             temp.getActorData().turret = temp;
             stage.addTurret(temp);
         }
     }
 
     public void setUpInfoText() {
-        Rectangle bounds = new Rectangle(stage.getCamera().viewportWidth * 0.40f, stage.getCamera().viewportHeight * 0.98f, 100, 20);
-        infoLabel = new GameLabel(bounds, "Currency: " + currencyHandler.getCurrentCurrency(), 0.7f);
+        Rectangle bounds = new Rectangle(stage.getCamera().viewportWidth * 0.10f, stage.getCamera().viewportHeight * 0.88f, 100, 20);
+        infoLabel = new GameLabel(bounds, "Currency: " + playerHandler.getCurrentCurrency(), 0.7f);
         stage.addActor(infoLabel);
     }
 
     public void updateLabel() {
-        infoLabel.setText("Currency: " + currencyHandler.getCurrentCurrency());
+        infoLabel.setText("Currency: " + playerHandler.getCurrentCurrency());
     }
 
     public void setUpStageCompleteLabel() {
@@ -156,22 +152,25 @@ public class GameHandler {
                 turret = a;
             }
             ActorData data = (ActorData) bullet.getUserData();
-
-            if (WorldHandler.isBullet(bullet)) {
-                data.isRemoved = true;
-                stage.addDead(bullet);
-            }
             TurretActorData t_data = (TurretActorData) turret.getUserData();
+
             if (data.getShotBy().equals(Constants.PLAYER_ASSET_ID)) {
+                if (WorldHandler.isBullet(bullet)) {
+                    data.isRemoved = true;
+                    stage.addDead(bullet);
+                }
+
                 if (t_data.subHealth(WorldHandler.getProjectileDamage(bullet))) {
                     t_data.isRemoved = true;
+                    t_data.turret.die();
                     stage.addDead(turret);
                     // death animation and stuff
                 }
 
                 if (!targetBar.isVisible())
                     targetBar.addAction(Actions.show());
-                currencyHandler.addCurrency(1);
+
+                playerHandler.addCurrency(1);
                 targetBar.setBarWidth((int) t_data.getHealth());
                 stage.getLabel("TargetLabel").setText(t_data.getTurretType().name());
                 Gdx.app.log("TURRET", "Turret HP:" + t_data.getHealth());
@@ -232,10 +231,13 @@ public class GameHandler {
 
     public void createBullets(int bulletsToCreate) {
         if (gameMode != Constants.GAMEMODE_CREATOR) {
-            for (int i = 0; i < bulletsToCreate; i++) { // todo player bullet types
+            if(playerHandler.getMultiShot())
+                bulletsToCreate *= 2;
+            for (int i = 0; i < bulletsToCreate; i++) {
                 Bullet bullet = new Bullet(WorldHandler.createBullet(stage.getWorld(), player.getBodyX() + 1,
                         player.getBodyY(), Constants.PLAYER_ASSET_ID));
                 BulletActorData data = bullet.getActorData();
+                data.setDamage(playerHandler.getDamage());
                 data.bullet = bullet;
                 stage.addProjectile(Constants.BULLET_ASSET_ID, bullet);
             }
@@ -248,7 +250,7 @@ public class GameHandler {
 
                     if (random.nextFloat() > 0.3 && canFire) {
                         turret.setLastFiretime(System.currentTimeMillis());
-                        switch (type) { // todo just turret.fire and handle the firing for each type in its own class
+                        switch (type) {
                             case MACHINE_GUN:
                                 Bullet bullet = new Bullet(WorldHandler.createBullet(stage.getWorld(),
                                         turret.getBodyX() - 2, turret.getBodyY(), Constants.TURRET_ASSET_ID));
@@ -309,8 +311,8 @@ public class GameHandler {
         }
 
         if (player != null) {
-            player.applyForce(touchPad.getKnobPercentX() * 10,
-                    touchPad.getKnobPercentY() * 10);
+            player.applyForce(touchPad.getKnobPercentX() * playerHandler.getSpeed(),
+                    touchPad.getKnobPercentY() * playerHandler.getSpeed());
             if (activeTouch > 1) {
                 stage.addBullet();
             }

@@ -40,13 +40,15 @@ public class FitnessHandler extends GameHandler {
     public void setUpFitnessText() {
         float width = stage.getCamera().viewportWidth;
         float height = stage.getCamera().viewportHeight;
-        int counter = 0;
-        stage.addLabel("TotalSteps", new GameLabel(new Rectangle(width * 0.30f, height * 0.70f,
-                20, 20), "Steps today - " + cryogenic.actionResolver.readTotalSteps(), 1f));
+        float counter = 0;
+        stage.addLabel("CurrencyEarned", new GameLabel(new Rectangle(width * 0.30f, height * 0.75f, 10, 10),
+                "Currency Gained: " + calculateCurrencyGain(), 1f));
+        stage.addLabel("TotalSteps", new GameLabel(new Rectangle(width * 0.30f, height * 0.70f, 20, 20),
+                "Steps today - " + cryogenic.actionResolver.readTotalSteps(), 1f));
         for (Integer steps : cryogenic.actionResolver.readWeeklySteps()) {
-            stage.addLabel("Day " + counter, new GameLabel(new Rectangle(width * 0.30f,
-                    height * (0.50f + counter), 20, 20), counter + " - " + steps.toString(), 0.5f));
-            counter++;
+            stage.addLabel("Day " + counter, new GameLabel(new Rectangle(width * 0.30f, height * (0.60f - counter), 20, 20),
+                    counter + " - " + steps.toString(), 0.5f));
+            counter = counter + 0.05f;
         }
     }
 
@@ -72,7 +74,7 @@ public class FitnessHandler extends GameHandler {
     }
 
     public float calculateCurrencyGain() {
-        return cryogenic.actionResolver.readTotalSteps() * 0.05f;
+        return cryogenic.actionResolver.readTotalSteps() * 0.05f; // todo dont add today twice. check if what we've already added is lower than the new value, and add the difference
 
     }
 }

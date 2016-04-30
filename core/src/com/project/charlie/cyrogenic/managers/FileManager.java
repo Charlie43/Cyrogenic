@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Json;
 import com.project.charlie.cyrogenic.handlers.PlanetHandler;
 import com.project.charlie.cyrogenic.objects.AsteroidLevel;
 import com.project.charlie.cyrogenic.objects.PlanetJSON;
+import com.project.charlie.cyrogenic.objects.PlayerJSON;
 import com.project.charlie.cyrogenic.objects.TurretJSON;
 
 import java.util.ArrayList;
@@ -26,24 +27,23 @@ public class FileManager {
         }
     }
 
-    public static int loadCurrency() {
+    public static PlayerJSON loadPlayer() {
         FileHandle currencyFile = Gdx.files.local("plr_currency.json");
         if (!currencyFile.exists())
-            return 0;
+            return null;
 
         Json json = new Json();
-        Integer currency = json.fromJson(Integer.class, currencyFile);
-        Gdx.app.log("CURR", "CURR: " + currency);
-        return currency;
+        PlayerJSON playerJSON = json.fromJson(PlayerJSON.class, currencyFile);
+        return playerJSON;
     }
 
-    public static void saveCurrency() {
+    public static void savePlayer(PlayerJSON playerJSON) {
         FileHandle currencyFile = Gdx.files.local("plr_currency.json");
         if(!currencyFile.exists())
             return;
 
         Json json = new Json();
-
+        currencyFile.writeString(json.toJson(playerJSON), false);
     }
 
     public static PlanetHandler loadBase(World gameWorld) {

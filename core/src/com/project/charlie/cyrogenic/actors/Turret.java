@@ -76,4 +76,8 @@ public class Turret extends BaseActor {
     public float getBodyWidth() { return getActorData().getWidth(); }
 
 
+    public void die() {
+        // todo drop pick ups
+
+    }
 }
