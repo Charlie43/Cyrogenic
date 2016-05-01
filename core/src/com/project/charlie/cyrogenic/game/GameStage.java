@@ -72,14 +72,13 @@ public class GameStage extends Stage implements ContactListener {
      * fade out background to show moving stages
      * health/shield bars for player + last hit target
      * setting screen
-     *
+     * <p/>
      * DONE - "upgrade" screen. Either buttons, or buildings      *
      * DONE - Upgrades for attack speed, turret damage, etc. Percentages. Use currency which is gained through playing/setupFitness
      * DONE - Need to save upgrade progress when app closes
-     *
+     * <p/>
      * Pick ups - Shield Boost, HP, etc.
      * REMEMBER TO IMPLEMENT LIVES YOU TWAT.
-     *
      */
 
 
@@ -128,9 +127,13 @@ public class GameStage extends Stage implements ContactListener {
         setUpPreChoice();
 //        obstacleGameHandler.setUpObstaclesButton();
 //        gameHandler.setUpNormalButton();
+        if (gameHandler.pickupTimer != null)
+            gameHandler.pickupTimer.cancel();
+
         creatorHandler.setUpCreatorButton();
         mapHandler.setUpMapButton();
         fitnessHandler.setUpFitnessButton();
+        playerHandler.savePlayer();
     }
 
     public void setUpPreChoice() {
@@ -184,6 +187,7 @@ public class GameStage extends Stage implements ContactListener {
         gameHandler.setUpInfoText();
         gameHandler.setUpHPBar();
         gameHandler.setUpTargetBar();
+        gameHandler.setUpPickupDrops();
         Gdx.app.log("GS", "Width: " + getCamera().viewportWidth);
 
     }
@@ -348,6 +352,7 @@ public class GameStage extends Stage implements ContactListener {
                 asteroid.getActorData().isRemoved = true;
             }
         }
+        // todo pickups
     }
 
     private void removeDeadBodies() { // todo this needs sorting out
@@ -407,6 +412,16 @@ public class GameStage extends Stage implements ContactListener {
                         removed.add(body);
                         asteroids.remove(a_data.asteroid);
                         a_data.asteroid.addAction(Actions.removeActor());
+                        world.destroyBody(body);
+                        body.setUserData(null);
+                        body = null;
+                    }
+                } else if(WorldHandler.isPickup(body)) {
+                    PickupData pData = (PickupData) body.getUserData();
+                    if(pData != null && pData.isRemoved && pickups.contains(pData.pickup)) {
+                        removed.add(body);
+                        pickups.remove(pData.pickup);
+                        pData.pickup.addAction(Actions.removeActor());
                         world.destroyBody(body);
                         body.setUserData(null);
                         body = null;
@@ -495,7 +510,7 @@ public class GameStage extends Stage implements ContactListener {
 
     @Override
     public void endContact(Contact contact) {
-        if(contact.getFixtureA() == null && contact.getFixtureB() == null)
+        if (contact.getFixtureA() == null && contact.getFixtureB() == null)
             return;
 
         Body a = contact.getFixtureA().getBody();
@@ -531,6 +546,7 @@ public class GameStage extends Stage implements ContactListener {
     @Override
     public boolean keyDown(int keyCode) {
         if (keyCode == Input.Keys.BACK) {
+            playerHandler.savePlayer();
             setUpMenu();
         }
         return false;
@@ -614,5 +630,11 @@ public class GameStage extends Stage implements ContactListener {
 
     public PlayerHandler getPlayerHandler() {
         return playerHandler;
+    }
+
+    ArrayList<Pickup> pickups = new ArrayList<>();
+    public void addPickup(Pickup pickup) {
+        pickups.add(pickup);
+        addActor(pickup);
     }
 }

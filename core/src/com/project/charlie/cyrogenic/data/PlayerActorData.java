@@ -19,4 +19,8 @@ public class PlayerActorData extends ActorData {
     public float subHealth(float amount) {
         return this.health -= amount;
     }
+
+    public float addHealth(float amount) {
+        return this.health += amount;
+    }
 }

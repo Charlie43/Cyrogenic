@@ -73,6 +73,11 @@ public class AssetsManager {
         texturesMap.put(Constants.BACKGROUND_MENU_ASSET_ID, new TextureRegion(
                 new Texture(Gdx.files.internal(Constants.BACKGROUND_MENU_IMAGE_PATH))));
 
+        texturesMap.put(Constants.HP_PICKUP_ASSET_ID, new TextureRegion(
+                new Texture(Gdx.files.internal(Constants.HP_PICKUP_IMAGE_PATH))));
+
+        texturesMap.put(Constants.CURRENCY_PICKUP_ASSET_ID, new TextureRegion(
+                new Texture(Gdx.files.internal(Constants.CURRENCY_PICKUP_IMAGE_PATH))));
 
     }
 

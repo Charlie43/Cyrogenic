@@ -6,12 +6,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Timer;
 import com.project.charlie.cyrogenic.actors.*;
@@ -36,7 +33,7 @@ public class GameHandler {
     Random random;
     Bar playerHPBar;
     Bar targetBar;
-    Timer.Task damageTimer;
+    public Timer.Task damageTimer;
     PlayerHandler playerHandler;
 
     public GameHandler(GameStage stage) {
@@ -85,8 +82,34 @@ public class GameHandler {
         }
     }
 
+    public Timer.Task pickupTimer;
+
+    public void setUpPickupDrops() {
+        Gdx.app.log("GH", "Spawning pick ups in 3...");
+        pickupTimer = new Timer().scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                spawnPickup();
+            }
+        }, 1, 8);
+    }
+
+    public void spawnPickup() {
+        Pickup pickup;
+        Gdx.app.log("GH", "Spawning pick up.");
+        if (random.nextInt(2) == 1) {
+            pickup = new Pickup(WorldHandler.createPickup(stage.getWorld(),
+                    Constants.ConvertToBox(Constants.APP_WIDTH) * random.nextFloat(), Constants.ConvertToBox(Constants.APP_HEIGHT), Constants.HP_PICKUP_ASSET_ID), Constants.HP_PICKUP_ASSET_ID);
+        } else {
+            pickup = new Pickup(WorldHandler.createPickup(stage.getWorld(),
+                    Constants.ConvertToBox(Constants.APP_WIDTH) * random.nextFloat(), Constants.ConvertToBox(Constants.APP_HEIGHT), Constants.CURRENCY_PICKUP_ASSET_ID), Constants.CURRENCY_PICKUP_ASSET_ID);
+        }
+        pickup.getActorData().pickup = pickup;
+        stage.addPickup(pickup);
+    }
+
     public void setUpInfoText() {
-        Rectangle bounds = new Rectangle(stage.getCamera().viewportWidth * 0.10f, stage.getCamera().viewportHeight * 0.88f, 100, 20);
+        Rectangle bounds = new Rectangle(stage.getCamera().viewportWidth * 0.01f, stage.getCamera().viewportHeight * 0.88f, 100, 20);
         infoLabel = new GameLabel(bounds, "Currency: " + playerHandler.getCurrentCurrency(), 0.7f);
         stage.addActor(infoLabel);
     }
@@ -98,20 +121,6 @@ public class GameHandler {
     public void setUpStageCompleteLabel() {
         stage.addLabel("StageComplete", stage.createLabel("Planet Entry completed", new Vector3(stage.getCamera().viewportWidth / 3,
                 stage.getCamera().viewportHeight - 10, 0), 100, 20, 10, 0.3f));
-    }
-
-    public void setUpNormalButton() {
-        TextButton normalButton = new TextButton("Stage Two: Planet Assault", new Skin(Gdx.files.internal(Constants.BUTTONS_SKIN_PATH)), "default");
-        normalButton.setPosition(stage.getCamera().viewportWidth / 3, stage.getCamera().viewportHeight / 2 - 60f);
-        normalButton.setBounds(stage.getCamera().viewportWidth / 3, stage.getCamera().viewportHeight / 2 - 60f, 250, 40);
-        normalButton.addListener(new ClickListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                stage.setUpNormalLevel();
-                return true;
-            }
-        });
-        stage.addActor(normalButton);
     }
 
     public void setUpHPBar() {
@@ -132,6 +141,7 @@ public class GameHandler {
         targetBar.addAction(Actions.hide());
     }
 
+    @SuppressWarnings("Duplicates")
     public void handleContact(Body a, Body b) {
         boolean bulletHitTurret = ((WorldHandler.isProjectile(a) && WorldHandler.isTurret(b)) ||
                 (WorldHandler.isTurret(a) && WorldHandler.isProjectile(b)));
@@ -139,8 +149,12 @@ public class GameHandler {
         boolean bulletHitPlayer = ((WorldHandler.isProjectile(a) && WorldHandler.isPlayer(b)) ||
                 WorldHandler.isPlayer(a) && WorldHandler.isProjectile(b));
 
+        boolean playerHitPickup = (WorldHandler.isPlayer(a) && WorldHandler.isPickup(b)) ||
+                (WorldHandler.isPickup(a) && WorldHandler.isPlayer(b));
+
+        Body pickup;
         final Body bullet;
-        Body turret;
+        final Body turret;
         Body player;
 
         if (bulletHitTurret) {
@@ -161,10 +175,18 @@ public class GameHandler {
                 }
 
                 if (t_data.subHealth(WorldHandler.getProjectileDamage(bullet))) {
-                    t_data.isRemoved = true;
-                    t_data.turret.die();
-                    stage.addDead(turret);
                     // death animation and stuff
+                    if (random.nextInt(100) > 70) {
+                        new Timer().scheduleTask(new Timer.Task() {
+                            @Override
+                            public void run() {
+                                createPickup(turret.getPosition().x, turret.getPosition().y);
+                            }
+                        }, 2);
+                    }
+                    t_data.isRemoved = true;
+//                    t_data.turret.die();
+                    stage.addDead(turret);
                 }
 
                 if (!targetBar.isVisible())
@@ -203,7 +225,39 @@ public class GameHandler {
                 }, 0, 750);
             }
             playerHPBar.setBarWidth((int) p_data.getHealth());
+        } else if (playerHitPickup) {
+            if (WorldHandler.isPlayer(a)) {
+                player = a;
+                pickup = b;
+            } else {
+                player = b;
+                pickup = a;
+            }
+            PickupData pData = (PickupData) pickup.getUserData();
+            PlayerActorData plData = (PlayerActorData) player.getUserData();
+
+            pData.isRemoved = true;
+            stage.addDead(pickup);
+            Gdx.app.log("GH", "Plr Picked up pickup");
+
+            if (pData.getType().equals(Constants.CURRENCY_PICKUP_ASSET_ID))
+                playerHandler.addCurrency(100);
+            else
+                plData.addHealth(10); // todo magic numbers
         }
+    }
+
+    public void createPickup(float x, float y) {
+        Pickup pickUpDropped;
+        if (random.nextInt(2) == 1) {
+            pickUpDropped = new Pickup(WorldHandler.createPickup(stage.getWorld(), x,
+                    y, Constants.CURRENCY_PICKUP_ASSET_ID), Constants.CURRENCY_PICKUP_ASSET_ID);
+        } else {
+            pickUpDropped = new Pickup(WorldHandler.createPickup(stage.getWorld(), x,
+                    y, Constants.HP_PICKUP_ASSET_ID), Constants.HP_PICKUP_ASSET_ID);
+
+        }
+        stage.addPickup(pickUpDropped);
     }
 
     public void endContact(Body a, Body b) {
@@ -231,7 +285,7 @@ public class GameHandler {
 
     public void createBullets(int bulletsToCreate) {
         if (gameMode != Constants.GAMEMODE_CREATOR) {
-            if(playerHandler.getMultiShot())
+            if (playerHandler.getMultiShot())
                 bulletsToCreate *= 2;
             for (int i = 0; i < bulletsToCreate; i++) {
                 Bullet bullet = new Bullet(WorldHandler.createBullet(stage.getWorld(), player.getBodyX() + 1,

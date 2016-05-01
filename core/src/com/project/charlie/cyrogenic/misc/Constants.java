@@ -7,7 +7,7 @@ public class Constants {
     /* Application Constants */
     public static final float PIXELS_TO_METRES = 100f;
 
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     static final float WORLD_TO_BOX = 0.032f; // Pixels * 0.032 to get metres
     public static final float BOX_TO_WORLD = 32; // Metres * 32 to get pixels
@@ -31,7 +31,7 @@ public class Constants {
     public static final String BACKGROUND_FOREST_ASSET_ID = "background_forest";
     public static final String BACKGROUND_FOREST_IMAGE_PATH = "images/backgrounds/background_forest.png";
     public static final String BACKGROUND_CITY_ASSET_ID = "background_city";
-    public static final String BACKGROUND_CITY_IMAGE_PATH = "images/backgrounds/background5.png";
+    public static final String BACKGROUND_CITY_IMAGE_PATH = "images/backgrounds/background_mountains.png";
     public static final String BACKGROUND_MENU_ASSET_ID = "background_menu";
     public static final String BACKGROUND_MENU_IMAGE_PATH = "images/backgrounds/cryogenic_mainpage.png";
 
@@ -145,16 +145,23 @@ public class Constants {
     public static final String ASTEROID_ASSET_ID = "asteroid";
     public static final String ASTEROID_IMAGE_PATH = "images/asteroids/asteroid.png";
 
-    public static final String ASTEROID_2_ASSET_ID = "asteroid";
+    public static final String ASTEROID_2_ASSET_ID = "asteroid_2";
     public static final String ASTEROID_2_IMAGE_PATH = "images/asteroids/asteroidBrown1.png";
 
-    public static final String ASTEROID_3_ASSET_ID = "asteroid";
+    public static final String ASTEROID_3_ASSET_ID = "asteroid_3";
     public static final String ASTEROID_3_IMAGE_PATH = "images/asteroids/asteroidGrey1.png";
 
     public static final float ASTEROID_WIDTH = 1.2f;
     public static final float ASTEROID_HEIGHT = 1.2f;
     public static final float ASTEROID_DENSITY = 3f;
 
+    /* Pickups  */
+    public static final String HP_PICKUP_ASSET_ID = "health_pickup";
+    public static final String HP_PICKUP_IMAGE_PATH = "images/pickups/powerup_health.png";
+    public static final String CURRENCY_PICKUP_ASSET_ID = "currency_pickup";
+    public static final String CURRENCY_PICKUP_IMAGE_PATH = "images/pickups/powerup_currency.png";
+    public static final int PICKUP_WIDTH = 1;
+    public static final int PICKUP_HEIGHT = 1;
 
     public static final String TOUCH_BG_PATH = "images/misc/touchBackground_new.png";
     public static final String TOUCH_KNOB_PATH = "images/misc/touchKnob_new.png";

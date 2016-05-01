@@ -77,6 +77,37 @@ public class WorldHandler {
         return body;
     }
 
+    public static Body createPickup(World world, float createX, float createY, String type) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(new Vector2(createX, createY));
+
+        Body body = world.createBody(bodyDef);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(Constants.PICKUP_WIDTH / 2, Constants.PICKUP_HEIGHT / 2);
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.isSensor = true;
+
+        fixtureDef.filter.categoryBits = Constants.BULLET_ENTITY;
+        fixtureDef.filter.maskBits = Constants.DEFAULT_ENTITY;
+//        fixtureDef.density = Constants.DEFAULT_DENSITY;
+
+
+        body.createFixture(fixtureDef); // crashing??
+        shape.dispose();
+
+        body.setGravityScale(Constants.DEFUALT_GRAVITY);
+        body.resetMassData();
+
+        Gdx.app.log("WH", "Pickup setup, setting user data..");
+        body.setUserData(new PickupData(Constants.PICKUP_WIDTH, Constants.PICKUP_HEIGHT, type));
+
+        body.setLinearVelocity(0, -0.9f);
+        return body;
+    }
+
     public static Body createTesla(World world, float createX, float createY, String shotBy, int number) {
         float rotation;
         if (number == 0) {
@@ -380,5 +411,17 @@ public class WorldHandler {
             default:
                 return 0f;
         }
+    }
+
+    public static boolean isPickup(Body body) {
+        if(body == null || body.getUserData() == null) 
+            return false;
+        
+        ActorData data = (ActorData) body.getUserData();
+        return data.getDataType().equals("Pickup");
+    }
+    
+    public static boolean getPickupType() {
+        return false;// // TODO: 01/05/2016  
     }
 }

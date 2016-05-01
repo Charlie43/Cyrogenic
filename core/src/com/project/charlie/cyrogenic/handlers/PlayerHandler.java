@@ -54,7 +54,7 @@ public class PlayerHandler extends GameHandler {
         }
     }
 
-    public void saveCurrency() {
+    public void savePlayer() {
         FileManager.savePlayer(new PlayerJSON(currentCurrency, damageLevel, speedLevel, multishotLevel));
     }
 

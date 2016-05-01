@@ -15,27 +15,12 @@ import java.util.Random;
 public class Asteroid extends BaseActor {
 
     Random random;
+    String assetID;
+
 
     public Asteroid(Body body) {
         super(body);
         random = new Random();
-    }
-
-    @Override
-    public ActorData getActorData() {
-        return actorData;
-    }
-
-    public void draw(Batch batch, float parentAlpha) {
-        super.draw(batch, parentAlpha);
-
-        float x = screenRectangle.x - (screenRectangle.width * 0.1f);
-        float y = screenRectangle.y;
-        float width = screenRectangle.width * 1.2f;
-        if (Constants.DEBUG)
-            batch.draw(AssetsManager.getTextureRegion(Constants.BOX_ASSET_ID), screenRectangle.x, screenRectangle.y, screenRectangle.width, screenRectangle.height);
-
-        String assetID;
         switch(random.nextInt(3)) {
             case 0:
             default:
@@ -48,6 +33,21 @@ public class Asteroid extends BaseActor {
                 assetID = Constants.ASTEROID_3_ASSET_ID;
                 break;
         }
+    }
+
+    @Override
+    public ActorData getActorData() {
+        return actorData;
+    }
+
+    @SuppressWarnings("Duplicates")
+    public void draw(Batch batch, float parentAlpha) {
+        super.draw(batch, parentAlpha);
+        float x = screenRectangle.x - (screenRectangle.width * 0.1f);
+        float y = screenRectangle.y;
+        float width = screenRectangle.width * 1.2f;
+        if (Constants.DEBUG)
+            batch.draw(AssetsManager.getTextureRegion(Constants.BOX_ASSET_ID), screenRectangle.x, screenRectangle.y, screenRectangle.width, screenRectangle.height);
 
         batch.draw(AssetsManager.getTextureRegion(assetID), x, y, width, screenRectangle.height);
     }
