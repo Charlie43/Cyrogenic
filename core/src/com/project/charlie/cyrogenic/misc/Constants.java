@@ -7,7 +7,7 @@ public class Constants {
     /* Application Constants */
     public static final float PIXELS_TO_METRES = 100f;
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     static final float WORLD_TO_BOX = 0.032f; // Pixels * 0.032 to get metres
     public static final float BOX_TO_WORLD = 32; // Metres * 32 to get pixels

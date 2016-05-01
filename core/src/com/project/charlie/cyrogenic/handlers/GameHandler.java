@@ -155,7 +155,7 @@ public class GameHandler {
         Body pickup;
         final Body bullet;
         final Body turret;
-        Body player;
+        final Body player;
 
         if (bulletHitTurret) {
             if (WorldHandler.isProjectile(a)) {
@@ -182,7 +182,7 @@ public class GameHandler {
                             public void run() {
                                 createPickup(turret.getPosition().x, turret.getPosition().y);
                             }
-                        }, 2);
+                        }, 0.8f);
                     }
                     t_data.isRemoved = true;
 //                    t_data.turret.die();
@@ -220,9 +220,9 @@ public class GameHandler {
                 damageTimer = new Timer().scheduleTask(new Timer.Task() {
                     @Override
                     public void run() {
-                        damageTarget(bullet, WorldHandler.getProjectileDamage(bullet));
+                        damageTarget(player, WorldHandler.getProjectileDamage(bullet));
                     }
-                }, 0, 750);
+                }, 0, 0.3f);
             }
             playerHPBar.setBarWidth((int) p_data.getHealth());
         } else if (playerHitPickup) {
@@ -238,12 +238,11 @@ public class GameHandler {
 
             pData.isRemoved = true;
             stage.addDead(pickup);
-            Gdx.app.log("GH", "Plr Picked up pickup");
 
             if (pData.getType().equals(Constants.CURRENCY_PICKUP_ASSET_ID))
                 playerHandler.addCurrency(100);
             else
-                plData.addHealth(10); // todo magic numbers
+                plData.addHealth(20); // todo magic numbers
         }
     }
 

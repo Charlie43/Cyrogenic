@@ -1,6 +1,7 @@
 package com.project.charlie.cyrogenic.managers;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Json;
@@ -15,56 +16,23 @@ import java.util.ArrayList;
 public class FileManager {
     static World world;
 
+    static Preferences preferences = Gdx.app.getPreferences("Player");
+
     public FileManager() {
     }
 
-    public static void clearBase() {
-        if (Gdx.files.local("plr_base.json").exists()) {
-            if (Gdx.files.local("plr_base.json").delete())
-                Gdx.app.log("LM", "Base deleted.");
-            else
-                Gdx.app.log("LM", "Base could not be deleted");
-        }
-    }
-
     public static PlayerJSON loadPlayer() {
-        FileHandle currencyFile = Gdx.files.local("plr_currency.json");
-        if (!currencyFile.exists())
-            return null;
-
-        Json json = new Json();
-        PlayerJSON playerJSON = json.fromJson(PlayerJSON.class, currencyFile);
-        return playerJSON;
+        // todo dont need playerJSON now
+        return new PlayerJSON(preferences.getInteger("Currency"), preferences.getInteger("Damage"),
+                preferences.getInteger("Speed"), preferences.getInteger("Multishot"));
     }
 
     public static void savePlayer(PlayerJSON playerJSON) {
-        FileHandle currencyFile = Gdx.files.local("plr_currency.json");
-        if(!currencyFile.exists())
-            return;
-
-        Json json = new Json();
-        currencyFile.writeString(json.toJson(playerJSON), false);
-    }
-
-    public static PlanetHandler loadBase(World gameWorld) {
-        world = gameWorld;
-        PlanetHandler stage = new PlanetHandler();
-        try {
-            FileHandle base = Gdx.files.local("plr_base.json");
-            if (!base.exists())
-                return stage;
-
-            Json json = new Json();
-            PlanetJSON levelJSON = json.fromJson(PlanetJSON.class, base);
-
-            for (TurretJSON turret : levelJSON.turrets) {
-                stage.addTurret(turret);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return stage;
+        preferences.putInteger("Currency", playerJSON.currency);
+        preferences.putInteger("Damage", playerJSON.damageLevel);
+        preferences.putInteger("Speed", playerJSON.speedLevel);
+        preferences.putInteger("Multishot", playerJSON.multishotLevel);
+        preferences.putInteger("Health", playerJSON.healthLevel);
     }
 
     public static ArrayList<PlanetJSON> loadPlanets() { // todo sector handling
@@ -145,11 +113,11 @@ public class FileManager {
             Gdx.app.log("LM", "Exists.. " + Gdx.files.local("plr_base.json").exists());
             Json json = new Json();
 
-            PlanetJSON lvlJson = new PlanetJSON();
-            lvlJson.turrets = turrets;
-            lvlJson.asteroid = new AsteroidLevel(10, 10, 3);
+            PlanetJSON planetJSON = new PlanetJSON();
+            planetJSON.turrets = turrets;
+            planetJSON.asteroid = new AsteroidLevel(10, 10, 3);
 
-            plrBase.writeString(json.toJson(lvlJson), false);
+            plrBase.writeString(json.toJson(planetJSON), false);
             Gdx.app.log("LM", "Written");
             Gdx.app.log("LM", plrBase.readString());
 

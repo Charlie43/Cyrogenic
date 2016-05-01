@@ -23,6 +23,7 @@ public class ObstacleGameHandler extends GameHandler {
     int asteroidCount;
     boolean triggered;
     Random random;
+    Timer.Task obstacleTimer;
 
     public ObstacleGameHandler(GameStage stage) {
         super(stage);
@@ -41,7 +42,7 @@ public class ObstacleGameHandler extends GameHandler {
         if (asteroidCount == stage.getPlanetHandler().getAsteriodCount() && !triggered) {
             triggered = true;
             Gdx.app.log("COUNT", "AsteroidLevel complete");
-            asteroidCount = 0;
+            if (obstacleTimer != null) obstacleTimer.cancel();
             stage.setUpNormalLevel();
         }
         if (asteroidCount > stage.getPlanetHandler().getAsteriodCount()) {
@@ -109,18 +110,19 @@ public class ObstacleGameHandler extends GameHandler {
 
             b_data.isRemoved = true;
             stage.addDead(bullet);
+            playerHandler.addCurrency(2);
 
             if (a_data.subHealth(WorldHandler.getProjectileDamage(bullet)) <= 0) {
                 Gdx.app.log("OGH", "Asteroid dead - Spawn pickup?");
-//                if (random.nextInt(100) > 70) {
-                final Body finalAsteroid = asteroid;
-                new Timer().scheduleTask(new Timer.Task() {
-                    @Override
-                    public void run() {
-                        createPickup(finalAsteroid.getPosition().x, finalAsteroid.getPosition().y);
-                    }
-                }, 2);
-//                }
+                if (random.nextInt(100) > 70) {
+                    final Body finalAsteroid = asteroid;
+                    new Timer().scheduleTask(new Timer.Task() {
+                        @Override
+                        public void run() {
+                            createPickup(finalAsteroid.getPosition().x, finalAsteroid.getPosition().y);
+                        }
+                    }, 2);
+                }
 
                 stage.addDead(asteroid);
                 a_data.isRemoved = true;
@@ -146,7 +148,6 @@ public class ObstacleGameHandler extends GameHandler {
             else
                 plData.addHealth(50); // todo magic numbers
         }
-        // todo if player hits pickup
     }
 
     public void createPickup(float x, float y) {
@@ -159,6 +160,17 @@ public class ObstacleGameHandler extends GameHandler {
                     y, Constants.HP_PICKUP_ASSET_ID), Constants.HP_PICKUP_ASSET_ID);
         }
         pickUpDropped.getActorData().pickup = pickUpDropped;
-        stage.addActor(pickUpDropped);
+        stage.addPickup(pickUpDropped);
+    }
+
+
+    public void setUpAsteroids() {
+        asteroidCount = 0;
+        obstacleTimer = new Timer().scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                createAsteroid();
+            }
+        }, 4, stage.getPlanetHandler().getAsteriodInterval(), stage.getPlanetHandler().getAsteriodCount());
     }
 }

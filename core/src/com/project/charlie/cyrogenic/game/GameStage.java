@@ -201,12 +201,7 @@ public class GameStage extends Stage implements ContactListener {
         setUpBoundaries();
         obstacleGameHandler.setUpControls();
         obstacleGameHandler.setUpInfoText();
-        new Timer().scheduleTask(new Timer.Task() {
-            @Override
-            public void run() {
-                obstacleGameHandler.createAsteroid();
-            }
-        }, 4, planetHandler.getAsteriodInterval(), planetHandler.getAsteriodCount());
+        obstacleGameHandler.setUpAsteroids();
         obstacleGameHandler.setUpHPBar();
         Gdx.app.log("GS", "Width: " + getCamera().viewportWidth);
     }
@@ -547,6 +542,7 @@ public class GameStage extends Stage implements ContactListener {
     public boolean keyDown(int keyCode) {
         if (keyCode == Input.Keys.BACK) {
             playerHandler.savePlayer();
+            dead.clear();
             setUpMenu();
         }
         return false;
