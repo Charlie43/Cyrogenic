@@ -109,8 +109,8 @@ public class GameHandler {
     }
 
     public void setUpInfoText() {
-        Rectangle bounds = new Rectangle(stage.getCamera().viewportWidth * 0.01f, stage.getCamera().viewportHeight * 0.88f, 100, 20);
-        infoLabel = new GameLabel(bounds, "Currency: " + playerHandler.getCurrentCurrency(), 0.7f);
+        Rectangle bounds = new Rectangle(stage.getCamera().viewportWidth * 0.01f, stage.getCamera().viewportHeight * 0.90f, 100, 20);
+        infoLabel = new GameLabel(bounds, "Currency: " + playerHandler.getCurrentCurrency(), 17f);
         stage.addActor(infoLabel);
     }
 
@@ -120,20 +120,21 @@ public class GameHandler {
 
     public void setUpStageCompleteLabel() {
         stage.addLabel("StageComplete", stage.createLabel("Planet Entry completed", new Vector3(stage.getCamera().viewportWidth / 3,
-                stage.getCamera().viewportHeight - 10, 0), 100, 20, 10, 0.3f));
+                stage.getCamera().viewportHeight - 10, 0), 100, 20, 10, 15));
     }
 
     public void setUpHPBar() {
-        GameLabel hpLabel = new GameLabel(new Rectangle(0, stage.getCamera().viewportHeight, 140, 20), "Player HP", 0.5f);
+        GameLabel hpLabel = new GameLabel(new Rectangle(stage.getCamera().viewportWidth * 0.01f, stage.getCamera().viewportHeight * 0.98f, 140, 20), "Player HP", 16f);
         stage.addActor(hpLabel);
 
-        playerHPBar = new Bar(WorldHandler.createBar(stage.getWorld(), 20, stage.getCamera().viewportHeight * 0.95f, 100), Color.RED);
+        playerHPBar = new Bar(WorldHandler.createBar(stage.getWorld(), stage.getCamera().viewportWidth * 0.10f, stage.getCamera().viewportHeight * 0.92f, 100), Color.RED);
         stage.addActor(playerHPBar);
         Gdx.app.log("GH", "Bar created");
     }
 
     public void setUpTargetBar() {
-        GameLabel targetLabel = new GameLabel(new Rectangle(stage.getCamera().viewportWidth * 0.90f, stage.getCamera().viewportHeight, 100, 20), "", 0.5f);
+        GameLabel targetLabel = new GameLabel(new Rectangle(stage.getCamera().viewportWidth * 0.90f,
+                stage.getCamera().viewportHeight, 100, 20), "", 16f);
         stage.addLabel("TargetLabel", targetLabel);
 
         targetBar = new Bar(WorldHandler.createBar(stage.getWorld(), stage.getCamera().viewportWidth * 0.90f, stage.getCamera().viewportHeight * 0.95f, 100), Color.PINK);

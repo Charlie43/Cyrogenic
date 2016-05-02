@@ -227,9 +227,9 @@ public class GameStage extends Stage implements ContactListener {
         planetHandler = FileManager.parsePlanet(world);
     }
 
-    public GameLabel createLabel(String text, Vector3 bounds, float width, float height, int fadeOut, float scale) {
+    public GameLabel createLabel(String text, Vector3 bounds, float width, float height, int fadeOut, float size) {
         Rectangle rect = new Rectangle(bounds.x, bounds.y, width, height);
-        GameLabel toReturn = new GameLabel(rect, text, scale);
+        GameLabel toReturn = new GameLabel(rect, text, size);
         addActor(toReturn);
         if (fadeOut > 0)
             toReturn.addAction(Actions.sequence(Actions.fadeOut(fadeOut), Actions.hide()));

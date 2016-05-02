@@ -42,12 +42,12 @@ public class FitnessHandler extends GameHandler {
         float height = stage.getCamera().viewportHeight;
         float counter = 0;
         stage.addLabel("CurrencyEarned", new GameLabel(new Rectangle(width * 0.30f, height * 0.75f, 10, 10),
-                "Currency Gained: " + calculateCurrencyGain(), 1f));
+                "Currency Gained: " + calculateCurrencyGain(), 12f));
         stage.addLabel("TotalSteps", new GameLabel(new Rectangle(width * 0.30f, height * 0.70f, 20, 20),
-                "Steps today - " + cryogenic.actionResolver.readTotalSteps(), 1f));
+                "Steps today - " + cryogenic.actionResolver.readTotalSteps(), 12f));
         for (Integer steps : cryogenic.actionResolver.readWeeklySteps()) {
             stage.addLabel("Day " + counter, new GameLabel(new Rectangle(width * 0.30f, height * (0.60f - counter), 20, 20),
-                    counter + " - " + steps.toString(), 0.5f));
+                    counter + " - " + steps.toString(), 8f));
             counter = counter + 0.05f;
         }
     }

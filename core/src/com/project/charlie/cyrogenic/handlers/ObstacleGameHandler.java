@@ -58,7 +58,7 @@ public class ObstacleGameHandler extends GameHandler {
 
     public void setUpLabels(String name) {
         stage.addLabel("PlanetName", stage.createLabel(name,
-                new Vector3(stage.getCamera().viewportWidth * 0.50f, stage.getCamera().viewportHeight - 10, 0), 20, 20, 0, 0.4f));
+                new Vector3(stage.getCamera().viewportWidth * 0.50f, stage.getCamera().viewportHeight - 10, 0), 20, 20, 0, 15));
     }
 
     @SuppressWarnings("Duplicates")

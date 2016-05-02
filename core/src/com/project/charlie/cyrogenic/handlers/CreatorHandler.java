@@ -38,12 +38,13 @@ public class CreatorHandler extends GameHandler {
     public void setUpLabels() {
         float screenHeight = stage.getCamera().viewportHeight;
         float screenWidth = stage.getCamera().viewportWidth;
+        int fontSize = 21;
 
-        stage.addLabel("CurrencyLabel", stage.createLabel("Currency: " + playerHandler.getCurrentCurrency(), new Vector3(screenWidth * 0.20f, screenHeight * 0.95f, 0), 10, 1, 0, 1f));
-        stage.addLabel("HealthLabel", stage.createLabel("Health: " + playerHandler.getHealth(), new Vector3(screenWidth * 0.20f, screenHeight * 0.90f, 0), 10, 1, 0, 1f));
-        stage.addLabel("DamageLabel", stage.createLabel("Damage: " + playerHandler.getDamage(), new Vector3(screenWidth * 0.20f, screenHeight * 0.85f, 0), 10, 1, 0, 1f));
-        stage.addLabel("SpeedLabel", stage.createLabel("Speed: " + playerHandler.getSpeed(), new Vector3(screenWidth * 0.20f, screenHeight * 0.80f, 0), 10, 1, 0, 1f));
-        stage.addLabel("MultiShotLabel", stage.createLabel("MultiShot: " + playerHandler.getMultiShot(), new Vector3(screenWidth * 0.20f, screenHeight * 0.75f, 0), 10, 1, 0, 1f));
+        stage.addLabel("CurrencyLabel", stage.createLabel("Currency: " + playerHandler.getCurrentCurrency(), new Vector3(screenWidth * 0.20f, screenHeight * 0.80f, 0), 10, 1, 0, fontSize));
+        stage.addLabel("HealthLabel", stage.createLabel("Health: " + playerHandler.getHealth(), new Vector3(screenWidth * 0.20f, screenHeight * 0.75f, 0), 10, 1, 0, fontSize));
+        stage.addLabel("DamageLabel", stage.createLabel("Damage: " + playerHandler.getDamage(), new Vector3(screenWidth * 0.20f, screenHeight * 0.70f, 0), 10, 1, 0, fontSize));
+        stage.addLabel("SpeedLabel", stage.createLabel("Speed: " + playerHandler.getSpeed(), new Vector3(screenWidth * 0.20f, screenHeight * 0.65f, 0), 10, 1, 0, fontSize));
+        stage.addLabel("MultiShotLabel", stage.createLabel("MultiShot: " + playerHandler.getMultiShot(), new Vector3(screenWidth * 0.20f, screenHeight * 0.60f, 0), 10, 1, 0, fontSize));
     }
 
     public void setUpButtons() {
