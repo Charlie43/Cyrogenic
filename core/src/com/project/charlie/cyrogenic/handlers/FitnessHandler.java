@@ -44,18 +44,18 @@ public class FitnessHandler extends GameHandler {
         float counter = 0;
 
         stage.addLabel("TotalSteps", new GameLabel(new Rectangle(width * 0.30f, height * 0.75f, 20, 20),
-                "Steps today:   " + cryogenic.actionResolver.readTotalSteps(), 15f));
+                "Steps today:   " + cryogenic.actionResolver.readTotalSteps(), 17f));
 
         stage.addLabel("CurrencyEarned", new GameLabel(new Rectangle(width * 0.30f, height * 0.70f, 10, 10),
-                "Currency Gained:   " + calculateCurrencyGain(), 15f));
+                "Currency Gained:   " + calculateCurrencyGain(), 17f));
 
-        stage.addLabel("FitnessLabel", stage.createLabel("Previous 7 Days Step Count", new Vector3(width * 0.30f, height * 0.65f, 0), 20, 20, 0, 15f));
+        stage.addLabel("FitnessLabel", stage.createLabel("Previous 7 Days Step Count", new Vector3(width * 0.30f, height * 0.65f, 0), 20, 20, 0, 17f));
 
 
         for (Integer steps : cryogenic.actionResolver.readWeeklySteps()) {
-            stage.addLabel("Day " + counter, new GameLabel(new Rectangle(width * 0.30f, height * (0.60f - counter), 20, 20),
-                    counter + " - " + steps.toString(), 12f));
-            counter = counter + 0.02f;
+            stage.addLabel("Day " + counter, new GameLabel(new Rectangle(width * 0.30f, height * (0.60f - (counter * 0.01f)), 20, 20),
+                    counter + " - " + steps.toString(), 14f));
+            counter = counter + 1f;
         }
     }
 
