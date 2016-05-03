@@ -3,6 +3,7 @@ package com.project.charlie.cyrogenic.handlers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -41,14 +42,20 @@ public class FitnessHandler extends GameHandler {
         float width = stage.getCamera().viewportWidth;
         float height = stage.getCamera().viewportHeight;
         float counter = 0;
-        stage.addLabel("CurrencyEarned", new GameLabel(new Rectangle(width * 0.30f, height * 0.75f, 10, 10),
-                "Currency Gained: " + calculateCurrencyGain(), 12f));
-        stage.addLabel("TotalSteps", new GameLabel(new Rectangle(width * 0.30f, height * 0.70f, 20, 20),
-                "Steps today - " + cryogenic.actionResolver.readTotalSteps(), 12f));
+
+        stage.addLabel("TotalSteps", new GameLabel(new Rectangle(width * 0.30f, height * 0.75f, 20, 20),
+                "Steps today:   " + cryogenic.actionResolver.readTotalSteps(), 15f));
+
+        stage.addLabel("CurrencyEarned", new GameLabel(new Rectangle(width * 0.30f, height * 0.70f, 10, 10),
+                "Currency Gained:   " + calculateCurrencyGain(), 15f));
+
+        stage.addLabel("FitnessLabel", stage.createLabel("Previous 7 Days Step Count", new Vector3(width * 0.30f, height * 0.65f, 0), 20, 20, 0, 15f));
+
+
         for (Integer steps : cryogenic.actionResolver.readWeeklySteps()) {
             stage.addLabel("Day " + counter, new GameLabel(new Rectangle(width * 0.30f, height * (0.60f - counter), 20, 20),
-                    counter + " - " + steps.toString(), 8f));
-            counter = counter + 0.05f;
+                    counter + " - " + steps.toString(), 12f));
+            counter = counter + 0.02f;
         }
     }
 

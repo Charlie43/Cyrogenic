@@ -103,6 +103,7 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
     public void signIn() {
         try {
             Gdx.app.log("AL", "Sign in started..");
+            Gdx.graphics.requestRendering();
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -155,7 +156,11 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
     @Override
     public void onSignInSucceeded() {
         Gdx.app.log("AL", "Sign in succeeded");
+    }
 
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Gdx.graphics.requestRendering();
     }
 }
