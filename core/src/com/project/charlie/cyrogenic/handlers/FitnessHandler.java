@@ -53,7 +53,7 @@ public class FitnessHandler extends GameHandler {
 
 
         for (Integer steps : cryogenic.actionResolver.readWeeklySteps()) {
-            stage.addLabel("Day " + counter, new GameLabel(new Rectangle(width * 0.30f, height * (0.60f - (counter * 0.01f)), 20, 20),
+            stage.addLabel("Day " + counter, new GameLabel(new Rectangle(width * 0.30f, height * (0.60f - (counter * 0.025f)), 20, 20),
                     counter + " - " + steps.toString(), 14f));
             counter = counter + 1f;
         }

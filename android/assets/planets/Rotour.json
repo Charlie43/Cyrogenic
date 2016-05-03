@@ -29,12 +29,12 @@
     {
       "x": "22",
       "y": "5",
-      "type": "MACHINE_GUN"
+      "type": "LASER"
     },
     {
       "x": "13",
       "y": "14",
-      "type": "MACHINE_GUN"
+      "type": "TESLA"
     }
   ]
 }
