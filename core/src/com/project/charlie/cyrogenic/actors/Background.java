@@ -48,6 +48,8 @@ public class Background extends Actor {
                     case "City":
                         region = AssetsManager.getTextureRegion(Constants.BACKGROUND_CITY_ASSET_ID);
                         break;
+                    case "Water":
+                        region = AssetsManager.getTextureRegion(Constants.BACKGROUND_ICE_ASSET_ID);
                     default:
                         region = null;
                         break;

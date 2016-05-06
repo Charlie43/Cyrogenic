@@ -25,9 +25,6 @@ public class GameLabel extends Actor {
         this.text = text;
         setWidth(bounds.width);
         setHeight(bounds.height);
-//        font = new BitmapFont(Gdx.files.internal("new_mainfont.fnt"));// todo dynamic fonts using truetype
-//        font.setColor(Color.LIME);
-//        font.getData().setScale(scale);
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/ebrima.ttf"));
         FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -36,9 +33,6 @@ public class GameLabel extends Actor {
         parameter.borderWidth = 1f;
 
         parameter.color = Color.SKY;
-//        parameter.shadowOffsetX = 1;
-//        parameter.shadowOffsetY = 1;
-
 
         font = generator.generateFont(parameter);
         generator.dispose();

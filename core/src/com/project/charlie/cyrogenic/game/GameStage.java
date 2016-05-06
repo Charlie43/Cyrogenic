@@ -2,6 +2,7 @@ package com.project.charlie.cyrogenic.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
@@ -66,6 +67,7 @@ public class GameStage extends Stage implements ContactListener {
 
     FitnessHandler fitnessHandler;
     PlayerHandler playerHandler;
+    FPSLogger fpsLogger;
 
     /**
      * todo
@@ -97,6 +99,7 @@ public class GameStage extends Stage implements ContactListener {
         mapHandler = new StarMapHandler(this);
         fitnessHandler = new FitnessHandler(this);
         this.cryogenic = cryogenic;
+        fpsLogger = new FPSLogger();
 
         setupFitness();
         setUpMenu();
@@ -308,6 +311,9 @@ public class GameStage extends Stage implements ContactListener {
 
         if (Constants.DEBUG)
             renderer.render(world, camera.combined);
+
+        fpsLogger.log();
+
 
         checkBounds();
         removeDeadBodies();

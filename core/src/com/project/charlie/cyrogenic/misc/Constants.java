@@ -32,6 +32,8 @@ public class Constants {
     public static final String BACKGROUND_FOREST_IMAGE_PATH = "images/backgrounds/background_forest.png";
     public static final String BACKGROUND_CITY_ASSET_ID = "background_city";
     public static final String BACKGROUND_CITY_IMAGE_PATH = "images/backgrounds/background_mountains.png";
+    public static final String BACKGROUND_ICE_ASSET_ID = "background_ice";
+    public static final String BACKGROUND_ICE_IMAGE_PATH = "images/backgrounds/background_ice.png";
     public static final String BACKGROUND_MENU_ASSET_ID = "background_menu";
     public static final String BACKGROUND_MENU_IMAGE_PATH = "images/backgrounds/cryogenic_mainpage.png";
 
