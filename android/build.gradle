@@ -19,6 +19,19 @@ android {
         minSdkVersion 15
         targetSdkVersion 23
     }
+    signingConfigs {
+        release {
+            storeFile file("releasekey.keystore")
+            storePassword "Danney43"
+            keyAlias "MainKey"
+            keyPassword "Danney43"
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
 }
 
 // called every time gradle gets executed, takes the native dependencies of
