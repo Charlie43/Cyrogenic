@@ -39,6 +39,9 @@ public class FitnessHandler extends GameHandler {
         return false;
     }
 
+    public void signIn() {
+        cryogenic.actionResolver.signIn();
+    }
     public int getDailySteps() {
         return cryogenic.actionResolver.readTotalSteps();
     }

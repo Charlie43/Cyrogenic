@@ -28,19 +28,13 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
-        if (gameHelper == null) {
-            gameHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
-            gameHelper.enableDebugLog(true);
-        }
-        gameHelper.setup(this);
+        gameHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
+        gameHelper.enableDebugLog(true);
 
+        gameHelper.setup(this);
         initialize(new Cryogenic(this), config);
 
-
-    }
-
-    public void signInToGoogle() {
-
+        requestPermissions();
     }
 
     @Override
@@ -99,7 +93,7 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
 
     @Override
     public boolean connectToFitnessApi() {
-        if(!isSignedIn())
+        if (!isSignedIn())
             return false;
         googleFitManager.connectToFitnessApi(this);
         return true;
@@ -114,7 +108,6 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
     public void signIn() {
         try {
             Gdx.app.log("AL", "Sign in started..");
-            Gdx.graphics.requestRendering();
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -144,7 +137,7 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
     }
 
     @Override
-    public int readTotalSteps() { // todo refactor this interface into its own class
+    public int readTotalSteps() {
         return googleFitManager.readTotalSteps();
     }
 

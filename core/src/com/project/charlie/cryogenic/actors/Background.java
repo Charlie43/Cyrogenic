@@ -23,6 +23,7 @@ public class Background extends Actor {
     public static final int PLANET = 1;
     public static final int MAP = 2;
     public static final int MENU = 3;
+    public static final int UPGRADES = 4;
 
 
     public Background(int stage, PlanetHandler planetHandler) {
@@ -31,6 +32,8 @@ public class Background extends Actor {
             region = AssetsManager.getTextureRegion(Constants.BACKGROUND_SPACE_ASSET_ID);
         } else if(stage == MENU) {
             region = AssetsManager.getTextureRegion(Constants.BACKGROUND_MENU_ASSET_ID);
+        } else if(stage == UPGRADES) {
+            region = AssetsManager.getTextureRegion(Constants.BACKGROUND_MENU_DARKENED_ASSET_ID);
         } else if (stage == PLANET) {
             if (planetHandler == null)
                 region = AssetsManager.getTextureRegion(Constants.BACKGROUND_ASSET_ID);
@@ -58,7 +61,7 @@ public class Background extends Actor {
         } else {
             region = null;
         }
-        if(stage != MENU) {
+        if(stage != MENU && stage != MAP && stage != UPGRADES) {
             regionBounds1 = new Rectangle(0 - Constants.APP_WIDTH / 2,
                     0, Constants.APP_WIDTH, Constants.APP_HEIGHT);
             regionBounds2 = new Rectangle(Constants.APP_WIDTH / 2,
@@ -73,7 +76,7 @@ public class Background extends Actor {
 
     @Override
     public void act(float delta) {
-        if (stage != MAP && stage != MENU) {
+        if (stage != MAP && stage != MENU && stage != UPGRADES) {
             if (leftBoundsReached(delta))
                 resetBounds();
             else
@@ -85,10 +88,12 @@ public class Background extends Actor {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
-        batch.draw(region, regionBounds1.x, regionBounds1.y,
-                Constants.APP_WIDTH, Constants.APP_HEIGHT);
-        batch.draw(region, regionBounds2.x, regionBounds2.y,
-                Constants.APP_WIDTH, Constants.APP_HEIGHT);
+        if(region != null) {
+            batch.draw(region, regionBounds1.x, regionBounds1.y,
+                    Constants.APP_WIDTH, Constants.APP_HEIGHT);
+            batch.draw(region, regionBounds2.x, regionBounds2.y,
+                    Constants.APP_WIDTH, Constants.APP_HEIGHT);
+        }
     }
 
     private boolean leftBoundsReached(float delta) {

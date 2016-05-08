@@ -25,7 +25,7 @@ public class Constants {
     public static final String BACKGROUND_ASSET_ID = "background";
     public static final String BACKGROUND_IMAGE_PATH = "images/backgrounds/background2.png";
     public static final String BACKGROUND_SPACE_ASSET_ID = "background_space";
-    public static final String BACKGROUND_SPACE_IMAGE_PATH = "images/backgrounds/background.jpg";
+    public static final String BACKGROUND_SPACE_IMAGE_PATH = "images/backgrounds/background.png";
     public static final String BACKGROUND_DESERT_ASSET_ID = "background_desert";
     public static final String BACKGROUND_DESERT_IMAGE_PATH = "images/backgrounds/background_desert.png";
     public static final String BACKGROUND_FOREST_ASSET_ID = "background_forest";
@@ -36,6 +36,8 @@ public class Constants {
     public static final String BACKGROUND_ICE_IMAGE_PATH = "images/backgrounds/background_ice.png";
     public static final String BACKGROUND_MENU_ASSET_ID = "background_menu";
     public static final String BACKGROUND_MENU_IMAGE_PATH = "images/backgrounds/cryogenic_mainpage.png";
+    public static final String BACKGROUND_MENU_DARKENED_ASSET_ID = "background_darkened";
+    public static final String BACKGROUND_MENU_DARKENED_IMAGE_PATH = "images/backgrounds/cryogenic_mainpage_darkened.png";
 
     public static final int TOP = 1;
     public static final int BOTTOM = 0;

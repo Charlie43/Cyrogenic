@@ -40,11 +40,11 @@ public class CreatorHandler extends GameHandler {
         float screenWidth = stage.getCamera().viewportWidth;
         int fontSize = 21;
 
-        stage.addLabel("CurrencyLabel", stage.createLabel("Currency: " + playerHandler.getCurrentCurrency(), new Vector3(screenWidth * 0.20f, screenHeight * 0.80f, 0), 10, 1, 0, fontSize));
-        stage.addLabel("HealthLabel", stage.createLabel("Health: " + playerHandler.getHealth(), new Vector3(screenWidth * 0.20f, screenHeight * 0.75f, 0), 10, 1, 0, fontSize));
-        stage.addLabel("DamageLabel", stage.createLabel("Damage: " + playerHandler.getDamage(), new Vector3(screenWidth * 0.20f, screenHeight * 0.70f, 0), 10, 1, 0, fontSize));
-        stage.addLabel("SpeedLabel", stage.createLabel("Speed: " + playerHandler.getSpeed(), new Vector3(screenWidth * 0.20f, screenHeight * 0.65f, 0), 10, 1, 0, fontSize));
-        stage.addLabel("MultiShotLabel", stage.createLabel("MultiShot: " + playerHandler.getMultiShot(), new Vector3(screenWidth * 0.20f, screenHeight * 0.60f, 0), 10, 1, 0, fontSize));
+        stage.addLabel("CurrencyLabel", stage.createLabel("Currency: " + playerHandler.getCurrentCurrency(), new Vector3(screenWidth * 0.20f, screenHeight * 0.70f, 0), 10, 1, 0, fontSize));
+        stage.addLabel("HealthLabel", stage.createLabel("Health: " + playerHandler.getHealth(), new Vector3(screenWidth * 0.20f, screenHeight * 0.65f, 0), 10, 1, 0, fontSize));
+        stage.addLabel("DamageLabel", stage.createLabel("Damage: " + playerHandler.getDamage(), new Vector3(screenWidth * 0.20f, screenHeight * 0.60f, 0), 10, 1, 0, fontSize));
+        stage.addLabel("SpeedLabel", stage.createLabel("Speed: " + playerHandler.getSpeed(), new Vector3(screenWidth * 0.20f, screenHeight * 0.55f, 0), 10, 1, 0, fontSize));
+        stage.addLabel("MultiShotLabel", stage.createLabel("MultiShot: " + playerHandler.getMultiShot(), new Vector3(screenWidth * 0.20f, screenHeight * 0.50f, 0), 10, 1, 0, fontSize));
     }
 
     public void setUpButtons() {
@@ -56,14 +56,14 @@ public class CreatorHandler extends GameHandler {
         float screenHeight = stage.getCamera().viewportHeight;
         float screenWidth = stage.getCamera().viewportWidth;
 
-        multiShot.setPosition(screenWidth * 0.50f, screenHeight * 0.80f);
-        multiShot.setBounds(screenWidth * 0.50f, screenHeight * 0.80f, 250, 40);
-        health.setPosition(screenWidth * 0.50f, screenHeight * 0.70f);
-        health.setBounds(screenWidth * 0.50f, screenHeight * 0.70f, 250, 40);
-        damage.setPosition(screenWidth * 0.50f, screenHeight * 0.60f);
-        damage.setBounds(screenWidth * 0.50f, screenHeight * 0.60f, 250, 40);
-        speed.setPosition(screenWidth * 0.50f, screenHeight * 0.50f);
-        speed.setBounds(screenWidth * 0.50f, screenHeight * 0.50f, 250, 40);
+        multiShot.setPosition(screenWidth * 0.50f, screenHeight * 0.65f);
+        multiShot.setBounds(screenWidth * 0.50f, screenHeight * 0.65f, 250, 40);
+        health.setPosition(screenWidth * 0.50f, screenHeight * 0.55f);
+        health.setBounds(screenWidth * 0.50f, screenHeight * 0.55f, 250, 40);
+        damage.setPosition(screenWidth * 0.50f, screenHeight * 0.45f);
+        damage.setBounds(screenWidth * 0.50f, screenHeight * 0.45f, 250, 40);
+        speed.setPosition(screenWidth * 0.50f, screenHeight * 0.35f);
+        speed.setBounds(screenWidth * 0.50f, screenHeight * 0.35f, 250, 40);
 
         if (playerHandler.multishotLevel > 0)
             multiShot.setDisabled(true);
@@ -138,10 +138,6 @@ public class CreatorHandler extends GameHandler {
             }
         });
         stage.addActor(creatorButton);
-    }
-
-    private void writeLevel() {
-        FileManager.writePlanet(placedBuildings);
     }
 
     public void touchDown(float x, float y) {

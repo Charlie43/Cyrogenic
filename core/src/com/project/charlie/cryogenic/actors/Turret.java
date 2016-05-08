@@ -15,6 +15,7 @@ public class Turret extends BaseActor {
     private float stateTime;
     private long lastFiretime;
     private String assetID;
+    private Body projectile;
 
     public Turret(Body body, Constants.TurretType type) {
         super(body);
@@ -32,21 +33,19 @@ public class Turret extends BaseActor {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
-
         float x = screenRectangle.x - (screenRectangle.width * 0.1f);
         float y = screenRectangle.y;
         float width = screenRectangle.width * 1.2f;
 
-        // if running
 //        stateTime += Gdx.graphics.getDeltaTime(); // for animation
 //        batch.draw(AssetsManager.getTextureRegion(Constants.TURRET_ASSET_ID), x, y,
 //                width, screenRectangle.height);
+
+
         if (Constants.DEBUG)
             batch.draw(AssetsManager.getTextureRegion(Constants.BOX_ASSET_ID), screenRectangle.x, screenRectangle.y, screenRectangle.width, screenRectangle.height);
 
-        batch.draw(AssetsManager.getTextureRegion(assetID), x, y,
-                width, screenRectangle.height);
-
+        batch.draw(AssetsManager.getTextureRegion(assetID), x, y, width, screenRectangle.height);
     }
 
     public long getLastFiretime() {
@@ -75,6 +74,13 @@ public class Turret extends BaseActor {
     public float getBodyHeight() { return getActorData().getHeight(); }
     public float getBodyWidth() { return getActorData().getWidth(); }
 
+    public Body getProjectile() {
+        return projectile;
+    }
+
+    public void setProjectile(Body projectile) {
+        this.projectile = projectile;
+    }
 
     public void die() {
         // todo drop pick ups

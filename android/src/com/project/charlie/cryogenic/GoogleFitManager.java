@@ -106,15 +106,8 @@ public class GoogleFitManager {
                 .build();
 
         DataReadResult readResult = Fitness.HistoryApi
-                .readData(mClient, readRequest).await(1, TimeUnit.MINUTES);
-        DailyTotalResult result = Fitness.HistoryApi.readDailyTotal(mClient, DataType.TYPE_STEP_COUNT_DELTA).await();
-        if (result.getTotal() == null) {
-            Gdx.app.log("AAP", "Result total = null");
-        } else {
-            if (result.getTotal().getDataPoints() != null) {
-                Gdx.app.log("DailyTotal", result.getTotal().getDataPoints().get(0).getValue(Field.FIELD_STEPS).toString());
-            }
-        }
+                .readData(mClient, readRequest).await(6, TimeUnit.SECONDS);
+
         Gdx.app.log("AndroidActionResolver", "Requests completed");
         for (DataSet data : readResult.getDataSets()) {
             for (DataPoint dataPoint : data.getDataPoints()) {

@@ -15,7 +15,7 @@ android {
         instrumentTest.setRoot('tests')
     }
     defaultConfig {
-        applicationId "com.project.charlie.cyrogenic"
+        applicationId "com.project.charlie.cryogenic"
         minSdkVersion 15
         targetSdkVersion 23
     }
@@ -80,7 +80,7 @@ task run(type: Exec) {
     }
 
     def adb = path + "/platform-tools/adb"
-    commandLine "$adb", 'shell', 'am', 'start', '-n', 'com.project.charlie.cyrogenic/com.project.charlie.cyrogenic.AndroidLauncher'
+    commandLine "$adb", 'shell', 'am', 'start', '-n', 'com.project.charlie.cogenic/com.project.charlie.cryogenic.AndroidLauncher'
 }
 
 // sets up the Android Eclipse project, using the old Ant based build.

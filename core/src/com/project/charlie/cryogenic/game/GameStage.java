@@ -113,9 +113,13 @@ public class GameStage extends Stage implements ContactListener {
     }
 
     public void setUpFitnessMenu() {
-        clear();
-        setUpStage(3, planetHandler);
-        fitnessHandler.setUpFitnessText();
+        if(fitnessHandler.connectToApi()) {
+            clear();
+            setUpStage(4, planetHandler);
+            fitnessHandler.setUpFitnessText();
+        } else {
+            fitnessHandler.signIn();
+        }
     }
 
     public void setUpMenu() {
@@ -148,12 +152,7 @@ public class GameStage extends Stage implements ContactListener {
         obstacleGameHandler.setUpLabels(planet);
         obstacleGameHandler.setUpControls();
         obstacleGameHandler.setUpInfoText();
-        new Timer().scheduleTask(new Timer.Task() {
-            @Override
-            public void run() {
-                obstacleGameHandler.createAsteroid();
-            }
-        }, 4, planetHandler.getAsteriodInterval(), planetHandler.getAsteriodCount());
+        obstacleGameHandler.setUpAsteroids();
         obstacleGameHandler.setUpHPBar();
         Gdx.app.log("GS", "Width: " + getCamera().viewportWidth);
 
@@ -213,7 +212,7 @@ public class GameStage extends Stage implements ContactListener {
     public void setUpStageCreator() {
         gameHandler.gameMode = Constants.GAMEMODE_CREATOR;
         clear();
-        setUpStage(1, planetHandler);
+        setUpStage(4, planetHandler);
         setUpBoundaries();
         creatorHandler.setUpLabels();
         creatorHandler.setUpButtons();
@@ -306,7 +305,7 @@ public class GameStage extends Stage implements ContactListener {
         if (Constants.DEBUG)
             renderer.render(world, camera.combined);
 
-        fpsLogger.log();
+//        fpsLogger.log();
 
 
         checkBounds();
@@ -386,7 +385,7 @@ public class GameStage extends Stage implements ContactListener {
                             projectiles.remove(t_data.getTesla());
                         }
                         t_data.getTesla().addAction(Actions.removeActor());
-                        world.destroyBody(body);
+                        try { world.destroyBody(body); } catch(Exception ignored) {}
                         body.setUserData(null);
                         body = null;
                     }

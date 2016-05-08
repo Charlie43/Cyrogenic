@@ -183,10 +183,14 @@ public class GameHandler {
                             public void run() {
                                 createPickup(turret.getPosition().x, turret.getPosition().y);
                             }
-                        }, 0.8f);
+                        }, 0.3f);
                     }
                     t_data.isRemoved = true;
-//                    t_data.turret.die();
+                    Body projectile = t_data.getTurret().getProjectile();
+                    if (projectile != null) {
+                        ((ActorData) projectile.getUserData()).isRemoved = true;
+                    }
+                    stage.addDead(t_data.getTurret().getProjectile());
                     stage.addDead(turret);
                 }
 
@@ -329,6 +333,7 @@ public class GameHandler {
                                 LaserActorData l_data = laser.getActorData();
                                 l_data.laser = laser;
                                 l_data.setDamage(type.getDamage());
+                                turret.setProjectile(laser.getBody());
                                 stage.addProjectile(Constants.LASER_ASSET_ID, laser);
                                 stage.scheduleRemoval(laser.getBody(), Constants.LASER_DELAY);
                                 break;
@@ -355,6 +360,7 @@ public class GameHandler {
                                     TeslaActorData teslaData = tesla.getActorData();
                                     teslaData.setTesla(tesla);
                                     teslaData.setDamage(type.getDamage());
+                                    turret.setProjectile(tesla.getBody());
                                     stage.addProjectile(Constants.TESLA_ASSET_ID, tesla);
                                     stage.scheduleRemoval(tesla.getBody(), Constants.TESLA_DELAY);
                                 }
