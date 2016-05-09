@@ -1,6 +1,7 @@
 package com.project.charlie.cryogenic.managers;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.project.charlie.cryogenic.misc.Constants;
@@ -14,6 +15,7 @@ public class AssetsManager {
     public static final String TAG = "AssetsManager";
 
     private static HashMap<String, TextureRegion> texturesMap = new HashMap<String, TextureRegion>();
+    public static Music music;
 
     public static void loadAssets() {
         texturesMap.put(Constants.BACKGROUND_ASSET_ID, new TextureRegion(
@@ -24,6 +26,10 @@ public class AssetsManager {
 
         texturesMap.put(Constants.PLAYER_ASSET_ID, new TextureRegion(
                 new Texture(Gdx.files.internal(Constants.PLAYER_IMAGE_PATH))));
+        texturesMap.put(Constants.PLAYER_L_ASSET_ID, new TextureRegion(
+                new Texture(Gdx.files.internal(Constants.PLAYER_L_IMAGE_PATH))));
+        texturesMap.put(Constants.PLAYER_R_ASSET_ID, new TextureRegion(
+                new Texture(Gdx.files.internal(Constants.PLAYER_R_IMAGE_PATH))));
 
         texturesMap.put(Constants.TURRET_ASSET_ID, new TextureRegion(
                 new Texture(Gdx.files.internal(Constants.TURRET_IMAGE_PATH))));
@@ -84,7 +90,8 @@ public class AssetsManager {
 
         texturesMap.put(Constants.CURRENCY_PICKUP_ASSET_ID, new TextureRegion(
                 new Texture(Gdx.files.internal(Constants.CURRENCY_PICKUP_IMAGE_PATH))));
-
+        music = Gdx.audio.newMusic(Gdx.files.internal("sounds/music.mp3"));
+        music.setLooping(true);
     }
 
     public static TextureRegion getTextureRegion(String key) {

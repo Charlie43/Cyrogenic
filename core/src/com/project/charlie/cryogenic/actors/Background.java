@@ -1,5 +1,6 @@
 package com.project.charlie.cryogenic.actors;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
@@ -52,6 +53,7 @@ public class Background extends Actor {
                         region = AssetsManager.getTextureRegion(Constants.BACKGROUND_CITY_ASSET_ID);
                         break;
                     case "Water":
+                        Gdx.app.log("GDX", "Water region found.");
                         region = AssetsManager.getTextureRegion(Constants.BACKGROUND_ICE_ASSET_ID);
                     default:
                         region = null;

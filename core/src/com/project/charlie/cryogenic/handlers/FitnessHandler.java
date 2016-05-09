@@ -13,6 +13,8 @@ import com.project.charlie.cryogenic.game.GameStage;
 import com.project.charlie.cryogenic.misc.Constants;
 import com.project.charlie.cryogenic.ui.GameLabel;
 
+import java.util.ArrayList;
+
 public class FitnessHandler extends GameHandler {
     Cryogenic cryogenic;
     public boolean achieved;
@@ -32,11 +34,7 @@ public class FitnessHandler extends GameHandler {
     }
 
     public boolean connectToApi() {
-        if(cryogenic.actionResolver.connectToFitnessApi()) {
-            cryogenic.actionResolver.readData();
-            return true;
-        }
-        return false;
+        return cryogenic.actionResolver.connectToFitnessApi();
     }
 
     public void signIn() {
@@ -51,19 +49,30 @@ public class FitnessHandler extends GameHandler {
         float height = stage.getCamera().viewportHeight;
         float counter = 0;
 
-        stage.addLabel("TotalSteps", new GameLabel(new Rectangle(width * 0.30f, height * 0.75f, 20, 20),
+        float LEFT_PADDING = 0.15f;
+
+        stage.addLabel("Title", new GameLabel(new Rectangle(width * 0.30f, height * 0.85f, 20, 20), "Fitness Report", 30f));
+
+        stage.addLabel("TotalSteps", new GameLabel(new Rectangle(width * LEFT_PADDING, height * 0.75f, 20, 20),
                 "Steps today:   " + cryogenic.actionResolver.readTotalSteps(), 17f));
 
-        stage.addLabel("CurrencyEarned", new GameLabel(new Rectangle(width * 0.30f, height * 0.70f, 10, 10),
-                "Currency Gained:   " + calculateCurrencyGain(), 17f));
+        stage.addLabel("CurrencyEarned", new GameLabel(new Rectangle(width * LEFT_PADDING, height * 0.70f, 10, 10),
+                "Currency Gained:   $" + calculateCurrencyGain(), 17f));
 
-        stage.addLabel("FitnessLabel", stage.createLabel("Previous 7 Days Step Count", new Vector3(width * 0.30f, height * 0.65f, 0), 20, 20, 0, 17f));
+        stage.addLabel("FitnessLabel", stage.createLabel("Previous 7 Days Step Count", new Vector3(width * LEFT_PADDING, height * 0.65f, 0), 20, 20, 0, 17f));
 
 
-        for (Integer steps : cryogenic.actionResolver.readWeeklySteps()) {
-            stage.addLabel("Day " + counter, new GameLabel(new Rectangle(width * 0.30f, height * (0.60f - (counter * 0.025f)), 20, 20),
-                    counter + " - " + steps.toString(), 14f));
-            counter = counter + 1f;
+        ArrayList<Integer> weeklySteps = cryogenic.actionResolver.readWeeklySteps();
+        if(weeklySteps != null) {
+            for (Integer steps : weeklySteps) {
+                String count = String.valueOf(counter).substring(0,1);
+                stage.addLabel("Day " + counter, new GameLabel(new Rectangle(width * LEFT_PADDING, height * (0.60f - (counter * 0.065f)), 20, 20),
+                        count + "     " + steps.toString(), 16.5f));
+                counter = counter + 1f;
+            }
+        } else {
+            stage.addLabel("CouldntLoadDays", stage.createLabel("Couldn't load previous weeks steps.", new Vector3(width * 0.30f,
+                    height * 0.60f, 0), 20, 20, 0, 16f));
         }
         if(!hasAchievedTarget()) {
             stage.addLabel("StepTarget", stage.createLabel("Daily Step Objective: 5000", new Vector3(width * 0.60f, height * 0.75f, 0),
@@ -87,8 +96,8 @@ public class FitnessHandler extends GameHandler {
         style.up = style.down = style.checked = skin.getDrawable("FitnessButton");
         ImageButton imageButton = new ImageButton(style);
         imageButton.setSize(50, 50);
-        imageButton.setPosition(70, stage.getCamera().viewportHeight * 0.90f);
-        imageButton.setBounds(70, stage.getCamera().viewportHeight * 0.90f, imageButton.getWidth(), imageButton.getHeight());
+        imageButton.setPosition(stage.getCamera().viewportWidth * 0.03f, stage.getCamera().viewportHeight * 0.87f);
+        imageButton.setBounds(stage.getCamera().viewportWidth * 0.03f, stage.getCamera().viewportHeight * 0.87f, imageButton.getWidth(), imageButton.getHeight());
         imageButton.setName(style.up.toString());
         imageButton.addListener(new ClickListener() {
             @Override
@@ -103,6 +112,8 @@ public class FitnessHandler extends GameHandler {
 
     public float calculateCurrencyGain() {
         return cryogenic.actionResolver.readTotalSteps() * 0.05f; // todo dont add today twice. check if what we've already added is lower than the new value, and add the difference
-
+    }
+    public float calcCurrency(float amount) {
+        return amount * 0.05f;
     }
 }

@@ -31,6 +31,7 @@ public class GoogleFitManager {
     Handler handler;
     Context context;
     GoogleApiClient mClient = null;
+    ArrayList<Integer> steps = new ArrayList<>();
 
     final int FITNESS_REQUEST = 1;
 
@@ -90,35 +91,35 @@ public class GoogleFitManager {
 
 
     public void readData() {
-        Gdx.app.log("AAR", "Reading data...");
-        Calendar cal = Calendar.getInstance();
-        Date now = new Date();
-        cal.setTime(now);
-        long endTime = cal.getTimeInMillis();
-        cal.add(Calendar.WEEK_OF_YEAR, -1);
-        long startTime = cal.getTimeInMillis();
-
-        DataReadRequest readRequest = new DataReadRequest.Builder()
-                .aggregate(DataType.TYPE_STEP_COUNT_DELTA,
-                        DataType.AGGREGATE_STEP_COUNT_DELTA)
-                .bucketByTime(1, TimeUnit.DAYS)
-                .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
-                .build();
-
-        DataReadResult readResult = Fitness.HistoryApi
-                .readData(mClient, readRequest).await(6, TimeUnit.SECONDS);
-
-        Gdx.app.log("AndroidActionResolver", "Requests completed");
-        for (DataSet data : readResult.getDataSets()) {
-            for (DataPoint dataPoint : data.getDataPoints()) {
-                Gdx.app.log("S", "Type: " + dataPoint.getDataType().getName());
-            }
-        }
+//        Gdx.app.log("AAR", "Reading data...");
+//        Calendar cal = Calendar.getInstance();
+//        Date now = new Date();
+//        cal.setTime(now);
+//        long endTime = cal.getTimeInMillis();
+//        cal.add(Calendar.WEEK_OF_YEAR, -1);
+//        long startTime = cal.getTimeInMillis();
+//
+//        DataReadRequest readRequest = new DataReadRequest.Builder()
+//                .aggregate(DataType.TYPE_STEP_COUNT_DELTA,
+//                        DataType.AGGREGATE_STEP_COUNT_DELTA)
+//                .bucketByTime(1, TimeUnit.DAYS)
+//                .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
+//                .build();
+//
+//        DataReadResult readResult = Fitness.HistoryApi
+//                .readData(mClient, readRequest).await(6, TimeUnit.SECONDS);
+//
+//        Gdx.app.log("AndroidActionResolver", "Requests completed");
+//        for (DataSet data : readResult.getDataSets()) {
+//            for (DataPoint dataPoint : data.getDataPoints()) {
+//                Gdx.app.log("S", "Type: " + dataPoint.getDataType().getName());
+//            }
+//        }
     }
 
     public int readTotalSteps() {
-        DailyTotalResult result = Fitness.HistoryApi.readDailyTotal(mClient, DataType.TYPE_STEP_COUNT_DELTA).await();
-        if (result.getTotal() != null && result.getTotal().getDataPoints() != null) {
+        DailyTotalResult result = Fitness.HistoryApi.readDailyTotal(mClient, DataType.TYPE_STEP_COUNT_DELTA).await(2, TimeUnit.SECONDS);
+        if (result.getTotal() != null && result.getTotal().getDataPoints() != null && !result.getTotal().getDataPoints().isEmpty()) {
             return result.getTotal().getDataPoints().get(0).getValue(Field.FIELD_STEPS).asInt();
         } else {
             return 0;
@@ -127,6 +128,9 @@ public class GoogleFitManager {
     }
 
     public ArrayList<Integer> readWeeklySteps() {
+        if(steps != null && !steps.isEmpty())
+            return steps;
+
         Gdx.app.log("AAR", "Reading weekly steps...");
         Calendar cal = Calendar.getInstance();
         Date now = new Date();
@@ -141,8 +145,10 @@ public class GoogleFitManager {
                 .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
                 .build();
 
-        ArrayList<Integer> steps = new ArrayList<>();
-        DataReadResult readResult = Fitness.HistoryApi.readData(mClient, readRequest).await();
+        DataReadResult readResult = Fitness.HistoryApi.readData(mClient, readRequest).await(2, TimeUnit.SECONDS);
+        if (readResult == null || readResult.getBuckets().isEmpty())
+            return null;
+
         for (Bucket bucket : readResult.getBuckets()) {
             Gdx.app.log("AAR", "DS Size " + bucket.getDataSets().size());
             for (DataSet ds : bucket.getDataSets()) {
@@ -158,7 +164,6 @@ public class GoogleFitManager {
                 }
             }
         }
-//        return readResult.getDataSets().get(0).getDataPoints().get(0).;
         return steps;
     }
 }

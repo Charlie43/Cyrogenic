@@ -23,7 +23,7 @@ public class ObstacleGameHandler extends GameHandler {
     int asteroidCount;
     boolean triggered;
     Random random;
-    Timer.Task obstacleTimer;
+    public Timer.Task obstacleTimer;
 
     public ObstacleGameHandler(GameStage stage) {
         super(stage);
@@ -72,7 +72,7 @@ public class ObstacleGameHandler extends GameHandler {
 
         Body asteroid;
         Body player;
-        Body bullet;
+        final Body bullet;
         if (playerHitAsteroid) {
             if (WorldHandler.isAsteroid(a)) {
                 asteroid = a;
@@ -87,7 +87,7 @@ public class ObstacleGameHandler extends GameHandler {
                 a_data.isRemoved = true;
                 stage.addDead(asteroid);
             }
-            asteroid.applyForceToCenter(new Vector2(0, 50f), true);
+            asteroid.applyForceToCenter(new Vector2(0, 100f), true);
 
             if (p_data.subHealth(a_data.getDamage()) <= 0) {
                 // game over
@@ -107,6 +107,13 @@ public class ObstacleGameHandler extends GameHandler {
             }
             ActorData b_data = (ActorData) bullet.getUserData();
             AsteroidActorData a_data = (AsteroidActorData) asteroid.getUserData();
+
+            new Timer().scheduleTask(new Timer.Task() {
+                @Override
+                public void run() {
+                    createExplosion(bullet.getPosition().x + 1f, bullet.getPosition().y + 0.7f);
+                }
+            }, 0.05f);
 
             b_data.isRemoved = true;
             stage.addDead(bullet);
@@ -166,6 +173,7 @@ public class ObstacleGameHandler extends GameHandler {
 
     public void setUpAsteroids() {
         asteroidCount = 0;
+        triggered = false;
         obstacleTimer = new Timer().scheduleTask(new Timer.Task() {
             @Override
             public void run() {

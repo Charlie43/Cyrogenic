@@ -54,7 +54,6 @@ public abstract class BaseActor extends Actor {
                 actorData.getHeight());
         screenRectangle.width = Constants.ConvertToScreen(actorData.getWidth());
         screenRectangle.height = Constants.ConvertToScreen(actorData.getHeight());
-        setColor(Color.GOLD);
     }
 
 
@@ -65,7 +64,6 @@ public abstract class BaseActor extends Actor {
                 actorData.getHeight() / 2);
         screenRectangle.width = Constants.ConvertToScreen(actorData.getWidth());
         screenRectangle.height = Constants.ConvertToScreen(actorData.getHeight());
-        setColor(Color.GOLD);
     }
 
     public Body getBody() {
@@ -74,6 +72,13 @@ public abstract class BaseActor extends Actor {
 
     public boolean isBullet() {
         return bullet;
+    }
+
+    public float getRectX() {
+        return screenRectangle.x;
+    }
+    public float getRectY() {
+        return screenRectangle.y;
     }
 
 }

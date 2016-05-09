@@ -22,7 +22,7 @@ public class FileManager {
     }
 
     public static PlayerJSON loadPlayer() {
-        // todo dont need playerJSON now
+        Gdx.app.log("FM", "loading player " + preferences.getInteger("Currency"));
         return new PlayerJSON(preferences.getInteger("Currency"), preferences.getInteger("Damage"),
                 preferences.getInteger("Speed"), preferences.getInteger("Multishot"));
     }
@@ -33,6 +33,7 @@ public class FileManager {
         preferences.putInteger("Speed", playerJSON.speedLevel);
         preferences.putInteger("Multishot", playerJSON.multishotLevel);
         preferences.putInteger("Health", playerJSON.healthLevel);
+        Gdx.app.log("FM", "saving currency " + playerJSON.currency);
     }
 
     public static ArrayList<PlanetJSON> loadPlanets() { // todo sector handling

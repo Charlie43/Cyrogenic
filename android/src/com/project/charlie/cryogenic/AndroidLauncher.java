@@ -21,7 +21,6 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
 
     public AndroidLauncher() {
         googleFitManager = new GoogleFitManager(this);
-
     }
 
     @Override
@@ -31,10 +30,8 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
         gameHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
         gameHelper.enableDebugLog(true);
 
-        gameHelper.setup(this);
         initialize(new Cryogenic(this), config);
-
-        requestPermissions();
+        gameHelper.setup(this);
     }
 
     @Override
@@ -74,6 +71,7 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
         Gdx.app.log("AL", "V:4 - Requesting permissions..");
         ActivityCompat.requestPermissions(this,
                 new String[]{"FITNESS_ACTIVITY_READ"}, FITNESS_REQUEST);
+        Gdx.graphics.requestRendering();
     }
 
     @Override
@@ -101,7 +99,7 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
 
     @Override
     public void readData() {
-        googleFitManager.readData();
+//        googleFitManager.readData();
     }
 
     @Override
@@ -149,7 +147,6 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
     @Override
     public boolean isSignedIn() {
         return gameHelper.isSignedIn();
-
     }
 
     @Override
@@ -162,6 +159,8 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
     @Override
     public void onSignInSucceeded() {
         Gdx.app.log("AL", "Sign in succeeded");
+        Gdx.graphics.requestRendering();
+        requestPermissions();
     }
 
     @Override

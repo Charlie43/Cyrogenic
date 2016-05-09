@@ -18,7 +18,9 @@ import com.project.charlie.cryogenic.misc.Constants;
 import com.project.charlie.cryogenic.objects.TurretJSON;
 import com.project.charlie.cryogenic.ui.GameLabel;
 
+import java.util.ArrayList;
 import java.util.Random;
+import java.util.TimerTask;
 
 /**
  * Created by Charlie on 05/03/2016.
@@ -35,6 +37,7 @@ public class GameHandler {
     Bar targetBar;
     public Timer.Task damageTimer;
     PlayerHandler playerHandler;
+    public ArrayList<Timer.Task> timers = new ArrayList<>();
 
     public GameHandler(GameStage stage) {
         this.stage = stage;
@@ -133,7 +136,7 @@ public class GameHandler {
     }
 
     public void setUpTargetBar() {
-        GameLabel targetLabel = new GameLabel(new Rectangle(stage.getCamera().viewportWidth * 0.90f,
+        GameLabel targetLabel = new GameLabel(new Rectangle(stage.getCamera().viewportWidth * 0.80f,
                 stage.getCamera().viewportHeight, 100, 20), "", 16f);
         stage.addLabel("TargetLabel", targetLabel);
 
@@ -167,30 +170,40 @@ public class GameHandler {
                 turret = a;
             }
             ActorData data = (ActorData) bullet.getUserData();
-            TurretActorData t_data = (TurretActorData) turret.getUserData();
+            final TurretActorData t_data = (TurretActorData) turret.getUserData();
 
             if (data.getShotBy().equals(Constants.PLAYER_ASSET_ID)) {
                 if (WorldHandler.isBullet(bullet)) {
                     data.isRemoved = true;
                     stage.addDead(bullet);
                 }
+                // Create contact explosion
+                final float x = bullet.getPosition().x + 1f;
+                final float y = bullet.getPosition().y + 0.7f;
+                timers.add(new Timer().scheduleTask(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        createExplosion(x, y);
+                    }
+                }, 0.05f));
+
 
                 if (t_data.subHealth(WorldHandler.getProjectileDamage(bullet))) {
                     // death animation and stuff
                     if (random.nextInt(100) > 70) {
-                        new Timer().scheduleTask(new Timer.Task() {
+                        timers.add(new Timer().scheduleTask(new Timer.Task() {
                             @Override
                             public void run() {
                                 createPickup(turret.getPosition().x, turret.getPosition().y);
                             }
-                        }, 0.3f);
+                        }, 0.1f));
                     }
                     t_data.isRemoved = true;
                     Body projectile = t_data.getTurret().getProjectile();
-                    if (projectile != null) {
+                    if (projectile != null && projectile.getUserData() != null) {
                         ((ActorData) projectile.getUserData()).isRemoved = true;
+                        stage.addDead(projectile);
                     }
-                    stage.addDead(t_data.getTurret().getProjectile());
                     stage.addDead(turret);
                 }
 
@@ -199,11 +212,11 @@ public class GameHandler {
 
                 playerHandler.addCurrency(1);
                 targetBar.setBarWidth((int) t_data.getHealth());
-                stage.getLabel("TargetLabel").setText(t_data.getTurretType().name());
+                stage.getLabel("TargetLabel").setText(t_data.getTurretType().toString());
                 Gdx.app.log("TURRET", "Turret HP:" + t_data.getHealth());
             }
         } else if (bulletHitPlayer) {
-            if (a.isBullet()) {
+            if (WorldHandler.isProjectile(a)) {
                 bullet = a;
                 player = b;
             } else {
@@ -218,19 +231,11 @@ public class GameHandler {
                 stage.addDead(bullet);
             }
 
-            if (p_data.subHealth(WorldHandler.getProjectileDamage(bullet)) <= 0) {
-                Gdx.app.log("PLAYER", "You died!");
-                stage.clear();
-                stage.addLabel("Died", stage.createLabel("You have died.\nReturning to main screen.", new Vector3(stage.getCamera().viewportWidth * 0.50f, stage.getCamera().viewportHeight * 0.50f, 0),
-                        20, 20, 3, 20f));
-                new Timer().scheduleTask(new Timer.Task() {
-                    @Override
-                    public void run() {
-                        stage.setUpMenu();
-                    }
-                }, 4);
-            }
+            if (p_data.subHealth(WorldHandler.getProjectileDamage(bullet)) <= 0)
+                playerDead();
+
             if (WorldHandler.isConstantlyDamaging(bullet)) {
+                Gdx.app.log("Constantly", "Hit a constantly damaging projectile.");
                 damageTimer = new Timer().scheduleTask(new Timer.Task() {
                     @Override
                     public void run() {
@@ -250,14 +255,40 @@ public class GameHandler {
             PickupData pData = (PickupData) pickup.getUserData();
             PlayerActorData plData = (PlayerActorData) player.getUserData();
 
-            pData.isRemoved = true;
-            stage.addDead(pickup);
-
             if (pData.getType().equals(Constants.CURRENCY_PICKUP_ASSET_ID))
                 playerHandler.addCurrency(100);
             else
                 plData.addHealth(20); // todo magic numbers
+
+            pData.isRemoved = true;
+            stage.addDead(pickup);
         }
+    }
+
+    public void createExplosion(float x, float y) {
+        Explosion explosion = new Explosion(WorldHandler.createExplosion(stage.getWorld(), x, y));
+        ((ExplosionData) explosion.getActorData()).explosion = explosion;
+        stage.addExplosion(explosion);
+        stage.scheduleExplosionRemoval(explosion.getBody(), 0.6f, explosion);
+    }
+
+    public void playerDead() {
+        stage.clear();
+        stage.getTurrets().clear();
+        pickupTimer.cancel();
+
+        for (Timer.Task timer : timers)
+            timer.cancel();
+        timers.clear();
+
+        stage.addLabel("Died", stage.createLabel("You have died.\nReturning to main screen.", new Vector3(stage.getCamera().viewportWidth * 0.50f, stage.getCamera().viewportHeight * 0.50f, 0),
+                20, 20, 3, 20f));
+        new Timer().scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                stage.setUpMenu();
+            }
+        }, 4);
     }
 
     public void createPickup(float x, float y) {
@@ -290,9 +321,9 @@ public class GameHandler {
     }
 
     public void damageTarget(Body body, float damage) {
-        if (WorldHandler.isPlayer(body)) {
+        if (WorldHandler.isPlayer(body) && body.getUserData() != null) {
             PlayerActorData pData = (PlayerActorData) body.getUserData();
-            pData.subHealth(damage);
+            playerHPBar.setBarWidth((int) pData.subHealth(damage));
         }
     }
 
@@ -338,7 +369,7 @@ public class GameHandler {
                                 stage.scheduleRemoval(laser.getBody(), Constants.LASER_DELAY);
                                 break;
                             case BURST:
-                                new Timer().scheduleTask(new Timer.Task() {
+                                timers.add(new Timer().scheduleTask(new Timer.Task() {
                                     @Override
                                     public void run() {
                                         Bullet burstBullet = new Bullet(WorldHandler.createBullet(stage.getWorld(),
@@ -348,7 +379,7 @@ public class GameHandler {
                                         burstData.setDamage(type.getDamage());
                                         stage.addProjectile(Constants.BULLET_ASSET_ID, burstBullet);
                                     }
-                                }, 0.3f, 0.3f, 2);
+                                }, 0.3f, 0.3f, 2));
                                 break;
                             case TESLA:
                                 for (int x = 0; x < 2; x++) {

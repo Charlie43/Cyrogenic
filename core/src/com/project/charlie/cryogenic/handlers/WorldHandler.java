@@ -145,6 +145,30 @@ public class WorldHandler {
         return body;
     }
 
+    public static Body createExplosion(World world, float createX, float createY) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.KinematicBody;
+        bodyDef.position.set(createX, createY);
+
+        Body body = world.createBody(bodyDef);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(Constants.EXPLOSION_WIDTH / 2, Constants.EXPLOSION_HEIGHT / 2);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.isSensor = true;
+
+        body.createFixture(fixtureDef);
+
+        shape.dispose();
+
+        body.setGravityScale(Constants.DEFUALT_GRAVITY);
+        body.resetMassData();
+        body.setUserData(new ExplosionData(Constants.EXPLOSION_WIDTH, Constants.EXPLOSION_HEIGHT, null));
+        return body;
+    }
+
     public static Body createLaser(World world, float createX, float createY, String shotBy) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;

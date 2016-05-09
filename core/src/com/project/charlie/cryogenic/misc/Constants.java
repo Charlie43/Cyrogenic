@@ -69,10 +69,22 @@ public class Constants {
     public static final short BOUNDARY_ENTITY = 0x1 << 1; // 0010 or 0x2 in hex
     public static final short DEFAULT_ENTITY = 0x3 << 1; // 0010 or 0x2 in hex
 
+    public static final int EXPLOSION_WIDTH = 2;
+    public static final int EXPLOSION_HEIGHT = 2;
+
+
+
 
     /* Player  */
     public static final String PLAYER_ASSET_ID = "player";
-    public static final String PLAYER_IMAGE_PATH = "images/ships/playerShip2_red_resize.png";
+    public static final String PLAYER_IMAGE_PATH = "images/ships/player/player_m.png";
+
+    public static final String PLAYER_R_ASSET_ID = "player_right";
+    public static final String PLAYER_R_IMAGE_PATH = "images/ships/player/player_r.png";
+
+    public static final String PLAYER_L_ASSET_ID = "player_left";
+    public static final String PLAYER_L_IMAGE_PATH = "images/ships/player/player_l.png";
+
     public static final int PLAYER_X = 1;
     public static final int PLAYER_Y = 5 + 1; // GROUND y + ground height
     public static final float PLAYER_GRAVITY = 0f;
@@ -196,6 +208,7 @@ public class Constants {
             this.assetID = assetID;
         }
 
+
         public float getFireRate() {
             return fireRate;
         }
@@ -218,6 +231,12 @@ public class Constants {
 
         public String getAssetID() {
             return assetID;
+        }
+
+        @Override
+        public String toString() {
+            String current = this.name();
+            return current.substring(0,1) + current.substring(1).toLowerCase();
         }
     }
 }

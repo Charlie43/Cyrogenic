@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.project.charlie.cryogenic.actors.*;
 import com.project.charlie.cryogenic.data.*;
 import com.project.charlie.cryogenic.handlers.*;
+import com.project.charlie.cryogenic.managers.AssetsManager;
 import com.project.charlie.cryogenic.managers.FileManager;
 import com.project.charlie.cryogenic.misc.Constants;
 import com.project.charlie.cryogenic.ui.GameLabel;
@@ -45,6 +46,7 @@ public class GameStage extends Stage implements ContactListener {
 
     private ArrayList<Turret> turrets = new ArrayList<Turret>();
     private ArrayList<Bullet> bullets = new ArrayList<>();
+    private ArrayList<Explosion> explosions = new ArrayList<>();
     private HashMap<Object, String> projectiles = new HashMap<>();
     private HashMap<String, Planet> planets = new HashMap<String, Planet>();
     public HashMap<String, GameLabel> labels = new HashMap<String, GameLabel>();
@@ -93,6 +95,8 @@ public class GameStage extends Stage implements ContactListener {
         this.cryogenic = cryogenic;
         fpsLogger = new FPSLogger();
 
+        AssetsManager.music.play();
+
         setupFitness();
         setUpMenu();
 
@@ -104,7 +108,7 @@ public class GameStage extends Stage implements ContactListener {
 
     public void setupFitness() {
         fitnessHandler.setCryogenic(cryogenic);
-        if(fitnessHandler.connectToApi()) {
+        if (fitnessHandler.connectToApi()) {
             playerHandler.addCurrency((int) fitnessHandler.calculateCurrencyGain());
             playerHandler.addCurrency((!fitnessHandler.achieved && fitnessHandler.hasAchievedTarget()) ? 5000 : 0);
         }
@@ -113,23 +117,28 @@ public class GameStage extends Stage implements ContactListener {
     }
 
     public void setUpFitnessMenu() {
-        if(fitnessHandler.connectToApi()) {
+        if (fitnessHandler.connectToApi()) {
             clear();
             setUpStage(4, planetHandler);
+            Gdx.app.log("SS", "Connected. Setting up text..");
             fitnessHandler.setUpFitnessText();
         } else {
+            Gdx.app.log("SS", "Signing in...");
             fitnessHandler.signIn();
         }
     }
 
     public void setUpMenu() {
         gameHandler.gameMode = Constants.GAMEMODE_NOTHING;
-        clear();
-        setUpPreChoice();
-//        obstacleGameHandler.setUpObstaclesButton();
-//        gameHandler.setUpNormalButton();
+        for (Timer.Task timer : gameHandler.timers)
+            timer.cancel();
         if (gameHandler.pickupTimer != null)
             gameHandler.pickupTimer.cancel();
+        if (obstacleGameHandler.obstacleTimer != null)
+            obstacleGameHandler.obstacleTimer.cancel();
+
+        clear();
+        setUpPreChoice();
 
         creatorHandler.setUpCreatorButton();
         mapHandler.setUpMapButton();
@@ -159,18 +168,40 @@ public class GameStage extends Stage implements ContactListener {
     }
 
     public void scheduleRemoval(final Body body, float time) {
-        new Timer().scheduleTask(new Timer.Task() {
+        gameHandler.timers.add(new Timer().scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                addDead(body);
-                ((ActorData) body.getUserData()).isRemoved = true;
+                if (body != null && body.getUserData() != null) {
+                    addDead(body);
+                    ((ActorData) body.getUserData()).isRemoved = true;
+                }
             }
-        }, time);
+        }, time));
+    }
+
+    public void scheduleExplosionRemoval(final Body body, float time, final Explosion explosion) {
+        gameHandler.timers.add(new Timer().scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                if (body != null) {
+                    try {
+                        explosion.addAction(Actions.removeActor());
+                        world.destroyBody(body);
+                    } catch (Exception e) {
+                        Gdx.app.log("Exception", "Exception caught attempting to remove explosion actor.");
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }, time));
 
     }
 
     public void setUpNormalLevel() {
         gameHandler.gameMode = Constants.GAMEMODE_NORMAL;
+        for (Timer.Task timer : gameHandler.timers)
+            timer.cancel();
+
         clear();
         if (planetHandler == null)
             loadPlanet();
@@ -186,20 +217,6 @@ public class GameStage extends Stage implements ContactListener {
         gameHandler.setUpPickupDrops();
         Gdx.app.log("GS", "Width: " + getCamera().viewportWidth);
 
-    }
-
-    public void setUpObstacleLevel() {
-        gameHandler.gameMode = Constants.GAMEMODE_OBSTACLES;
-        clear();
-        setUpStage(0, planetHandler);
-        obstacleGameHandler.setUpPlayer();
-        loadPlanet();
-        setUpBoundaries();
-        obstacleGameHandler.setUpControls();
-        obstacleGameHandler.setUpInfoText();
-        obstacleGameHandler.setUpAsteroids();
-        obstacleGameHandler.setUpHPBar();
-        Gdx.app.log("GS", "Width: " + getCamera().viewportWidth);
     }
 
     public void setUpMap() {
@@ -385,7 +402,10 @@ public class GameStage extends Stage implements ContactListener {
                             projectiles.remove(t_data.getTesla());
                         }
                         t_data.getTesla().addAction(Actions.removeActor());
-                        try { world.destroyBody(body); } catch(Exception ignored) {}
+                        try {
+                            world.destroyBody(body);
+                        } catch (Exception ignored) {
+                        }
                         body.setUserData(null);
                         body = null;
                     }
@@ -410,9 +430,9 @@ public class GameStage extends Stage implements ContactListener {
                         body.setUserData(null);
                         body = null;
                     }
-                } else if(WorldHandler.isPickup(body)) {
+                } else if (WorldHandler.isPickup(body)) {
                     PickupData pData = (PickupData) body.getUserData();
-                    if(pData != null && pData.isRemoved && pickups.contains(pData.pickup)) {
+                    if (pData != null && pData.isRemoved && pickups.contains(pData.pickup)) {
                         removed.add(body);
                         pickups.remove(pData.pickup);
                         pData.pickup.addAction(Actions.removeActor());
@@ -628,8 +648,14 @@ public class GameStage extends Stage implements ContactListener {
     }
 
     ArrayList<Pickup> pickups = new ArrayList<>();
+
     public void addPickup(Pickup pickup) {
         pickups.add(pickup);
         addActor(pickup);
+    }
+
+    public void addExplosion(Explosion explosion) {
+        explosions.add(explosion);
+        addActor(explosion);
     }
 }

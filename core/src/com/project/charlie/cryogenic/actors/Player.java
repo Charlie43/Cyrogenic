@@ -15,6 +15,8 @@ public class Player extends BaseActor {
     private float stateTime;
     private boolean moving;
 
+    float forceX;
+    float forceY;
     private float damage;
     private float maxHealth; // todo
 //    Affine2 affine2;
@@ -36,17 +38,28 @@ public class Player extends BaseActor {
 
         float x = screenRectangle.x - (screenRectangle.width * 0.1f);
         float y = screenRectangle.y;
-        float width = screenRectangle.width * 1.0f;
 
         if (Constants.DEBUG)
             batch.draw(AssetsManager.getTextureRegion(Constants.BOX_ASSET_ID), screenRectangle.x, screenRectangle.y, screenRectangle.width, screenRectangle.height);
-        batch.draw(AssetsManager.getTextureRegion(Constants.PLAYER_ASSET_ID), x, y);
 
-//affine 2 for rotation?
+        if (getDirection() == 0) {
+            batch.draw(AssetsManager.getTextureRegion(Constants.PLAYER_L_ASSET_ID), x, y);
+        } else if (getDirection() == 1) {
+            batch.draw(AssetsManager.getTextureRegion(Constants.PLAYER_R_ASSET_ID), x, y);
+        } else {
+            batch.draw(AssetsManager.getTextureRegion(Constants.PLAYER_ASSET_ID), x, y);
+        }
+    }
 
+    public int getDirection() {
+        if (forceY > 0) return 0; // up
+        else if(forceY < 0) return 1; // down
+        else return 2; // forward
     }
 
     public void applyForce(float forceX, float forceY) {
+        this.forceX = forceX;
+        this.forceY = forceY;
         body.setLinearVelocity(new Vector2(forceX, forceY));
     }
 
@@ -71,8 +84,13 @@ public class Player extends BaseActor {
         return screenRectangle.y;
     }
 
-    public float getBodyX() { return getBody().getPosition().x; }
-    public float getBodyY() { return getBody().getPosition().y; }
+    public float getBodyX() {
+        return getBody().getPosition().x;
+    }
+
+    public float getBodyY() {
+        return getBody().getPosition().y;
+    }
 
     public void rotateToTouch(float angle) {
 //        affine2 = new Affine2();
